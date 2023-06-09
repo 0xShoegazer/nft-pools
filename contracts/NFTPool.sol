@@ -1042,19 +1042,26 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
 
         position.rewardDebt = amountWithMultiplier.mul(_accRewardsPerShare).div(1e18);
 
-        if (rewardTokens.length > 0) {
-            _updatePositionRewardDebts(position, tokenId);
-        }
+        _updatePositionRewardDebts(amountWithMultiplier, tokenId);
     }
 
-    function _updatePositionRewardDebts(StakingPosition storage position, uint256 tokenId) private {
-        uint256 rewardCount = rewardTokens.length;
-        uint256 positionAmountMultiplied = position.amountWithMultiplier;
+    /**
+     * @dev Update reward debt for any/all additional reward tokens
+     */
+    function _updatePositionRewardDebts(uint256 positionAmountMultiplied, uint256 tokenId) private {
+        if (rewardTokens.length == 0) {
+            return;
+        }
 
-        // Need the token id..
+        RewardToken memory currentReward;
+        uint256 rewardCount = rewardTokens.length;
 
         for (uint256 i = 0; i < rewardCount; i++) {
-            //
+            currentReward = rewardTokens[i];
+
+            positionRewardDebts[tokenId][address(currentReward.token)] = positionAmountMultiplied
+                .mul(currentReward.accTokenPerShare)
+                .div(currentReward.PRECISION_FACTOR);
         }
     }
 
@@ -1066,7 +1073,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
         StakingPosition storage position = _stakingPositions[tokenId];
 
         // compute position's pending rewards
-        uint256 pending = position.amountWithMultiplier.mul(_accRewardsPerShare).div(1e18).sub(position.rewardDebt);
+        uint256 positionAmountMultiplied = position.amountWithMultiplier;
+        uint256 pending = positionAmountMultiplied.mul(_accRewardsPerShare).div(1e18).sub(position.rewardDebt);
 
         // unlock the position if pool has been unlocked or position is unlocked
         if (isUnlocked() || position.startLockTime.add(position.lockDuration) <= _currentBlockTimestamp()) {
@@ -1092,13 +1100,43 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
 
                 if (xGrailRewards > 0) xGrailRewards = _safeConvertTo(to, xGrailRewards);
                 // send share of GRAIL rewards
-                grailAmount = _safeRewardsTransfer(to, grailAmount);
+                grailAmount = _safeRewardsTransfer(address(_grailToken), to, grailAmount);
 
                 // forbidden to harvest if contract has not explicitly confirmed it handle it
                 _checkOnNFTHarvest(to, tokenId, grailAmount, xGrailRewards);
+
+                _harvestAdditionalRewards(positionAmountMultiplied, to, tokenId);
             }
         }
         emit HarvestPosition(tokenId, to, pending);
+    }
+
+    /**
+     * @dev Renew lock from a staking position with "lockDuration"
+     */
+    function _harvestAdditionalRewards(uint256 positionAmountMultiplied, address to, uint256 tokenId) private {
+        uint256 rewardCount = rewardTokens.length;
+        if (rewardCount == 0) {
+            return;
+        }
+
+        RewardToken memory currentReward;
+        uint256 pendingAmount;
+        address rewardAddress;
+
+        for (uint256 i = 0; i < rewardCount; i++) {
+            currentReward = rewardTokens[i];
+            rewardAddress = address(currentReward.token);
+
+            pendingAmount = positionAmountMultiplied
+                .mul(currentReward.accTokenPerShare)
+                .div(currentReward.PRECISION_FACTOR)
+                .sub(positionRewardDebts[tokenId][rewardAddress]);
+
+            if (pendingAmount > 0) {
+                _safeRewardsTransfer(rewardAddress, to, pendingAmount);
+            }
+        }
     }
 
     /**
@@ -1143,13 +1181,14 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
     /**
      * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
      */
-    function _safeRewardsTransfer(address to, uint256 amount) internal returns (uint256) {
-        uint256 balance = _grailToken.balanceOf(address(this));
+    function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
+        IERC20 token = IERC20(tokenAddress);
+        uint256 balance = token.balanceOf(address(this));
         // cap to available balance
         if (amount > balance) {
             amount = balance;
         }
-        _grailToken.safeTransfer(to, amount);
+        token.safeTransfer(to, amount);
         return amount;
     }
 
