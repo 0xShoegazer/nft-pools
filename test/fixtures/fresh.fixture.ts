@@ -61,6 +61,7 @@ export async function freshFixture() {
   ]);
 
   await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
+
   const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address);
   await rewardManager.initialize(nftPoolAddress);
 

@@ -17,6 +17,7 @@ interface INFTPool is IERC721 {
             address sbtToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
+            uint256 accRewardsPerShareWETH,
             uint256 lpSupply,
             uint256 lpSupplyWithMultiplier,
             uint256 allocPoint

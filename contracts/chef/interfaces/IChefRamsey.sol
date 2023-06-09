@@ -21,7 +21,8 @@ interface IChefRamsey {
             uint256 lastRewardTime,
             uint256 reserve,
             uint256 reserveWETH,
-            uint256 poolEmissionRate
+            uint256 poolEmissionRate,
+            uint256 poolEmissionRateWETH
         );
 
     function claimRewards() external returns (uint256 rewardAmount, uint256 amountWETH);

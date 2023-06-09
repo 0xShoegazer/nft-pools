@@ -35,6 +35,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         uint256 lockDuration; // The lock duration in seconds
         uint256 lockMultiplier; // Active lock multiplier (times 1e2)
         uint256 rewardDebt; // Reward debt
+        uint256 rewardDebtWETH;
         uint256 boostPoints; // Allocated xGRAIL from yieldboost contract (optional)
         uint256 totalMultiplier; // lockMultiplier + allocated xGRAIL boostPoints multiplier
         uint256 pendingXGrailRewards; // Not harvested xGrail rewards
@@ -56,6 +57,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
     uint256 private _lpSupplyWithMultiplier; // Sum of deposit token on this pool including the user's total multiplier (lockMultiplier + boostPoints)
     uint256 private _accRewardsPerShare; // Accumulated Rewards (staked token) per share, times 1e18. See below
+    uint256 private _accRewardsPerShareWETH;
 
     // readable via getMultiplierSettings
     uint256 public constant MAX_GLOBAL_MULTIPLIER_LIMIT = 25000; // 250%, high limit for maxGlobalMultiplier (100 = 1%)
@@ -88,7 +90,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     event HarvestPosition(uint256 indexed tokenId, address to, uint256 pending);
     event SetBoost(uint256 indexed tokenId, uint256 boostPoints);
 
-    event PoolUpdated(uint256 lastRewardTime, uint256 accRewardsPerShare);
+    event PoolUpdated(uint256 lastRewardTime, uint256 accRewardsPerShare, uint256 accRewardsPerShareWETH);
 
     event SetLockMultiplierSettings(uint256 maxLockDuration, uint256 maxLockMultiplier);
     event SetBoostMultiplierSettings(uint256 maxGlobalMultiplier, uint256 maxBoostMultiplier);
@@ -224,18 +226,20 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             address xGrailToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
+            uint256 accRewardsPerShareWETH,
             uint256 lpSupply,
             uint256 lpSupplyWithMultiplier,
             uint256 allocPoint
         )
     {
-        (, allocPoint, lastRewardTime, , , ) = master.getPoolInfo(address(this));
+        (, allocPoint, lastRewardTime, , , , ) = master.getPoolInfo(address(this));
         return (
             address(_lpToken),
             address(_grailToken),
             address(_xGrailToken),
             lastRewardTime,
             _accRewardsPerShare,
+            _accRewardsPerShareWETH,
             _lpSupply,
             _lpSupplyWithMultiplier,
             allocPoint
@@ -332,11 +336,19 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     function pendingRewards(uint256 tokenId) external view returns (uint256 mainAmount, uint256 wethAmount) {
         StakingPosition storage position = _stakingPositions[tokenId];
 
-        (, , uint256 lastRewardTime, uint256 reserve, uint256 reserveWETH, uint256 poolEmissionRate) = master
-            .getPoolInfo(address(this));
+        (
+            ,
+            ,
+            uint256 lastRewardTime,
+            uint256 reserve,
+            uint256 reserveWETH,
+            uint256 poolEmissionRate,
+            uint256 poolEmissionRateWETH
+        ) = master.getPoolInfo(address(this));
 
         uint256 positionAmountMultiplied = position.amountWithMultiplier;
         uint256 accRewardsPerShare = _accRewardsPerShare;
+        uint256 accRewardsPerShareWETH = _accRewardsPerShareWETH;
 
         // recompute accRewardsPerShare if not up to date
         if (
@@ -346,9 +358,11 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             // adding reserve here in case master has been synced but not the pool
             uint256 tokenRewards = duration.mul(poolEmissionRate).add(reserve);
             accRewardsPerShare = accRewardsPerShare.add(tokenRewards.mul(1e18).div(_lpSupplyWithMultiplier));
+
+            uint256 wethRewards = duration.mul(poolEmissionRateWETH).add(reserveWETH);
+            accRewardsPerShareWETH = accRewardsPerShare.add(wethRewards.mul(1e18).div(_lpSupplyWithMultiplier));
         }
 
-        // Add WETH to this. Return a tuple
         mainAmount = positionAmountMultiplied
             .mul(accRewardsPerShare)
             .div(1e18)
@@ -356,7 +370,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             .add(position.pendingXGrailRewards)
             .add(position.pendingGrailRewards);
 
-        wethAmount = positionAmountMultiplied.mul(accRewardsPerShare).div(1e18).sub(position.rewardDebt);
+        wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebt);
 
         return (mainAmount, wethAmount);
     }
@@ -365,7 +379,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         uint256 tokenId
     ) external view returns (address[] memory tokens, uint256[] memory rewardAmounts) {
         StakingPosition storage position = _stakingPositions[tokenId];
-        (, , uint256 lastRewardTime, , , ) = master.getPoolInfo(address(this));
+        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
 
         return
             rewardManager.pendingAdditionalRewards(
@@ -523,6 +537,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _stakingPositions[currentTokenId] = StakingPosition({
             amount: amount,
             rewardDebt: amountWithMultiplier.mul(_accRewardsPerShare).div(1e18),
+            rewardDebtWETH: amountWithMultiplier.mul(_accRewardsPerShareWETH).div(1e18),
             lockDuration: lockDuration,
             startLockTime: _currentBlockTimestamp(),
             lockMultiplier: lockMultiplier,
@@ -731,6 +746,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _stakingPositions[currentTokenId] = StakingPosition({
             amount: splitAmount,
             rewardDebt: amountWithMultiplier.mul(_accRewardsPerShare).div(1e18),
+            rewardDebtWETH: amountWithMultiplier.mul(_accRewardsPerShareWETH).div(1e18),
             lockDuration: lockDuration,
             startLockTime: position.startLockTime,
             lockMultiplier: lockMultiplier,
@@ -848,17 +864,22 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      */
     function _updatePool() internal {
         // Returns the amount of main token. WETH is already transfered to this contract at this time
-        (uint256 rewardAmount, ) = master.claimRewards();
+        (uint256 rewardAmount, uint256 amountWETH) = master.claimRewards();
 
         uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier;
         if (rewardAmount > 0) {
             _accRewardsPerShare = _accRewardsPerShare.add(rewardAmount.mul(1e18).div(lpSupplyMultiplied));
         }
 
-        (, , uint256 lastRewardTime, , , ) = master.getPoolInfo(address(this));
+        if (amountWETH > 0) {
+            _accRewardsPerShare = _accRewardsPerShare.add(rewardAmount.mul(1e18).div(lpSupplyMultiplied));
+            _accRewardsPerShareWETH = _accRewardsPerShareWETH.add(rewardAmount.mul(1e18).div(lpSupplyMultiplied));
+        }
+
+        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
         rewardManager.updateRewardsPerShare(lpSupplyMultiplied, lastRewardTime);
 
-        emit PoolUpdated(_currentBlockTimestamp(), _accRewardsPerShare);
+        emit PoolUpdated(_currentBlockTimestamp(), _accRewardsPerShare, _accRewardsPerShareWETH);
     }
 
     /**
@@ -958,6 +979,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         // compute position's pending rewards
         uint256 positionAmountMultiplied = position.amountWithMultiplier;
         uint256 pending = positionAmountMultiplied.mul(_accRewardsPerShare).div(1e18).sub(position.rewardDebt);
+        uint256 pendingWETH = positionAmountMultiplied.mul(_accRewardsPerShareWETH).div(1e18).sub(
+            position.rewardDebtWETH
+        );
 
         // unlock the position if pool has been unlocked or position is unlocked
         if (isUnlocked() || position.startLockTime.add(position.lockDuration) <= _currentBlockTimestamp()) {
@@ -966,7 +990,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         }
 
         // transfer rewards
-        if (pending > 0 || position.pendingXGrailRewards > 0 || position.pendingGrailRewards > 0) {
+        if (pending > 0 || pendingWETH > 0 || position.pendingXGrailRewards > 0 || position.pendingGrailRewards > 0) {
             uint256 xGrailRewards = pending.mul(xGrailRewardsShare).div(_TOTAL_REWARDS_SHARES);
             uint256 grailAmount = pending.add(position.pendingGrailRewards).sub(xGrailRewards);
 
@@ -976,14 +1000,15 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             if (address(0) == to) {
                 position.pendingXGrailRewards = xGrailRewards;
                 position.pendingGrailRewards = grailAmount;
+                position.pendingWETHRewards = grailAmount;
             } else {
-                // convert and send xGRAIL + GRAIL rewards
+                // convert and send xToken + main token rewards
                 position.pendingXGrailRewards = 0;
                 position.pendingGrailRewards = 0;
 
                 if (xGrailRewards > 0) xGrailRewards = _safeConvertTo(to, xGrailRewards);
 
-                // send share of GRAIL rewards
+                // send share of main token rewards
                 uint256 balance = _grailToken.balanceOf(address(this));
                 // cap to available balance
                 if (grailAmount > balance) {

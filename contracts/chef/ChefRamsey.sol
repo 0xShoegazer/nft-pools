@@ -173,6 +173,11 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         pendingWETH = mainChef.pendingWETH(poolId, thisAddress);
     }
 
+    function getRewardBalances() public view returns (uint256 mainAmount, uint256 amountWETH) {
+        mainAmount = _mainToken.balanceOf(address(this));
+        amountWETH = WETH.balanceOf(address(this));
+    }
+
     function getMainChefPoolInfo() public view returns (ArbidexPoolInfo memory) {
         return mainChef.poolInfo(mainChefPoolId);
     }
@@ -234,7 +239,8 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
             uint256 lastRewardTime,
             uint256 reserve,
             uint256 reserveWETH,
-            uint256 poolEmissionRate
+            uint256 poolEmissionRate,
+            uint256 poolEmissionRateWETH
         )
     {
         PoolInfo memory pool = _poolInfo[poolAddress_];
@@ -251,7 +257,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
             (uint256 mainRate, uint256 wethRate) = emissionRates();
 
             poolEmissionRate = (mainRate * allocPoint) / totalAllocPoint;
-            reserveWETH = (wethRate * allocPoint) / totalAllocPoint;
+            poolEmissionRateWETH = (wethRate * allocPoint) / totalAllocPoint;
         }
     }
 
