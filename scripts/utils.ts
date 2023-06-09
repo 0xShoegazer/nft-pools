@@ -1,16 +1,21 @@
-import { ethers } from 'hardhat';
+import { ethers, upgrades } from 'hardhat';
 import { ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, ARX_ADDRESS, CHEF_RAMSEY_ADDRESS, xARX_ADDRESS } from './constants';
 import { BigNumber, Contract } from 'ethers';
 import { OLD_CHEF_ABI } from '../test/abis/arbidex-chef-abi';
-import { MAX_UINT256 } from '../test/constants';
+import { MAX_UINT256, ZERO_ADDRESS } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
 
-export async function deployContract(name: string, ...args) {
-  const factory = await ethers.getContractFactory(name);
-  const instance = await factory.deploy(...args);
+export async function deployRamsey() {
+  const factory = await ethers.getContractFactory('ChefRamsey');
+  const instance = await upgrades.deployProxy(factory, [
+    xARX_ADDRESS,
+    ARBIDEX_CHEF_ADDRESS,
+    ARBIDEX_TREASURY,
+    ZERO_ADDRESS,
+  ]);
   await instance.deployed();
-  console.log(`${name} deployed at: ${instance.address}`);
+  console.log(`ChefRamsey deployed at: ${instance.address}`);
 
   return instance;
 }
@@ -31,8 +36,6 @@ export async function deployPoolFactory(master: string, mainToken: string, xToke
   const instance = await factory.deploy(master, mainToken, xToken);
   await instance.deployed();
   console.log(`NFTPoolFactory deployed at: ${instance.address}`);
-
-  // return deployContract('NFTPoolFactory', [master, mainToken, xToken]);
 
   return instance;
 }

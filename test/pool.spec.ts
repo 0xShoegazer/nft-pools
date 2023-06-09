@@ -22,7 +22,7 @@ describe('NFT Pools', () => {
     // });
 
     it('gives token and xtoken rewards', async () => {
-      const { nftPool, tokenId, chefRamsey, oldChef } = await loadFixture(awesomeFixture);
+      const {} = await loadFixture(awesomeFixture);
 
       // const position = await nftPool.getStakingPosition(tokenId);
       // // console.log(position);
@@ -33,10 +33,10 @@ describe('NFT Pools', () => {
       // const rate = await chefRamsey.emissionRate();
       // console.log(rate);
 
-      const ogPoolInfo = await oldChef.poolInfo(33);
-      console.log(ogPoolInfo);
+      // const ogPoolInfo = await oldChef.poolInfo(33);
+      // console.log(ogPoolInfo);
 
-      const oldTotal = await oldChef.arxTotalAllocPoint();
+      // const oldTotal = await oldChef.arxTotalAllocPoint();
 
       // let pendingGrails = await nftPool.pendingRewards(tokenId);
       // console.log(pendingGrails);

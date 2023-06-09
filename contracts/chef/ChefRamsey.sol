@@ -4,7 +4,6 @@ pragma solidity 0.8.15;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
@@ -15,7 +14,7 @@ import "./interfaces/IYieldBooster.sol";
 import "./interfaces/IXToken.sol";
 
 contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
-    using SafeERC20Upgradeable for IERC20MetadataUpgradeable;
+    using SafeERC20Upgradeable for IERC20Upgradeable;
     using SafeMathUpgradeable for uint256; // solc 0.8+ version to not fuck up Cam teams math
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -32,7 +31,8 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
 
     address public treasury;
 
-    IERC20MetadataUpgradeable public _mainToken;
+    IERC20Upgradeable public _mainToken;
+    IERC20Upgradeable public dummyToken;
     IArbidexMasterChef public mainChef;
     IYieldBooster private _yieldBooster; // Contract address handling yield boosts
 
@@ -94,7 +94,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
 
         xToken = _xToken;
         mainChef = _chef;
-        _mainToken = IERC20MetadataUpgradeable(mainChef.arx());
+        _mainToken = IERC20Upgradeable(mainChef.arx());
         treasury = _treasury;
         _yieldBooster = _boost;
 
@@ -107,15 +107,17 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     }
 
     // Allow approval to happen after initialize function instead of bothering with predict address stuff right now
-    function start(IERC20MetadataUpgradeable _dummyToken, uint256 _poolId) external onlyAdmin {
+    function start(IERC20Upgradeable _dummyToken, uint256 _poolId) external onlyAdmin {
         require(mainChefPoolId == type(uint256).max, "Already initialized");
-        mainChefPoolId = _poolId;
 
         uint256 callerBalance = _dummyToken.balanceOf(msg.sender);
         require(callerBalance != 0, "Zero token balance");
 
-        _dummyToken.safeTransferFrom(msg.sender, address(this), callerBalance);
-        _dummyToken.safeApprove(address(mainChef), callerBalance);
+        mainChefPoolId = _poolId;
+        dummyToken = _dummyToken;
+
+        dummyToken.safeTransferFrom(msg.sender, address(this), callerBalance);
+        dummyToken.safeApprove(address(mainChef), callerBalance);
         mainChef.deposit(_poolId, callerBalance);
     }
 
@@ -363,6 +365,14 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     /********************************************************/
     /****************** ADMIN FUNCTIONS ******************/
     /********************************************************/
+
+    function withdrawFromPool(IERC20Upgradeable dummyToken) external onlyAdmin {
+        ArbidexPoolUserInfo memory poolInfo = mainChef.userInfo(mainChefPoolId, address(this));
+        if (poolInfo.amount > 0) {
+            mainChef.withdraw(mainChefPoolId, poolInfo.amount);
+            dummyToken.safeTransfer(_msgSender(), dummyToken.balanceOf(address(this)));
+        }
+    }
 
     /**
      * @dev Set YieldBooster contract's address

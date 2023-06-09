@@ -1,6 +1,12 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
+struct ArbidexPoolUserInfo {
+    uint256 amount; // How many LP tokens the user has provided.
+    uint256 arxRewardDebt;
+    uint256 WETHRewardDebt;
+}
+
 struct ArbidexPoolInfo {
     address lpToken; // Address of LP token contract.
     uint256 arxAllocPoint; // How many allocation points assigned to this pool. ARXs to distribute per block.
@@ -33,4 +39,6 @@ interface IArbidexMasterChef {
     function arxTotalAllocPoint() external view returns (uint256);
 
     function WETHTotalAllocPoint() external view returns (uint256);
+
+    function userInfo(uint256 poolId, address user) external view returns (ArbidexPoolUserInfo memory);
 }
