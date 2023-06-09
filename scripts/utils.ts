@@ -1,7 +1,10 @@
 import { ethers } from 'hardhat';
 import { ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, ARX_ADDRESS, CHEF_RAMSEY_ADDRESS, xARX_ADDRESS } from './constants';
-import { Contract } from 'ethers';
+import { BigNumber, Contract } from 'ethers';
 import { CHEF_ABI } from '../test/abis/arbidex-chef-abi';
+import { MAX_UINT256 } from '../test/constants';
+import { formatEther } from 'ethers/lib/utils';
+import { ERC20_ABI } from '../test/abis/erc20-abi';
 
 export async function deployContract(name: string, ...args) {
   const factory = await ethers.getContractFactory(name);
@@ -59,4 +62,48 @@ export async function deployYieldBooster(xToken: string) {
   console.log(`YieldBooster at: ${instance.address}`);
 
   return instance;
+}
+
+export async function addRewardToken(rewardManager: string, token: string, sharesPerSecond: BigNumber) {
+  const manager = await ethers.getContractAt('NFTPoolRewardManager', rewardManager);
+  await manager.addRewardToken(token, sharesPerSecond);
+}
+
+export async function createPosition(poolAddress: string, lpPoolAddress: string, amount: BigNumber, lockDuration = 0) {
+  const pool = await ethers.getContractAt('NFTPool', poolAddress);
+  await approveTokens([lpPoolAddress], poolAddress);
+  return await pool.createPosition(amount, lockDuration);
+}
+
+export async function approveTokens(tokens: string[], spender: string) {
+  for (const token of tokens) {
+    const tc = await getERC20(token);
+    await tc.approve(spender, MAX_UINT256);
+  }
+}
+
+export async function getSignerAccount() {
+  return (await ethers.getSigners())[0];
+}
+
+export async function getTokenBalance(token: string, who: string) {
+  const tc = await getERC20(token);
+  const balance = await tc.balanceOf(who);
+  console.log('Token balance: ' + formatEther(balance));
+
+  return balance;
+}
+
+export async function getERC20(address: string) {
+  return new Contract(address, ERC20_ABI, await getSignerAccount());
+}
+
+export async function getERC20WithSigner(address: string, signer) {
+  return new Contract(address, ERC20_ABI, signer);
+}
+
+export async function getTokenAllowance(token: string, spender: string) {
+  const signer = await getSignerAccount();
+  const tc = await getERC20(token);
+  console.log(`Allowance for ${token}: ${formatEther(await tc.allowance(signer.address, spender))}`);
 }

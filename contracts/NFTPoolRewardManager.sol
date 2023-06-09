@@ -16,8 +16,6 @@ contract NFTPoolRewardManager is AccessControl {
     struct RewardToken {
         IERC20Metadata token;
         uint256 sharesPerSecond;
-        uint256 startTime;
-        uint256 endTime;
         uint256 accTokenPerShare;
         uint256 PRECISION_FACTOR; // Account for varying decimals in calculations
     }
@@ -25,12 +23,13 @@ contract NFTPoolRewardManager is AccessControl {
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     address public poolAddress;
+    address public treasury;
 
     RewardToken[] public rewardTokens;
     mapping(uint256 => mapping(address => uint256)) public positionRewardDebts; // per token reward debt for each NFT position
 
-    event RewardTokenAdded(IERC20Metadata token, uint256 sharesPerSecond, uint256 startTime, uint256 endTime);
-    event RewardTokenUpdated(IERC20Metadata token, uint256 sharesPerSecond, uint256 endTime);
+    event RewardTokenAdded(IERC20Metadata token, uint256 sharesPerSecond);
+    event RewardTokenUpdated(IERC20Metadata token, uint256 sharesPerSecond);
     event RewardTokenHarvested(IERC20Metadata token, uint256 amount);
 
     modifier onlyAdmin() {
@@ -43,18 +42,24 @@ contract NFTPoolRewardManager is AccessControl {
         _;
     }
 
-    constructor(address treasury) {
-        require(treasury != address(0), "Treasury not provided");
+    constructor(address _treasury) {
+        require(_treasury != address(0), "Treasury not provided");
+
+        treasury = _treasury;
 
         _setupRole(DEFAULT_ADMIN_ROLE, msg.sender);
         grantRole(ADMIN_ROLE, msg.sender);
-        grantRole(ADMIN_ROLE, treasury);
+        grantRole(ADMIN_ROLE, _treasury);
     }
 
     function initialize(address _poolAddress) external onlyAdmin {
         require(poolAddress == address(0), "Already initialized");
 
         poolAddress = _poolAddress;
+    }
+
+    function getRewardTokens() external view returns (RewardToken[] memory) {
+        return rewardTokens;
     }
 
     function pendingAdditionalRewards(
@@ -120,7 +125,7 @@ contract NFTPoolRewardManager is AccessControl {
     function updateRewardsPerShare(uint256 lpSupplyMultiplied, uint256 lastRewardTime) external onlyPool {
         uint256 rewardCount = rewardTokens.length;
 
-        if (rewardCount == 0) return;
+        if (rewardCount == 0 || lpSupplyMultiplied == 0) return;
 
         uint256 currentDuration;
         uint256 rewardAmountForDuration;
@@ -169,42 +174,36 @@ contract NFTPoolRewardManager is AccessControl {
         }
     }
 
-    function addRewardToken(RewardToken memory reward) external onlyAdmin {
-        // _requireOnlyOwner();
+    function addRewardToken(IERC20Metadata token, uint256 sharesPerSecond) external onlyAdmin {
+        require(address(token) != address(0), "Token not provided");
 
-        require(address(reward.token) != address(0), "Token not provided");
-        require(reward.startTime > block.timestamp, "Token start time in the past");
-        require(reward.endTime > reward.startTime, "End time lte start time");
-
-        uint256 decimalsRewardToken = uint256(reward.token.decimals());
+        uint256 decimalsRewardToken = uint256(token.decimals());
         require(decimalsRewardToken < 30, "Must be less than 30");
-        reward.PRECISION_FACTOR = uint256(10 ** (uint256(30) - decimalsRewardToken));
-        reward.accTokenPerShare = 0;
 
-        rewardTokens.push(reward);
+        rewardTokens.push(
+            RewardToken({
+                token: token,
+                sharesPerSecond: sharesPerSecond,
+                accTokenPerShare: 0,
+                PRECISION_FACTOR: uint256(10 ** (uint256(30) - decimalsRewardToken))
+            })
+        );
 
-        emit RewardTokenAdded(reward.token, reward.sharesPerSecond, reward.startTime, reward.endTime);
+        emit RewardTokenAdded(token, sharesPerSecond);
     }
 
-    function updateRewardToken(uint256 tokenIndex, uint256 sharesPerSecond, uint256 endTime) external onlyAdmin {
-        // _requireOnlyOwner();
-
+    function updateRewardToken(uint256 tokenIndex, uint256 sharesPerSecond) external onlyAdmin {
         require(tokenIndex < rewardTokens.length, "Invalid token index");
 
         RewardToken storage reward = rewardTokens[tokenIndex];
-        require(
-            endTime >= reward.startTime && endTime > block.timestamp,
-            "End time lte start time or current timestamp"
-        );
-
         reward.sharesPerSecond = sharesPerSecond;
-        reward.endTime = endTime;
 
-        emit RewardTokenUpdated(reward.token, sharesPerSecond, endTime);
+        emit RewardTokenUpdated(reward.token, sharesPerSecond);
     }
 
-    function withdrawToken(address token) external onlyAdmin {
-        IERC20Metadata(token).safeTransfer(msg.sender, IERC20Metadata(token).balanceOf(address(this)));
+    function withdrawToken(address token) external {
+        require(msg.sender == treasury, "Only treasury");
+        IERC20Metadata(token).safeTransfer(treasury, IERC20Metadata(token).balanceOf(address(this)));
     }
 
     /**

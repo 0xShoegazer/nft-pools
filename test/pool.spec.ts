@@ -8,7 +8,7 @@ describe('NFT Pools', () => {
   beforeEach(async () => {});
 
   it('Should', async () => {
-    const { arxTestPool } = await loadFixture(awesomeFixture);
+    const { nftPool } = await loadFixture(awesomeFixture);
     expect(true).to.be.true;
   });
 });

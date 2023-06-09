@@ -48,7 +48,7 @@ export function getRandomBytes32() {
 }
 
 /**
- * Replicates error string return from OpenZeppelin AccessControl contract
+ * Replicates error string return from OpenZeppelin AccessControl contract (solc 0.8+)
  */
 export function getAccessControlRevertString(account: string, role: string) {
   return `AccessControl: account ${account.toLowerCase()} is missing role ${role}`;
