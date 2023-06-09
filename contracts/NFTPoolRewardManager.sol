@@ -7,11 +7,20 @@ import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 import "./interfaces/INFTPoolRewardManager.sol";
-import "./interfaces/Structs.sol";
+import "./interfaces/tokens/IERC20Metadata.sol";
 
 contract NFTPoolRewardManager is AccessControl {
     using SafeMath for uint256;
     using SafeERC20 for IERC20Metadata;
+
+    struct RewardToken {
+        IERC20Metadata token;
+        uint256 sharesPerSecond;
+        uint256 startTime;
+        uint256 endTime;
+        uint256 accTokenPerShare;
+        uint256 PRECISION_FACTOR; // Account for varying decimals in calculations
+    }
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
