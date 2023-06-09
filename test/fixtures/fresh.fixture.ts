@@ -2,6 +2,7 @@ import { ethers } from 'hardhat';
 import {
   approveTokens,
   createPool,
+  createPosition,
   deployPoolFactory,
   deployRamsey,
   deployRewardManager,
@@ -67,7 +68,9 @@ export async function freshFixture() {
   const nftPool = getNFTPool(nftPoolAddress, signer);
   const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
   await lpInstance.approve(nftPool.address, MAX_UINT256);
-  await nftPool.createPosition(lpBalance.div(2), 0);
+
+  // await createPosition(nftPoolAddress, lpPoolAddress, lpBalance, signer);
+  await nftPool.createPosition(lpBalance, 0);
 
   return {
     chefRamsey,

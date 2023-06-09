@@ -81,7 +81,14 @@ export async function createPosition(
 ) {
   const pool = await ethers.getContractAt('NFTPool', poolAddress);
   await approveTokens([lpPoolAddress], poolAddress, signer);
-  return await pool.createPosition(amount, lockDuration);
+  const tx = await pool.createPosition(amount, lockDuration);
+  const receipt = await tx.wait();
+
+  const evt = receipt.events.find((evt) => evt.event === 'CreatePosition');
+  const tokenId = evt.args.tokenId;
+  console.log('New token ID: ' + tokenId);
+
+  return tokenId;
 }
 
 export async function approveTokens(tokens: string[], spender: string, signer) {
