@@ -85,8 +85,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     event WithdrawFromPosition(uint256 indexed tokenId, uint256 amount);
     event EmergencyWithdraw(uint256 indexed tokenId, uint256 amount);
     event LockPosition(uint256 indexed tokenId, uint256 lockDuration);
-    event SplitPosition(uint256 indexed tokenId, uint256 splitAmount, uint256 newTokenId);
-    event MergePositions(address indexed user, uint256[] tokenIds);
     event HarvestPosition(uint256 indexed tokenId, address to, uint256 pending);
     event SetBoost(uint256 indexed tokenId, uint256 boostPoints);
 
@@ -717,104 +715,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
         _updatePool();
         _lockPosition(tokenId, lockDuration);
-    }
-
-    /**
-     * @dev Split a staking position into two
-     *
-     * Can only be called by nft's owner
-     */
-    function splitPosition(uint256 tokenId, uint256 splitAmount) external nonReentrant {
-        _requireOnlyOwnerOf(tokenId);
-
-        _updatePool();
-        _harvestPosition(tokenId, ERC721.ownerOf(tokenId));
-
-        StakingPosition storage position = _stakingPositions[tokenId];
-        // can't have the original token completely emptied
-        require(splitAmount < position.amount, "invalid splitAmount");
-
-        // sub from existing position
-        position.amount = position.amount.sub(splitAmount);
-        _updateBoostMultiplierInfoAndRewardDebt(position, tokenId);
-
-        // create new position
-        uint256 currentTokenId = _mintNextTokenId(msg.sender);
-        uint256 lockDuration = position.lockDuration;
-        uint256 lockMultiplier = position.lockMultiplier;
-        uint256 amountWithMultiplier = splitAmount.mul(lockMultiplier.add(1e4)).div(1e4);
-        _stakingPositions[currentTokenId] = StakingPosition({
-            amount: splitAmount,
-            rewardDebt: amountWithMultiplier.mul(_accRewardsPerShare).div(1e18),
-            rewardDebtWETH: amountWithMultiplier.mul(_accRewardsPerShareWETH).div(1e18),
-            lockDuration: lockDuration,
-            startLockTime: position.startLockTime,
-            lockMultiplier: lockMultiplier,
-            amountWithMultiplier: amountWithMultiplier,
-            boostPoints: 0,
-            totalMultiplier: lockMultiplier,
-            pendingGrailRewards: 0,
-            pendingXGrailRewards: 0,
-            pendingWETHRewards: 0
-        });
-
-        _lpSupplyWithMultiplier = _lpSupplyWithMultiplier.add(amountWithMultiplier);
-
-        emit SplitPosition(tokenId, splitAmount, currentTokenId);
-    }
-
-    /**
-     * @dev Merge an array of staking positions into a single one with "lockDuration"
-     * Can't be used on positions with a higher lock duration than "lockDuration" param
-     *
-     * Can only be called by spNFT's owner
-     */
-    function mergePositions(uint256[] calldata tokenIds, uint256 lockDuration) external nonReentrant {
-        _updatePool();
-
-        uint256 length = tokenIds.length;
-        require(length > 1, "invalid");
-        // mergePositions: array must have at least two items
-
-        // set the destination position into which the others will be merged (using first item of the list)
-        uint256 dstTokenId = tokenIds[0];
-        _requireOnlyOwnerOf(dstTokenId);
-
-        StakingPosition storage dstPosition = _stakingPositions[dstTokenId];
-        require(dstPosition.lockDuration <= lockDuration, "can't merge");
-        _harvestPosition(dstTokenId, msg.sender);
-
-        dstPosition.lockDuration = lockDuration;
-        dstPosition.lockMultiplier = getMultiplierByLockDuration(lockDuration);
-
-        // loop starts at 2nd element
-        for (uint256 i = 1; i < length; ++i) {
-            uint256 tokenId = tokenIds[i];
-            _requireOnlyOwnerOf(tokenId);
-            require(tokenId != dstTokenId, "invalid token id");
-
-            _harvestPosition(tokenId, msg.sender);
-            StakingPosition storage position = _stakingPositions[tokenId];
-
-            // positions must have a lower lock duration than param
-            require(position.lockDuration <= lockDuration, "can't merge");
-            // mergePositions: positions cannot be merged
-
-            // we want to use the latest startLockTime
-            if (dstPosition.startLockTime < position.startLockTime) {
-                dstPosition.startLockTime = position.startLockTime;
-            }
-
-            // aggregate amounts to the destination position
-            dstPosition.amount = dstPosition.amount.add(position.amount);
-
-            // destroy position
-            _lpSupplyWithMultiplier = _lpSupplyWithMultiplier.sub(position.amountWithMultiplier);
-            _destroyPosition(tokenId, position.boostPoints);
-        }
-
-        _updateBoostMultiplierInfoAndRewardDebt(dstPosition, dstTokenId);
-        emit MergePositions(msg.sender, tokenIds);
     }
 
     /**
