@@ -5,9 +5,17 @@ import { formatEther } from 'ethers/lib/utils';
 import { freshFixture } from './fixtures/fresh.fixture';
 import { DUMMY_POOL_ID, DUMMY_TOKEN_ADDRESS } from '../scripts/constants';
 import { getTokenBalance } from '../scripts/utils';
-import { MAX_UINT256, ONE_DAY_SECONDS } from './constants';
+import { ONE_DAY_SECONDS } from './constants';
 
 describe('Chef Ramsey', () => {
+  describe('Emissions', () => {
+    it('fsml', async () => {
+      const { chefRamsey } = await loadFixture(freshFixture);
+
+      expect(await chefRamsey.emissionRate()).to.be.greaterThan(0);
+    });
+  });
+
   describe('Emissions', () => {
     it('fsml', async () => {
       const { chefRamsey, oldRamsey, dummyToken, signer, mainChef } = await loadFixture(freshFixture);

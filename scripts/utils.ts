@@ -72,15 +72,21 @@ export async function addRewardToken(rewardManager: string, token: string, share
   await manager.addRewardToken(token, sharesPerSecond);
 }
 
-export async function createPosition(poolAddress: string, lpPoolAddress: string, amount: BigNumber, lockDuration = 0) {
+export async function createPosition(
+  poolAddress: string,
+  lpPoolAddress: string,
+  amount: BigNumber,
+  signer,
+  lockDuration = 0
+) {
   const pool = await ethers.getContractAt('NFTPool', poolAddress);
-  await approveTokens([lpPoolAddress], poolAddress);
+  await approveTokens([lpPoolAddress], poolAddress, signer);
   return await pool.createPosition(amount, lockDuration);
 }
 
-export async function approveTokens(tokens: string[], spender: string) {
+export async function approveTokens(tokens: string[], spender: string, signer) {
   for (const token of tokens) {
-    const tc = await getERC20(token);
+    const tc = await getERC20(token, signer);
     await tc.approve(spender, MAX_UINT256);
   }
 }
@@ -89,16 +95,16 @@ export async function getSignerAccount() {
   return (await ethers.getSigners())[0];
 }
 
-export async function getTokenBalance(token: string, who: string) {
-  const tc = await getERC20(token);
+export async function getTokenBalance(token: string, who: string, signer) {
+  const tc = getERC20(token, signer);
   const balance = await tc.balanceOf(who);
   console.log('Token balance: ' + formatEther(balance));
 
   return balance;
 }
 
-export async function getERC20(address: string) {
-  return new Contract(address, ERC20_ABI, await getSignerAccount());
+export function getERC20(address: string, signer) {
+  return new Contract(address, ERC20_ABI, signer);
 }
 
 export function getERC20WithSigner(address: string, signer) {
@@ -107,6 +113,6 @@ export function getERC20WithSigner(address: string, signer) {
 
 export async function getTokenAllowance(token: string, spender: string) {
   const signer = await getSignerAccount();
-  const tc = await getERC20(token);
+  const tc = await getERC20(token, signer);
   console.log(`Allowance for ${token}: ${formatEther(await tc.allowance(signer.address, spender))}`);
 }

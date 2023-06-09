@@ -13,7 +13,6 @@ import {
   createPosition,
   deployPoolFactory,
   deployRewardManager,
-  getERC20,
   getERC20WithSigner,
   getTokenAllowance,
   getTokenBalance,
@@ -45,7 +44,7 @@ export async function awesomeFixture() {
     UNIV2_POOL_BALANCEOF_SLOT,
     parseUnits('100')
   );
-  const lpBalance = await getTokenBalance(lpPoolAddress, signer.address);
+  const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
 
   // Pool creation setup
   const rewardManager = await deployRewardManager();

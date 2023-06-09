@@ -1,11 +1,13 @@
 import { ethers } from 'hardhat';
 import {
+  approveTokens,
   createPool,
   deployPoolFactory,
   deployRamsey,
   deployRewardManager,
   deployYieldBooster,
   getERC20WithSigner,
+  getTokenBalance,
 } from '../../scripts/utils';
 import {
   ARBIDEX_CHEF_ADDRESS,
@@ -19,13 +21,27 @@ import {
 import { impersonateAccount } from '@nomicfoundation/hardhat-network-helpers';
 import { Contract } from 'ethers';
 import { OLD_CHEF_ABI } from '../abis/arbidex-chef-abi';
-import { MAX_UINT256 } from '../constants';
+import { MAX_UINT256, UNIV2_POOL_BALANCEOF_SLOT } from '../constants';
 import { xPools } from '../../scripts/xPools';
-import { getNFTPool } from '../utils';
+import { getNFTPool, giveTokenBalanceFor } from '../utils';
+import { parseUnits } from 'ethers/lib/utils';
 
 export async function freshFixture() {
   await impersonateAccount(DEV_ACCOUNT);
   const signer = await ethers.getSigner(DEV_ACCOUNT);
+
+  // Test LP pool
+  const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;
+
+  // Setup account funds
+  await giveTokenBalanceFor(
+    ethers.provider,
+    lpPoolAddress,
+    signer.address,
+    UNIV2_POOL_BALANCEOF_SLOT,
+    parseUnits('100')
+  );
+  const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
 
   const oldRamsey = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
 
@@ -44,14 +60,14 @@ export async function freshFixture() {
   ]);
 
   await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
-
-  // Test LP pool
-  const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;
-
   const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address);
-  const nftPool = getNFTPool(nftPoolAddress, signer);
-
   await rewardManager.initialize(nftPoolAddress);
+
+  // Need rewardManager init before creating positions
+  const nftPool = getNFTPool(nftPoolAddress, signer);
+  const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
+  await lpInstance.approve(nftPool.address, MAX_UINT256);
+  await nftPool.createPosition(lpBalance.div(2), 0);
 
   return {
     chefRamsey,
