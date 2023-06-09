@@ -1,13 +1,11 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
-pragma abicoder v2;
 
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/SafeERC20.sol";
 import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
-import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 import "./interfaces/INFTHandler.sol";
 import "./interfaces/IXMasterChef.sol";
@@ -15,18 +13,18 @@ import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
 import "./interfaces/tokens/IXToken.sol";
 import "./interfaces/tokens/IERC20Metadata.sol";
+import "./interfaces/INFTPoolRewardManager.sol";
 
 /*
  * This contract wraps ERC20 assets into non-fungible staking positions called spNFTs
  * spNFTs add the possibility to create an additional layer on liquidity providing lock features
  * spNFTs are yield-generating positions when the NFTPool contract has allocations from the Camelot Master
  */
-contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
+contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position NFT", "spNFT") {
     using Address for address;
     using Counters for Counters.Counter;
-    using EnumerableSet for EnumerableSet.AddressSet;
+    // using EnumerableSet for EnumerableSet.AddressSet;
     using SafeMath for uint256;
-    using SafeERC20 for IERC20;
     using SafeERC20 for IERC20Metadata;
 
     // Info of each NFT (staked position).
@@ -43,26 +41,17 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
         uint256 pendingGrailRewards; // Not harvested Grail rewards
     }
 
-    struct RewardToken {
-        IERC20Metadata token;
-        uint256 sharesPerSecond;
-        uint256 startTime;
-        uint256 endTime;
-        uint256 accTokenPerShare;
-        uint256 PRECISION_FACTOR; // Account for varying decimals in calculations
-    }
-
     Counters.Counter private _tokenIds;
 
-    EnumerableSet.AddressSet private _unlockOperators; // Addresses allowed to forcibly unlock locked spNFTs
     address public operator; // Used to delegate multiplier settings to project's owners
     IXMasterChef public master; // Address of the master
     address public immutable factory; // NFTPoolFactory contract's address
     bool public initialized;
 
-    IERC20 private _lpToken; // Deposit token contract's address
-    IERC20 private _grailToken; // GrailToken contract's address
+    IERC20Metadata private _lpToken; // Deposit token contract's address
+    IERC20Metadata private _grailToken; // GrailToken contract's address
     IXToken private _xGrailToken; // XGrailToken contract's address
+    INFTPoolRewardManager public rewardManager;
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
     uint256 private _lpSupplyWithMultiplier; // Sum of deposit token on this pool including the user's total multiplier (lockMultiplier + boostPoints)
     uint256 private _accRewardsPerShare; // Accumulated Rewards (staked token) per share, times 1e18. See below
@@ -83,9 +72,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
 
     // readable via getStakingPosition
     mapping(uint256 => StakingPosition) internal _stakingPositions; // Info of each NFT position that stakes LP tokens
-
-    RewardToken[] public rewardTokens;
-    mapping(uint256 => mapping(address => uint256)) public positionRewardDebts; // per token reward debt for each NFT position
 
     /********************************************/
     /****************** EVENTS ******************/
@@ -110,19 +96,23 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
     event SetEmergencyUnlock(bool emergencyUnlock);
     event SetOperator(address operator);
 
-    event RewardTokenAdded(IERC20 token, uint256 sharesPerSecond, uint256 startTime, uint256 endTime);
-    event RewardTokenUpdated(IERC20 token, uint256 sharesPerSecond, uint256 endTime);
-
-    constructor(string memory _name, string memory _symbol) ERC721(_name, _symbol) {
+    constructor() {
         factory = msg.sender;
     }
 
-    function initialize(IXMasterChef master_, IERC20 grailToken, IXToken xGrailToken, IERC20 lpToken) external {
+    function initialize(
+        IXMasterChef master_,
+        IERC20Metadata grailToken,
+        IXToken xGrailToken,
+        IERC20Metadata lpToken,
+        INFTPoolRewardManager manager
+    ) external {
         require(msg.sender == factory && !initialized, "FORBIDDEN");
         _lpToken = lpToken;
         master = master_;
         _grailToken = grailToken;
         _xGrailToken = xGrailToken;
+        rewardManager = manager;
         initialized = true;
 
         // to convert main token to xToken
@@ -137,7 +127,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
      * @dev Check if caller has operator rights
      */
     function _requireOnlyOwner() internal view {
-        require(msg.sender == owner() || master.isAdmin(msg.sender), "FORBIDDEN");
+        require(master.isAdmin(msg.sender), "FORBIDDEN");
         // onlyOwner: caller is not the owner
     }
 
@@ -178,34 +168,12 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
     /****************** PUBLIC VIEWS ******************/
     /**************************************************/
 
-    /**
-     * @dev Returns this contract's owner (= master contract's owner)
-     */
-    function owner() public view returns (address) {
-        return master.owner();
-    }
-
-    /**
-     * @dev Returns the number of unlockOperators
-     */
-    function unlockOperatorsLength() external view returns (uint256) {
-        return _unlockOperators.length();
-    }
-
-    /**
-     * @dev Returns an unlockOperator from its "index"
-     */
-    function unlockOperator(uint256 index) external view returns (address) {
-        if (_unlockOperators.length() <= index) return address(0);
-        return _unlockOperators.at(index);
-    }
-
-    /**
-     * @dev Returns true if "_operator" address is an unlockOperator
-     */
-    function isUnlockOperator(address _operator) external view returns (bool) {
-        return _unlockOperators.contains(_operator);
-    }
+    // /**
+    //  * @dev Returns this contract's owner (= master contract's owner)
+    //  */
+    // function owner() public view returns (address) {
+    //     return master.owner();
+    // }
 
     /**
      * @dev Get master-defined yield booster contract address
@@ -387,84 +355,21 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
     function pendingAdditionalRewards(
         uint256 tokenId
     ) external view returns (address[] memory tokens, uint256[] memory rewardAmounts) {
-        uint256 currentRewardTokenCount = rewardTokens.length;
-        tokens = new address[](currentRewardTokenCount);
-        rewardAmounts = new uint256[](currentRewardTokenCount);
-
-        (, , uint256 lastRewardTime, , ) = master.getPoolInfo(address(this));
         StakingPosition storage position = _stakingPositions[tokenId];
+        (, , uint256 lastRewardTime, , ) = master.getPoolInfo(address(this));
 
-        RewardToken memory currentReward;
-        uint256 positionAmountMultiplied = position.amountWithMultiplier;
-        uint256 currentDuration;
-        uint256 rewardAmountForDuration;
-        uint256 adjustedTokenPerShare;
-        uint256 currentRewardDebt;
-
-        for (uint256 i = 0; i < currentRewardTokenCount; i++) {
-            currentReward = rewardTokens[i];
-
-            if (_currentBlockTimestamp() > lastRewardTime && _lpSupplyWithMultiplier > 0) {
-                currentDuration = _currentBlockTimestamp().sub(lastRewardTime);
-                rewardAmountForDuration = currentDuration.mul(currentReward.sharesPerSecond);
-
-                adjustedTokenPerShare = rewardAmountForDuration.mul(currentReward.PRECISION_FACTOR).div(
-                    _lpSupplyWithMultiplier
-                );
-                adjustedTokenPerShare = currentReward.accTokenPerShare.add(adjustedTokenPerShare);
-
-                currentRewardDebt = positionRewardDebts[tokenId][address(currentReward.token)];
-                rewardAmounts[i] = positionAmountMultiplied
-                    .mul(adjustedTokenPerShare)
-                    .div(currentReward.PRECISION_FACTOR)
-                    .sub(currentRewardDebt);
-            }
-        }
+        return
+            rewardManager.pendingAdditionalRewards(
+                tokenId,
+                position.amountWithMultiplier,
+                _lpSupplyWithMultiplier,
+                lastRewardTime
+            );
     }
 
     /*******************************************************/
     /****************** OWNABLE FUNCTIONS ******************/
     /*******************************************************/
-
-    function addRewardToken(RewardToken memory reward) external {
-        _requireOnlyOwner();
-
-        require(address(reward.token) != address(0), "Token not provided");
-        require(reward.startTime > block.timestamp, "Token start time in the past");
-        require(reward.endTime > reward.startTime, "End time lte start time");
-
-        uint256 decimalsRewardToken = uint256(reward.token.decimals());
-        require(decimalsRewardToken < 30, "Must be less than 30");
-        reward.PRECISION_FACTOR = uint256(10 ** (uint256(30) - decimalsRewardToken));
-        reward.accTokenPerShare = 0;
-
-        rewardTokens.push(reward);
-
-        emit RewardTokenAdded(reward.token, reward.sharesPerSecond, reward.startTime, reward.endTime);
-    }
-
-    function updateRewardToken(uint256 tokenIndex, uint256 sharesPerSecond, uint256 endTime) external {
-        _requireOnlyOwner();
-
-        RewardToken storage reward = rewardTokens[tokenIndex];
-        require(tokenIndex < rewardTokens.length, "Invalid token index");
-        require(
-            endTime >= reward.startTime && endTime > block.timestamp,
-            "End time lte start time or current timestamp"
-        );
-
-        reward.sharesPerSecond = sharesPerSecond;
-        reward.endTime = endTime;
-
-        emit RewardTokenUpdated(reward.token, sharesPerSecond, endTime);
-    }
-
-    function withdrawToken(address token) external {
-        _requireOnlyOwner();
-        require(token != address(_grailToken) && token != address(_xGrailToken), "Cannot withdraw token");
-
-        IERC20(token).safeTransfer(msg.sender, IERC20(token).balanceOf(address(this)));
-    }
 
     /**
      * @dev Set lock multiplier settings
@@ -475,7 +380,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
      * Must only be called by the owner
      */
     function setLockMultiplierSettings(uint256 maxLockDuration, uint256 maxLockMultiplier) external {
-        require(msg.sender == owner() || msg.sender == operator, "FORBIDDEN");
+        require(msg.sender == operator, "FORBIDDEN");
         // onlyOperatorOrOwner: caller has no operator rights
         require(
             maxLockMultiplier <= MAX_LOCK_MULTIPLIER_LIMIT &&
@@ -527,22 +432,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
 
         xGrailRewardsShare = xGrailRewardsShare_;
         emit SetXGrailRewardsShare(xGrailRewardsShare_);
-    }
-
-    /**
-     * @dev Add or remove unlock operators
-     *
-     * Must only be called by the owner
-     */
-    function setUnlockOperator(address _operator, bool add) external {
-        _requireOnlyOwner();
-
-        if (add) {
-            _unlockOperators.add(_operator);
-        } else {
-            _unlockOperators.remove(_operator);
-        }
-        emit SetUnlockOperator(_operator, add);
     }
 
     /**
@@ -911,9 +800,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
 
         StakingPosition storage position = _stakingPositions[tokenId];
 
-        // position should be unlocked
         require(
-            _unlockOperators.contains(msg.sender) ||
+            master.isAdmin(msg.sender) ||
                 position.startLockTime.add(position.lockDuration) <= _currentBlockTimestamp() ||
                 isUnlocked(),
             "locked"
@@ -951,9 +839,13 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
         // gets allocated rewards from Master and updates
         uint256 rewards = master.claimRewards();
 
+        uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier;
         if (rewards > 0) {
-            _accRewardsPerShare = _accRewardsPerShare.add(rewards.mul(1e18).div(_lpSupplyWithMultiplier));
+            _accRewardsPerShare = _accRewardsPerShare.add(rewards.mul(1e18).div(lpSupplyMultiplied));
         }
+
+        (, , uint256 lastRewardTime, , ) = master.getPoolInfo(address(this));
+        rewardManager.updateRewardsPerShare(lpSupplyMultiplied, lastRewardTime);
 
         emit PoolUpdated(_currentBlockTimestamp(), _accRewardsPerShare);
     }
@@ -995,7 +887,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
 
         StakingPosition storage position = _stakingPositions[tokenId];
         require(
-            _unlockOperators.contains(nftOwner) ||
+            master.isAdmin(nftOwner) ||
                 position.startLockTime.add(position.lockDuration) <= _currentBlockTimestamp() ||
                 isUnlocked(),
             "locked"
@@ -1042,27 +934,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
 
         position.rewardDebt = amountWithMultiplier.mul(_accRewardsPerShare).div(1e18);
 
-        _updatePositionRewardDebts(amountWithMultiplier, tokenId);
-    }
-
-    /**
-     * @dev Update reward debt for any/all additional reward tokens
-     */
-    function _updatePositionRewardDebts(uint256 positionAmountMultiplied, uint256 tokenId) private {
-        if (rewardTokens.length == 0) {
-            return;
-        }
-
-        RewardToken memory currentReward;
-        uint256 rewardCount = rewardTokens.length;
-
-        for (uint256 i = 0; i < rewardCount; i++) {
-            currentReward = rewardTokens[i];
-
-            positionRewardDebts[tokenId][address(currentReward.token)] = positionAmountMultiplied
-                .mul(currentReward.accTokenPerShare)
-                .div(currentReward.PRECISION_FACTOR);
-        }
+        rewardManager.updatePositionRewardDebts(amountWithMultiplier, tokenId);
     }
 
     /**
@@ -1099,44 +971,24 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
                 position.pendingGrailRewards = 0;
 
                 if (xGrailRewards > 0) xGrailRewards = _safeConvertTo(to, xGrailRewards);
+
                 // send share of GRAIL rewards
-                grailAmount = _safeRewardsTransfer(address(_grailToken), to, grailAmount);
+                uint256 balance = _grailToken.balanceOf(address(this));
+                // cap to available balance
+                if (grailAmount > balance) {
+                    grailAmount = balance;
+                }
+
+                // grailAmount = _safeRewardsTransfer(address(_grailToken), to, grailAmount);
+                _grailToken.safeTransfer(to, grailAmount);
 
                 // forbidden to harvest if contract has not explicitly confirmed it handle it
                 _checkOnNFTHarvest(to, tokenId, grailAmount, xGrailRewards);
 
-                _harvestAdditionalRewards(positionAmountMultiplied, to, tokenId);
+                rewardManager.harvestAdditionalRewards(positionAmountMultiplied, to, tokenId);
             }
         }
         emit HarvestPosition(tokenId, to, pending);
-    }
-
-    /**
-     * @dev Renew lock from a staking position with "lockDuration"
-     */
-    function _harvestAdditionalRewards(uint256 positionAmountMultiplied, address to, uint256 tokenId) private {
-        uint256 rewardCount = rewardTokens.length;
-        if (rewardCount == 0) {
-            return;
-        }
-
-        RewardToken memory currentReward;
-        uint256 pendingAmount;
-        address rewardAddress;
-
-        for (uint256 i = 0; i < rewardCount; i++) {
-            currentReward = rewardTokens[i];
-            rewardAddress = address(currentReward.token);
-
-            pendingAmount = positionAmountMultiplied
-                .mul(currentReward.accTokenPerShare)
-                .div(currentReward.PRECISION_FACTOR)
-                .sub(positionRewardDebts[tokenId][rewardAddress]);
-
-            if (pendingAmount > 0) {
-                _safeRewardsTransfer(rewardAddress, to, pendingAmount);
-            }
-        }
     }
 
     /**
@@ -1169,7 +1021,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
      * @dev Handle deposits of tokens with transfer tax
      */
     function _transferSupportingFeeOnTransfer(
-        IERC20 token,
+        IERC20Metadata token,
         address user,
         uint256 amount
     ) internal returns (uint256 receivedAmount) {
@@ -1178,19 +1030,19 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721 {
         return token.balanceOf(address(this)).sub(previousBalance);
     }
 
-    /**
-     * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
-     */
-    function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
-        IERC20 token = IERC20(tokenAddress);
-        uint256 balance = token.balanceOf(address(this));
-        // cap to available balance
-        if (amount > balance) {
-            amount = balance;
-        }
-        token.safeTransfer(to, amount);
-        return amount;
-    }
+    // /**
+    //  * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
+    //  */
+    // function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
+    //     IERC20Metadata token = IERC20Metadata(tokenAddress);
+    //     uint256 balance = token.balanceOf(address(this));
+    //     // cap to available balance
+    //     if (amount > balance) {
+    //         amount = balance;
+    //     }
+    //     token.safeTransfer(to, amount);
+    //     return amount;
+    // }
 
     /**
      * @dev Safe convert GRAIL to xGRAIL function, in case rounding error causes pool to not have enough tokens

@@ -1,25 +1,25 @@
-import { impersonateAccount, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { ARBIDEX_TREASURY, ARX_ADDRESS, CHEF_RAMSEY_ADDRESS, xARX_ADDRESS } from '../../scripts/constants';
 import { ethers } from 'hardhat';
-import { parseUnits } from 'ethers/lib/utils';
-import { createPool, deployPoolFactory, deployYieldBooster } from '../../scripts/utils';
+import { createPool, deployPoolFactory, deployRewardManager } from '../../scripts/utils';
 import { xPools } from '../../scripts/xPools';
+import { getNFTPool } from '../utils';
+import { RAMSEY_ABI } from '../abis/chef-ramsey-abi';
+import { Contract } from 'ethers';
 
 export async function awesomeFixture() {
-  await impersonateAccount(ARBIDEX_TREASURY);
   const signer = await ethers.getSigner(ARBIDEX_TREASURY);
-  await setBalance(ARBIDEX_TREASURY, parseUnits('10000'));
 
-  // cant add the pool until the dummy token is deployed
-  const [yieldBooster] = await Promise.all([deployYieldBooster(xARX_ADDRESS)]);
-
+  const rewardManager = await deployRewardManager();
   const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);
-  const poolAddress: string = await createPool(factory.address, xPools.WETH_USDC.lpPoolAddress);
+  const poolAddress: string = await createPool(factory.address, xPools.ARX_USDC.lpPoolAddress, rewardManager.address);
+  const arxTestPool = getNFTPool(poolAddress, signer);
+  const chefRamsey = new Contract(CHEF_RAMSEY_ADDRESS, RAMSEY_ABI, signer);
 
   return {
     factory,
-    yieldBooster,
     poolAddress,
     signer,
+    arxTestPool,
+    chefRamsey,
   };
 }

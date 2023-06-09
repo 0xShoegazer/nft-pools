@@ -1,8 +1,12 @@
 import { BigNumber, Contract, ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
-import * as erc20 from '../node_modules/@openzeppelin/contracts/build/contracts/ERC20.json';
+import * as poolABI from '../artifacts/contracts/NFTPool.sol/NFTPool.json';
 
 export const keccak256 = ethers.utils.solidityKeccak256;
+
+export function getNFTPool(address: string, signer) {
+  return new Contract(address, poolABI.abi, signer);
+}
 
 export const prepStorageSlotWrite = (receiverAddress: string, storageSlot: number) => {
   return ethers.utils.solidityKeccak256(
@@ -35,10 +39,6 @@ export const giveTokenBalanceFor = async (
   const index = prepStorageSlotWrite(addressToSet, storageSlot);
   await setStorageAt(provider, contractAddress, index, amount);
 };
-
-export function getERC20(address: string, signer) {
-  return new Contract(address, erc20.abi, signer);
-}
 
 export function getRandomBytes32() {
   const values = ['1', '2', '64', , '128', '256'];

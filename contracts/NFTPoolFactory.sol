@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
 
-import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import "./interfaces/tokens/IERC20Metadata.sol";
 
 import "./interfaces/IXMasterChef.sol";
 import "./interfaces/tokens/IXToken.sol";
@@ -9,13 +9,13 @@ import "./NFTPool.sol";
 
 contract NFTPoolFactory {
     IXMasterChef public immutable master; // Address of the master
-    IERC20 public immutable grailToken;
+    IERC20Metadata public immutable grailToken;
     IXToken public immutable xGrailToken;
 
     mapping(address => address) public getPool;
     address[] public pools;
 
-    constructor(IXMasterChef master_, IERC20 grailToken_, IXToken xGrailToken_) {
+    constructor(IXMasterChef master_, IERC20Metadata grailToken_, IXToken xGrailToken_) {
         master = master_;
         grailToken = grailToken_;
         xGrailToken = xGrailToken_;
@@ -27,8 +27,9 @@ contract NFTPoolFactory {
         return pools.length;
     }
 
-    function createPool(address lpToken) external returns (address pool) {
+    function createPool(address lpToken, INFTPoolRewardManager rewardManager) external returns (address pool) {
         require(getPool[lpToken] == address(0), "pool exists");
+        require(address(rewardManager) != address(0), "rewardManager not provided");
 
         bytes memory bytecode_ = _bytecode();
         bytes32 salt = keccak256(abi.encodePacked(lpToken));
@@ -38,7 +39,7 @@ contract NFTPoolFactory {
         }
         require(pool != address(0), "failed");
 
-        NFTPool(pool).initialize(master, grailToken, xGrailToken, IERC20(lpToken));
+        NFTPool(pool).initialize(master, grailToken, xGrailToken, IERC20Metadata(lpToken), rewardManager);
         getPool[lpToken] = pool;
         pools.push(pool);
 

@@ -12,6 +12,17 @@ export async function deployContract(name: string, ...args) {
   return instance;
 }
 
+export async function deployRewardManager() {
+  const factory = await ethers.getContractFactory('NFTPoolRewardManager');
+  const instance = await factory.deploy(ARBIDEX_TREASURY);
+  await instance.deployed();
+  console.log(`NFTPoolRewardManager deployed at: ${instance.address}`);
+
+  // return deployContract('NFTPoolFactory', [master, mainToken, xToken]);
+
+  return instance;
+}
+
 export async function deployPoolFactory(master: string, mainToken: string, xToken: string) {
   const factory = await ethers.getContractFactory('NFTPoolFactory');
   const instance = await factory.deploy(master, mainToken, xToken);
@@ -23,9 +34,9 @@ export async function deployPoolFactory(master: string, mainToken: string, xToke
   return instance;
 }
 
-export async function createPool(factoryAddress: string, lpToken: string): Promise<string> {
+export async function createPool(factoryAddress: string, lpToken: string, rewardManager: string): Promise<string> {
   const factory = await ethers.getContractAt('NFTPoolFactory', factoryAddress);
-  const tx = await factory.createPool(lpToken);
+  const tx = await factory.createPool(lpToken, rewardManager);
   const receipt = await tx.wait();
 
   const poolEvent = receipt.events.find((evt) => evt.event === 'PoolCreated');

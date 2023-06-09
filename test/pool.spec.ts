@@ -8,8 +8,7 @@ describe('NFT Pools', () => {
   beforeEach(async () => {});
 
   it('Should', async () => {
-    const { chefRamsey } = await loadFixture(awesomeFixture);
-    console.log(formatEther(await chefRamsey.emissionRate()));
+    const { arxTestPool } = await loadFixture(awesomeFixture);
     expect(true).to.be.true;
   });
 });
