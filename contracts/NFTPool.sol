@@ -368,7 +368,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             .add(position.pendingXGrailRewards)
             .add(position.pendingGrailRewards);
 
-        wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebt);
+        wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebtWETH);
 
         return (mainAmount, wethAmount);
     }
@@ -772,8 +772,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         }
 
         if (amountWETH > 0) {
-            _accRewardsPerShare = _accRewardsPerShare.add(rewardAmount.mul(1e18).div(lpSupplyMultiplied));
-            _accRewardsPerShareWETH = _accRewardsPerShareWETH.add(rewardAmount.mul(1e18).div(lpSupplyMultiplied));
+            _accRewardsPerShareWETH = _accRewardsPerShareWETH.add(amountWETH.mul(1e18).div(lpSupplyMultiplied));
         }
 
         (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
@@ -865,6 +864,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         position.amountWithMultiplier = amountWithMultiplier;
 
         position.rewardDebt = amountWithMultiplier.mul(_accRewardsPerShare).div(1e18);
+        position.rewardDebtWETH = amountWithMultiplier.mul(_accRewardsPerShareWETH).div(1e18);
 
         rewardManager.updatePositionRewardDebts(amountWithMultiplier, tokenId);
     }
