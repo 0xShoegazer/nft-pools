@@ -6,8 +6,8 @@ import { MAX_UINT256, ZERO_ADDRESS } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
 
-export async function deployRamsey() {
-  const factory = await ethers.getContractFactory('ChefRamsey');
+export async function deployRamsey(signer) {
+  const factory = await ethers.getContractFactory('ChefRamsey', signer);
   const instance = await upgrades.deployProxy(factory, [
     xARX_ADDRESS,
     ARBIDEX_CHEF_ADDRESS,
@@ -101,7 +101,7 @@ export async function getERC20(address: string) {
   return new Contract(address, ERC20_ABI, await getSignerAccount());
 }
 
-export async function getERC20WithSigner(address: string, signer) {
+export function getERC20WithSigner(address: string, signer) {
   return new Contract(address, ERC20_ABI, signer);
 }
 

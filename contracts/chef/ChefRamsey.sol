@@ -310,7 +310,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     function _updatePool(address poolAddress) internal {
         PoolInfo storage pool = _poolInfo[poolAddress];
 
-        uint256 currentBlockTimestamp = _currentBlockTimestamp();
+        uint256 currentBlockTimestamp = block.timestamp;
 
         uint256 lastRewardTime = pool.lastRewardTime; // gas saving
 
@@ -354,23 +354,15 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         }
     }
 
-    /**
-     * @dev Utility function to get the current block timestamp
-     */
-    function _currentBlockTimestamp() internal view virtual returns (uint256) {
-        /* solhint-disable not-rely-on-time */
-        return block.timestamp;
-    }
-
     /********************************************************/
     /****************** ADMIN FUNCTIONS ******************/
     /********************************************************/
 
-    function withdrawFromPool(IERC20Upgradeable dummyToken) external onlyAdmin {
+    function withdrawFromPool(IERC20Upgradeable _dummyToken) external onlyAdmin {
         ArbidexPoolUserInfo memory poolInfo = mainChef.userInfo(mainChefPoolId, address(this));
         if (poolInfo.amount > 0) {
             mainChef.withdraw(mainChefPoolId, poolInfo.amount);
-            dummyToken.safeTransfer(_msgSender(), dummyToken.balanceOf(address(this)));
+            _dummyToken.safeTransfer(_msgSender(), _dummyToken.balanceOf(address(this)));
         }
     }
 
@@ -404,7 +396,6 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     function add(INFTPool nftPool, uint256 allocPoint, bool withUpdate) external onlyAdmin {
         address poolAddress = address(nftPool);
         require(!_pools.contains(poolAddress), "add: pool already exists");
-        uint256 currentBlockTimestamp = _currentBlockTimestamp();
 
         if (allocPoint > 0) {
             if (withUpdate) {
@@ -415,7 +406,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         }
 
         // update lastRewardTime if startTime has already been passed
-        uint256 lastRewardTime = currentBlockTimestamp > startTime ? currentBlockTimestamp : startTime;
+        uint256 lastRewardTime = block.timestamp;
 
         // update totalAllocPoint with the new pool's points
         totalAllocPoint = totalAllocPoint.add(allocPoint);
