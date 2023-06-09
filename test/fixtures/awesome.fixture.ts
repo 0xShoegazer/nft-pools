@@ -65,5 +65,7 @@ export async function awesomeFixture() {
     signer,
     nftPool,
     chefRamsey,
+    rewardToken: await getERC20WithSigner(WBTC, signer),
+    tokenId: 1,
   };
 }
