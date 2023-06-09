@@ -175,8 +175,14 @@ contract NFTPoolRewardManager is AccessControl {
         }
     }
 
-    function addRewardToken(IERC20Metadata token, uint256 sharesPerSecond) external onlyAdmin {
-        require(address(token) != address(0), "Token not provided");
+    function addRewardToken(address tokenAddress, uint256 sharesPerSecond) external onlyAdmin {
+        _addRewardToken(tokenAddress, sharesPerSecond);
+    }
+
+    function _addRewardToken(address tokenAddress, uint256 sharesPerSecond) internal {
+        require(tokenAddress != address(0), "Token not provided");
+
+        IERC20Metadata token = IERC20Metadata(tokenAddress);
 
         uint256 decimalsRewardToken = uint256(token.decimals());
         require(decimalsRewardToken < 30, "Must be less than 30");

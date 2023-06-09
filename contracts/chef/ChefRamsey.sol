@@ -4,7 +4,6 @@ pragma solidity 0.8.15;
 import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
-import "@openzeppelin/contracts-upgradeable/utils/math/SafeMathUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
 import "./interfaces/IArbidexMasterChef.sol";
@@ -15,7 +14,7 @@ import "./interfaces/IXToken.sol";
 
 contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     using SafeERC20Upgradeable for IERC20Upgradeable;
-    using SafeMathUpgradeable for uint256; // solc 0.8+ version to not fuck up Cam teams math
+    // using SafeMathUpgradeable for uint256; // solc 0.8+ version to not fuck up Cam teams math
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
@@ -126,7 +125,9 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         address thisAddress = address(this);
 
         uint256 pendingArx = mainChef.pendingArx(poolId, thisAddress);
-        uint256 pendingWETH = mainChef.pendingWETH(poolId, thisAddress);
+        // uint256 pendingWETH = mainChef.pendingWETH(poolId, thisAddress);
+
+        if (pendingArx == 0) return;
 
         IERC20Upgradeable wethToken = IERC20Upgradeable(mainChef.WETH());
         uint256 arxBalanceBefore = _mainToken.balanceOf(thisAddress);
@@ -137,6 +138,8 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
 
         uint256 arxReceived = _mainToken.balanceOf(thisAddress) - arxBalanceBefore;
         uint256 wethReceived = wethToken.balanceOf(thisAddress) - wethBalanceBefore;
+
+        // WETH needs to be added to "additional" rewards
 
         // TODO: updatePools()..?
 
@@ -236,7 +239,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         if (totalAllocPoint == 0) {
             poolEmissionRate = 0;
         } else {
-            poolEmissionRate = emissionRate().mul(allocPoint).div(totalAllocPoint);
+            poolEmissionRate = (emissionRate() * allocPoint) / totalAllocPoint;
         }
     }
 
@@ -308,6 +311,8 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
      * Pool should be validated prior to calling this
      */
     function _updatePool(address poolAddress) internal {
+        harvest();
+
         PoolInfo storage pool = _poolInfo[poolAddress];
 
         uint256 currentBlockTimestamp = block.timestamp;
@@ -323,16 +328,18 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         // do not allocate rewards if pool is not active
         if (allocPoint > 0 && INFTPool(poolAddress).hasDeposits()) {
             // calculate how much GRAIL rewards are expected to be received for this pool
-            uint256 rewards = currentBlockTimestamp.sub(lastRewardTime).mul(emissionRate()).mul(allocPoint).div(
-                totalAllocPoint
-            ); // nbSeconds
+            uint256 duration = currentBlockTimestamp - lastRewardTime;
+            uint256 rewards = (duration * emissionRate() * allocPoint) / totalAllocPoint;
+            // uint256 rewards = currentBlockTimestamp.sub(lastRewardTime).mul(emissionRate()).mul(allocPoint).div(
+            //     totalAllocPoint
+            // ); // nbSeconds
 
             // claim expected rewards from the token
             // use returns effective minted amount instead of expected amount
             // (rewards) = _mainTokenToken.claimMasterRewards(rewards);
 
             // updates pool data
-            pool.reserve = pool.reserve.add(rewards);
+            pool.reserve += rewards;
         }
 
         // TODO: "Extra" rewards should probably be managed here as well
@@ -409,7 +416,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         uint256 lastRewardTime = block.timestamp;
 
         // update totalAllocPoint with the new pool's points
-        totalAllocPoint = totalAllocPoint.add(allocPoint);
+        totalAllocPoint += allocPoint;
 
         // add new pool
         _poolInfo[poolAddress] = PoolInfo({ allocPoint: allocPoint, lastRewardTime: lastRewardTime, reserve: 0 });
@@ -440,7 +447,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
 
         // update (pool's and total) allocPoints
         pool.allocPoint = allocPoint;
-        totalAllocPoint = totalAllocPoint.sub(prevAllocPoint).add(allocPoint);
+        totalAllocPoint = (totalAllocPoint - prevAllocPoint) + allocPoint;
 
         // if request is activating the pool
         if (prevAllocPoint == 0 && allocPoint > 0) {
