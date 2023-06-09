@@ -4,6 +4,7 @@ import {
   deployPoolFactory,
   deployRamsey,
   deployRewardManager,
+  deployYieldBooster,
   getERC20WithSigner,
 } from '../../scripts/utils';
 import {
@@ -27,7 +28,9 @@ export async function freshFixture() {
   const signer = await ethers.getSigner(DEV_ACCOUNT);
 
   const oldRamsey = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
-  const chefRamsey = await deployRamsey(signer);
+
+  const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
+  const chefRamsey = await deployRamsey(yieldBooster.address, signer);
   const dummyToken = getERC20WithSigner(DUMMY_TOKEN_ADDRESS, signer);
   const mainChef = new Contract(ARBIDEX_CHEF_ADDRESS, OLD_CHEF_ABI, signer);
 
@@ -37,6 +40,7 @@ export async function freshFixture() {
     dummyToken.approve(chefRamsey.address, MAX_UINT256),
     deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS),
     deployRewardManager(),
+    ,
   ]);
 
   await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
@@ -57,5 +61,6 @@ export async function freshFixture() {
     mainChef,
     factory,
     nftPool,
+    yieldBooster,
   };
 }

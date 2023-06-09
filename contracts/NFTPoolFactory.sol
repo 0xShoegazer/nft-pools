@@ -9,29 +9,29 @@ import "./NFTPool.sol";
 
 contract NFTPoolFactory {
     IXMasterChef public immutable master; // Address of the master
-    IERC20Metadata public immutable grailToken;
-    IXToken public immutable xGrailToken;
+    IERC20Metadata public immutable mainToken;
+    IXToken public immutable xToken;
 
+    // lp token => pool
     mapping(address => address) public getPool;
     address[] public pools;
 
-    constructor(IXMasterChef master_, IERC20Metadata grailToken_, IXToken xGrailToken_) {
-        master = master_;
-        grailToken = grailToken_;
-        xGrailToken = xGrailToken_;
+    constructor(IXMasterChef _master, IERC20Metadata _mainToken, IXToken _xToken) {
+        master = _master;
+        mainToken = _mainToken;
+        xToken = _xToken;
     }
 
     event PoolCreated(address indexed lpToken, address pool);
 
-    function poolsLength() external view returns (uint256) {
-        return pools.length;
-    }
+    // function poolsLength() external view returns (uint256) {
+    //     return pools.length;
+    // }
 
-    function createPool(address lpToken, INFTPoolRewardManager rewardManager) external returns (address pool) {
+    function createPool(address lpToken, address rewardManager) external returns (address pool) {
         require(getPool[lpToken] == address(0), "pool exists");
-        require(address(rewardManager) != address(0), "rewardManager not provided");
 
-        bytes memory bytecode_ = _bytecode();
+        bytes memory bytecode_ = type(NFTPool).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(lpToken));
         /* solhint-disable no-inline-assembly */
         assembly {
@@ -39,14 +39,10 @@ contract NFTPoolFactory {
         }
         require(pool != address(0), "failed");
 
-        NFTPool(pool).initialize(master, grailToken, xGrailToken, IERC20Metadata(lpToken), rewardManager);
+        NFTPool(pool).initialize(master, mainToken, xToken, IERC20Metadata(lpToken), rewardManager);
         getPool[lpToken] = pool;
         pools.push(pool);
 
         emit PoolCreated(lpToken, pool);
-    }
-
-    function _bytecode() internal pure virtual returns (bytes memory) {
-        return type(NFTPool).creationCode;
     }
 }

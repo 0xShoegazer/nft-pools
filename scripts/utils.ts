@@ -6,13 +6,13 @@ import { MAX_UINT256, ZERO_ADDRESS } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
 
-export async function deployRamsey(signer) {
+export async function deployRamsey(yieldBoooster: string, signer) {
   const factory = await ethers.getContractFactory('ChefRamsey', signer);
   const instance = await upgrades.deployProxy(factory, [
     xARX_ADDRESS,
     ARBIDEX_CHEF_ADDRESS,
     ARBIDEX_TREASURY,
-    ZERO_ADDRESS,
+    yieldBoooster,
   ]);
   await instance.deployed();
   console.log(`ChefRamsey deployed at: ${instance.address}`);

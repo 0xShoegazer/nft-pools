@@ -106,14 +106,14 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         IERC20Metadata grailToken,
         IXToken xGrailToken,
         IERC20Metadata lpToken,
-        INFTPoolRewardManager manager
+        address manager
     ) external {
         require(msg.sender == factory && !initialized, "FORBIDDEN");
         _lpToken = lpToken;
         master = master_;
         _grailToken = grailToken;
         _xGrailToken = xGrailToken;
-        rewardManager = manager;
+        rewardManager = INFTPoolRewardManager(manager);
         initialized = true;
 
         // to convert main token to xToken
