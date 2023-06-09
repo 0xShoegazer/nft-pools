@@ -335,7 +335,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         (, , uint256 lastRewardTime, uint256 reserve, uint256 reserveWETH, uint256 poolEmissionRate) = master
             .getPoolInfo(address(this));
 
-        uint256 wethAmount;
         uint256 positionAmountMultiplied = position.amountWithMultiplier;
         uint256 accRewardsPerShare = _accRewardsPerShare;
 
@@ -356,6 +355,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             .sub(position.rewardDebt)
             .add(position.pendingXGrailRewards)
             .add(position.pendingGrailRewards);
+
+        uint256 wethAmount = positionAmountMultiplied.mul(accRewardsPerShare).div(1e18).sub(position.rewardDebt);
 
         return (mainAmount, wethAmount);
     }

@@ -126,9 +126,9 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         address thisAddress = address(this);
 
         uint256 pendingArx = mainChef.pendingArx(poolId, thisAddress);
-        // uint256 pendingWETH = mainChef.pendingWETH(poolId, thisAddress);
+        uint256 pendingWETH = mainChef.pendingWETH(poolId, thisAddress);
 
-        if (pendingArx == 0) return;
+        if (pendingArx == 0 && pendingWETH == 0) return;
 
         IERC20Upgradeable wethToken = IERC20Upgradeable(mainChef.WETH());
         uint256 arxBalanceBefore = _mainToken.balanceOf(thisAddress);
@@ -139,10 +139,6 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
 
         uint256 arxReceived = _mainToken.balanceOf(thisAddress) - arxBalanceBefore;
         uint256 wethReceived = wethToken.balanceOf(thisAddress) - wethBalanceBefore;
-
-        // WETH needs to be added to "additional" rewards
-
-        // TODO: updatePools()..?
 
         emit Harvest(arxReceived, wethReceived);
     }
