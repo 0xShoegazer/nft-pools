@@ -1,6 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
+import "./INFTPoolRewardManager.sol";
+
 interface INFTPool {
     function exists(uint256 tokenId) external view returns (bool);
 
@@ -39,4 +41,6 @@ interface INFTPool {
     function boost(uint256 userAddress, uint256 amount) external;
 
     function unboost(uint256 userAddress, uint256 amount) external;
+
+    function rewardManager() external view returns (INFTPoolRewardManager);
 }

@@ -5,18 +5,23 @@ import { formatEther } from 'ethers/lib/utils';
 import { freshFixture } from './fixtures/fresh.fixture';
 import { DUMMY_POOL_ID, DUMMY_TOKEN_ADDRESS } from '../scripts/constants';
 import { getTokenBalance } from '../scripts/utils';
-import { MAX_UINT256 } from './constants';
+import { MAX_UINT256, ONE_DAY_SECONDS } from './constants';
 
 describe('Chef Ramsey', () => {
   describe('Emissions', () => {
     it('fsml', async () => {
-      const { chefRamsey, oldRamsey, dummyToken, signer } = await loadFixture(freshFixture);
-      await oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS as any);
+      const { chefRamsey, oldRamsey, dummyToken, signer, mainChef } = await loadFixture(freshFixture);
 
-      await getTokenBalance(DUMMY_TOKEN_ADDRESS, signer.address);
+      // let pendingArx = await mainChef.pendingArx(DUMMY_POOL_ID, chefRamsey.address);
+      // console.log(formatEther(pendingArx));
 
-      await dummyToken.approve(chefRamsey.address, MAX_UINT256);
-      await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
+      // await time.increase(ONE_DAY_SECONDS);
+
+      // pendingArx = await mainChef.pendingArx(DUMMY_POOL_ID, chefRamsey.address);
+      // console.log(formatEther(pendingArx));
+
+      // console.log(formatEther(await chefRamsey.emissionRate()));
+      expect(await chefRamsey.emissionRate()).to.be.greaterThan(0);
     });
   });
 });
