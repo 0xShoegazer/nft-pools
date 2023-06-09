@@ -22,6 +22,7 @@ interface IChefRamsey {
             uint256 allocPoint,
             uint256 lastRewardTime,
             uint256 reserve,
+            uint256 reserveWETH,
             uint256 poolEmissionRate
         );
 

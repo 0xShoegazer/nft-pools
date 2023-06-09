@@ -34,6 +34,8 @@ interface IArbidexMasterChef {
 
     function arxPerSec() external view returns (uint256);
 
+    function WETHPerSec() external view returns (uint256);
+
     function poolInfo(uint256) external view returns (ArbidexPoolInfo memory);
 
     function arxTotalAllocPoint() external view returns (uint256);

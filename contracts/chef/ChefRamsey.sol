@@ -24,6 +24,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         uint256 allocPoint; // How many allocation points assigned to this NFT pool
         uint256 lastRewardTime; // Last time that distribution to this NFT pool occurs
         uint256 reserve; // Pending rewards to distribute to the NFT pool
+        uint256 reserveWETH;
     }
 
     uint256 public mainChefPoolId;
@@ -155,15 +156,23 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     }
 
     /**
-     * @dev Returns emission rate (allocated to this contract)
+     * @dev Returns main token emission rate from main chef (allocated to this contract)
      */
     function emissionRate() public view returns (uint256) {
-        // what % of that rate is our allocation
-        // rate * allocation points / total allocation (from chef)
         uint256 rewardPerSecond = mainChef.arxPerSec();
         uint totalAllocationPoints = mainChef.arxTotalAllocPoint();
         ArbidexPoolInfo memory poolInfo = getMainChefPoolInfo();
         return (rewardPerSecond * poolInfo.arxAllocPoint) / totalAllocationPoints;
+    }
+
+    /**
+     * @dev Returns weth emission rate from main chef (allocated to this contract)
+     */
+    function emissionRateWETH() public view returns (uint256) {
+        uint256 rewardPerSecond = mainChef.WETHPerSec();
+        uint totalAllocationPointsWETH = mainChef.WETHTotalAllocPoint();
+        ArbidexPoolInfo memory poolInfo = getMainChefPoolInfo();
+        return (rewardPerSecond * poolInfo.WETHAllocPoint) / totalAllocationPointsWETH;
     }
 
     function getMainChefPoolInfo() public view returns (ArbidexPoolInfo memory) {
@@ -226,6 +235,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
             uint256 allocPoint,
             uint256 lastRewardTime,
             uint256 reserve,
+            uint256 reserveWETH,
             uint256 poolEmissionRate
         )
     {
@@ -235,11 +245,13 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         allocPoint = pool.allocPoint;
         lastRewardTime = pool.lastRewardTime;
         reserve = pool.reserve;
+        reserveWETH = pool.reserveWETH;
 
         if (totalAllocPoint == 0) {
             poolEmissionRate = 0;
         } else {
             poolEmissionRate = (emissionRate() * allocPoint) / totalAllocPoint;
+            reserveWETH = (emissionRateWETH() * allocPoint) / totalAllocPoint;
         }
     }
 
@@ -419,7 +431,12 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         totalAllocPoint += allocPoint;
 
         // add new pool
-        _poolInfo[poolAddress] = PoolInfo({ allocPoint: allocPoint, lastRewardTime: lastRewardTime, reserve: 0 });
+        _poolInfo[poolAddress] = PoolInfo({
+            allocPoint: allocPoint,
+            lastRewardTime: lastRewardTime,
+            reserve: 0,
+            reserveWETH: 0
+        });
         _pools.add(poolAddress);
 
         emit PoolAdded(poolAddress, allocPoint);

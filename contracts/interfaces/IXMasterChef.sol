@@ -20,6 +20,7 @@ interface IXMasterChef {
             uint256 allocPoint,
             uint256 lastRewardTime,
             uint256 reserve,
+            uint256 reserveweth,
             uint256 poolEmissionRate
         );
 
