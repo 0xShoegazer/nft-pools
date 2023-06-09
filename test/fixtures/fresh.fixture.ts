@@ -71,6 +71,7 @@ export async function freshFixture() {
 
   // await createPosition(nftPoolAddress, lpPoolAddress, lpBalance, signer);
   await nftPool.createPosition(lpBalance, 0);
+  const tokenId = 1;
 
   return {
     chefRamsey,
@@ -81,5 +82,6 @@ export async function freshFixture() {
     factory,
     nftPool,
     yieldBooster,
+    tokenId,
   };
 }

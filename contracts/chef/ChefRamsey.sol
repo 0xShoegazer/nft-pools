@@ -56,7 +56,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     event PoolAdded(address indexed poolAddress, uint256 allocPoint);
     event PoolSet(address indexed poolAddress, uint256 allocPoint);
     event SetYieldBooster(address previousYieldBooster, address newYieldBooster);
-    event PoolUpdated(address indexed poolAddress, uint256 reserve, uint256 lastRewardTime);
+    event PoolUpdated(address indexed poolAddress, uint256 reserve, uint256 reserveWETH, uint256 lastRewardTime);
     event SetEmergencyUnlock(bool emergencyUnlock);
     event Harvest(uint256 arxAmount, uint256 wethAmount);
     event AddRewardToken(address token, uint256 rewardPerSecond);
@@ -154,22 +154,19 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     /**
      * @dev Returns main token emission rate from main chef (allocated to this contract)
      */
-    function emissionRate() public view returns (uint256) {
+    function emissionRates() public view returns (uint256 mainRate, uint256 wethRate) {
+        ArbidexPoolInfo memory poolInfo = getMainChefPoolInfo();
+
         uint256 rewardPerSecond = mainChef.arxPerSec();
         uint totalAllocationPoints = mainChef.arxTotalAllocPoint();
-        ArbidexPoolInfo memory poolInfo = getMainChefPoolInfo();
-        return (rewardPerSecond * poolInfo.arxAllocPoint) / totalAllocationPoints;
+        uint256 wethPerSecond = mainChef.WETHPerSec();
+        uint256 totalAllocationPointsWETH = mainChef.WETHTotalAllocPoint();
+
+        mainRate = (rewardPerSecond * poolInfo.arxAllocPoint) / totalAllocationPoints;
+        wethRate = (wethPerSecond * poolInfo.WETHAllocPoint) / totalAllocationPointsWETH;
     }
 
-    /**
-     * @dev Returns weth emission rate from main chef (allocated to this contract)
-     */
-    function emissionRateWETH() public view returns (uint256) {
-        uint256 rewardPerSecond = mainChef.WETHPerSec();
-        uint totalAllocationPointsWETH = mainChef.WETHTotalAllocPoint();
-        ArbidexPoolInfo memory poolInfo = getMainChefPoolInfo();
-        return (rewardPerSecond * poolInfo.WETHAllocPoint) / totalAllocationPointsWETH;
-    }
+    function getPendingRewards() public view returns (uint256, uint256) {}
 
     function getMainChefPoolInfo() public view returns (ArbidexPoolInfo memory) {
         return mainChef.poolInfo(mainChefPoolId);
@@ -246,8 +243,10 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         if (totalAllocPoint == 0) {
             poolEmissionRate = 0;
         } else {
-            poolEmissionRate = (emissionRate() * allocPoint) / totalAllocPoint;
-            reserveWETH = (emissionRateWETH() * allocPoint) / totalAllocPoint;
+            (uint256 mainRate, uint256 wethRate) = emissionRates();
+
+            poolEmissionRate = (mainRate * allocPoint) / totalAllocPoint;
+            reserveWETH = (wethRate * allocPoint) / totalAllocPoint;
         }
     }
 
@@ -335,26 +334,19 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
 
         // do not allocate rewards if pool is not active
         if (allocPoint > 0 && INFTPool(poolAddress).hasDeposits()) {
-            // calculate how much GRAIL rewards are expected to be received for this pool
+            // calculate how much rewards are expected to be received for this pool
+            (uint256 mainRate, uint256 wethRate) = emissionRates();
             uint256 duration = currentBlockTimestamp - lastRewardTime;
-            uint256 rewards = (duration * emissionRate() * allocPoint) / totalAllocPoint;
-            // uint256 rewards = currentBlockTimestamp.sub(lastRewardTime).mul(emissionRate()).mul(allocPoint).div(
-            //     totalAllocPoint
-            // ); // nbSeconds
+            uint256 mainRewards = (duration * mainRate * allocPoint) / totalAllocPoint;
+            uint256 wethRewards = (duration * wethRate * allocPoint) / totalAllocPoint;
 
-            // claim expected rewards from the token
-            // use returns effective minted amount instead of expected amount
-            // (rewards) = _mainTokenToken.claimMasterRewards(rewards);
-
-            // updates pool data
-            pool.reserve += rewards;
+            pool.reserve += mainRewards;
+            pool.reserveWETH += wethRewards;
         }
-
-        // TODO: "Extra" rewards should probably be managed here as well
 
         pool.lastRewardTime = currentBlockTimestamp;
 
-        emit PoolUpdated(poolAddress, pool.reserve, currentBlockTimestamp);
+        emit PoolUpdated(poolAddress, pool.reserve, pool.reserveWETH, currentBlockTimestamp);
     }
 
     /**

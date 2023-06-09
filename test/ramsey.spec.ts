@@ -9,27 +9,16 @@ import { ONE_DAY_SECONDS } from './constants';
 
 describe('Chef Ramsey', () => {
   describe('Emissions', () => {
-    it('fsml', async () => {
+    it('has an emission rate', async () => {
       const { chefRamsey } = await loadFixture(freshFixture);
 
       expect(await chefRamsey.emissionRate()).to.be.greaterThan(0);
     });
   });
 
-  describe('Emissions', () => {
-    it('fsml', async () => {
-      const { chefRamsey, oldRamsey, dummyToken, signer, mainChef } = await loadFixture(freshFixture);
-
-      // let pendingArx = await mainChef.pendingArx(DUMMY_POOL_ID, chefRamsey.address);
-      // console.log(formatEther(pendingArx));
-
-      // await time.increase(ONE_DAY_SECONDS);
-
-      // pendingArx = await mainChef.pendingArx(DUMMY_POOL_ID, chefRamsey.address);
-      // console.log(formatEther(pendingArx));
-
-      // console.log(formatEther(await chefRamsey.emissionRate()));
-      expect(await chefRamsey.emissionRate()).to.be.greaterThan(0);
+  describe('Rewards', () => {
+    it('harvest from main chef', async () => {
+      const { chefRamsey, oldRamsey, dummyToken, signer, mainChef, tokenId } = await loadFixture(freshFixture);
     });
   });
 });
