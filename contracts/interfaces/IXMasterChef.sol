@@ -24,7 +24,7 @@ interface IXMasterChef {
             uint256 poolEmissionRate
         );
 
-    function claimRewards() external returns (uint256);
+    function claimRewards() external returns (uint256 rewardAmount, uint256 amountWETH);
 
     function isAdmin(address) external view returns (bool);
 }

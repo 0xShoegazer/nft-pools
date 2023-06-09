@@ -31,7 +31,8 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
 
     address public treasury;
 
-    IERC20Upgradeable public _mainToken;
+    IERC20Upgradeable private _mainToken;
+    IERC20Upgradeable public WETH;
     IERC20Upgradeable public dummyToken;
     IArbidexMasterChef public mainChef;
     IYieldBooster private _yieldBooster; // Contract address handling yield boosts
@@ -52,7 +53,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     /****************** EVENTS ******************/
     /********************************************/
 
-    event ClaimRewards(address indexed poolAddress, uint256 amount);
+    event ClaimRewards(address indexed poolAddress, uint256 amount, uint256 amountWETH);
     event PoolAdded(address indexed poolAddress, uint256 allocPoint);
     event PoolSet(address indexed poolAddress, uint256 allocPoint);
     event SetYieldBooster(address previousYieldBooster, address newYieldBooster);
@@ -95,6 +96,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         xToken = _xToken;
         mainChef = _chef;
         _mainToken = IERC20Upgradeable(mainChef.arx());
+        WETH = IERC20Upgradeable(mainChef.WETH());
         treasury = _treasury;
         _yieldBooster = _boost;
 
@@ -125,20 +127,18 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         uint256 poolId = mainChefPoolId;
         address thisAddress = address(this);
 
-        uint256 pendingArx = mainChef.pendingArx(poolId, thisAddress);
-        uint256 pendingWETH = mainChef.pendingWETH(poolId, thisAddress);
+        (uint256 pendingArx, uint256 pendingWETH) = getPendingRewards();
 
         if (pendingArx == 0 && pendingWETH == 0) return;
 
-        IERC20Upgradeable wethToken = IERC20Upgradeable(mainChef.WETH());
         uint256 arxBalanceBefore = _mainToken.balanceOf(thisAddress);
-        uint256 wethBalanceBefore = wethToken.balanceOf(thisAddress);
+        uint256 wethBalanceBefore = WETH.balanceOf(thisAddress);
 
         // Trigger harvest
         mainChef.deposit(poolId, 0);
 
         uint256 arxReceived = _mainToken.balanceOf(thisAddress) - arxBalanceBefore;
-        uint256 wethReceived = wethToken.balanceOf(thisAddress) - wethBalanceBefore;
+        uint256 wethReceived = WETH.balanceOf(thisAddress) - wethBalanceBefore;
 
         emit Harvest(arxReceived, wethReceived);
     }
@@ -166,7 +166,12 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         wethRate = (wethPerSecond * poolInfo.WETHAllocPoint) / totalAllocationPointsWETH;
     }
 
-    function getPendingRewards() public view returns (uint256, uint256) {}
+    function getPendingRewards() public view returns (uint256 pendingArx, uint256 pendingWETH) {
+        uint256 poolId = mainChefPoolId;
+        address thisAddress = address(this);
+        pendingArx = mainChef.pendingArx(poolId, thisAddress);
+        pendingWETH = mainChef.pendingWETH(poolId, thisAddress);
+    }
 
     function getMainChefPoolInfo() public view returns (ArbidexPoolInfo memory) {
         return mainChef.poolInfo(mainChefPoolId);
@@ -273,24 +278,30 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     /**
      * @dev Transfer to a pool its pending rewards in reserve, can only be called by the NFT pool contract itself
      */
-    function claimRewards() external override returns (uint256 rewardsAmount) {
+    function claimRewards() external override returns (uint256 rewardAmount, uint256 amountWETH) {
         // check if caller is a listed pool
         if (!_pools.contains(msg.sender)) {
-            return 0;
+            return (0, 0);
         }
 
         _updatePool(msg.sender);
 
         // updates caller's reserve
         PoolInfo storage pool = _poolInfo[msg.sender];
-        uint256 reserve = pool.reserve;
-        if (reserve == 0) {
-            return 0;
-        }
-        pool.reserve = 0;
+        rewardAmount = pool.reserve;
+        amountWETH = pool.reserveWETH;
 
-        emit ClaimRewards(msg.sender, reserve);
-        return _safeRewardsTransfer(msg.sender, reserve);
+        if (rewardAmount == 0 && amountWETH == 0) {
+            return (0, 0);
+        }
+
+        pool.reserve = 0;
+        pool.reserveWETH = 0;
+
+        emit ClaimRewards(msg.sender, rewardAmount, amountWETH);
+
+        _safeRewardsTransfer(_mainToken, msg.sender, rewardAmount);
+        _safeRewardsTransfer(WETH, msg.sender, amountWETH);
     }
 
     /********************************************************/
@@ -300,14 +311,18 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     /**
      * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
      */
-    function _safeRewardsTransfer(address to, uint256 amount) internal returns (uint256 effectiveAmount) {
-        uint256 tokenBalance = _mainToken.balanceOf(address(this));
+    function _safeRewardsTransfer(
+        IERC20Upgradeable token,
+        address to,
+        uint256 amount
+    ) internal returns (uint256 effectiveAmount) {
+        uint256 tokenBalance = token.balanceOf(address(this));
 
         if (amount > tokenBalance) {
             amount = tokenBalance;
         }
 
-        _mainToken.safeTransfer(to, amount);
+        token.safeTransfer(to, amount);
 
         return amount;
     }

@@ -8,8 +8,6 @@ interface IChefRamsey {
 
     function owner() external view returns (address);
 
-    function isAdmin(address) external view returns (bool);
-
     function emergencyUnlock() external view returns (bool);
 
     function getPoolInfo(
@@ -26,5 +24,7 @@ interface IChefRamsey {
             uint256 poolEmissionRate
         );
 
-    function claimRewards() external returns (uint256);
+    function claimRewards() external returns (uint256 rewardAmount, uint256 amountWETH);
+
+    function isAdmin(address) external view returns (bool);
 }

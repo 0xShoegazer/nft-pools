@@ -329,7 +329,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     /**
      * @dev Returns pending rewards for a position
      */
-    function pendingRewards(uint256 tokenId) external view returns (uint256, uint256) {
+    function pendingRewards(uint256 tokenId) external view returns (uint256 mainAmount, uint256 wethAmount) {
         StakingPosition storage position = _stakingPositions[tokenId];
 
         (, , uint256 lastRewardTime, uint256 reserve, uint256 reserveWETH, uint256 poolEmissionRate) = master
@@ -349,14 +349,14 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         }
 
         // Add WETH to this. Return a tuple
-        uint256 mainAmount = positionAmountMultiplied
+        mainAmount = positionAmountMultiplied
             .mul(accRewardsPerShare)
             .div(1e18)
             .sub(position.rewardDebt)
             .add(position.pendingXGrailRewards)
             .add(position.pendingGrailRewards);
 
-        uint256 wethAmount = positionAmountMultiplied.mul(accRewardsPerShare).div(1e18).sub(position.rewardDebt);
+        wethAmount = positionAmountMultiplied.mul(accRewardsPerShare).div(1e18).sub(position.rewardDebt);
 
         return (mainAmount, wethAmount);
     }
@@ -847,12 +847,12 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * @dev Updates rewards states of this pool to be up-to-date
      */
     function _updatePool() internal {
-        // gets allocated rewards from Master and updates
-        uint256 rewards = master.claimRewards();
+        // Returns the amount of main token. WETH is already transfered to this contract at this time
+        (uint256 rewardAmount, ) = master.claimRewards();
 
         uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier;
-        if (rewards > 0) {
-            _accRewardsPerShare = _accRewardsPerShare.add(rewards.mul(1e18).div(lpSupplyMultiplied));
+        if (rewardAmount > 0) {
+            _accRewardsPerShare = _accRewardsPerShare.add(rewardAmount.mul(1e18).div(lpSupplyMultiplied));
         }
 
         (, , uint256 lastRewardTime, , , ) = master.getPoolInfo(address(this));

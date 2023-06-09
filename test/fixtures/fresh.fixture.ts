@@ -66,6 +66,8 @@ export async function freshFixture() {
 
   // Need rewardManager init before creating positions
   const nftPool = getNFTPool(nftPoolAddress, signer);
+  await chefRamsey.add(nftPoolAddress, 10000, true);
+
   const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
   await lpInstance.approve(nftPool.address, MAX_UINT256);
 
