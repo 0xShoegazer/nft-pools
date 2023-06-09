@@ -1,4 +1,4 @@
-export const CHEF_ABI = [
+export const OLD_CHEF_ABI = [
   {
     inputs: [
       { internalType: 'address', name: '_treasury', type: 'address' },

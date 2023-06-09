@@ -18,13 +18,22 @@ const config: HardhatUserConfig = {
           },
         },
       },
+      {
+        version: '0.8.15',
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
+          },
+        },
+      },
     ],
   },
   networks: {
     hardhat: {
       forking: {
         url: process.env.ARBITRUM_RPC || '',
-        blockNumber: 98488993,
+        blockNumber: 99442586,
       },
       // loggingEnabled: true,
     },

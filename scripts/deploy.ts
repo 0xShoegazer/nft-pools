@@ -18,9 +18,8 @@ async function main() {
   // const signer = (await ethers.getSigners())[0];
   // await deployYieldBooster(xARX_ADDRESS);
   // await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);
-
-  //await createPool(NFT_POOL_FACTORY, POOLS.ARX_USDC);
-  await addPoolToChef(xPools.ARX_USDC.nftPoolAddress, xPools.ARX_USDC.initialChefAllocationPoints);
+  // await createPool(NFT_POOL_FACTORY, POOLS.ARX_USDC);
+  // await addPoolToChef(xPools.ARX_USDC.nftPoolAddress, xPools.ARX_USDC.initialChefAllocationPoints);
   // await createPool(NFT_POOL_FACTORY, POOLS.WETH_USDC);
   // await addPoolToChef(xPools.WETH_USDC.nftPoolAddress, xPools.WETH_USDC.initialChefAllocationPoints);
 }

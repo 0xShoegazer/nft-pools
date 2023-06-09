@@ -84,6 +84,7 @@ contract NFTPoolRewardManager is AccessControl {
 
         for (uint256 i = 0; i < currentRewardTokenCount; i++) {
             currentReward = rewardTokens[i];
+            tokens[i] = address(currentReward.token);
 
             if (blockTime > lastRewardTime && lpSupplyWithMultiplier > 0) {
                 currentDuration = blockTime.sub(lastRewardTime);
