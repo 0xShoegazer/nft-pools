@@ -39,7 +39,7 @@ async function main() {
   // const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
   // const chefRamsey = await deployRamsey(yieldBooster.address, signer);
 
-  const chefRamsey = await ethers.getContractAt('ChefRamsey', RAMSEY);
+  // const chefRamsey = await ethers.getContractAt('ChefRamsey', RAMSEY);
 
   // const oldRamsey = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
   // oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS);
@@ -52,12 +52,10 @@ async function main() {
   // const rewardManager = await deployRewardManager();
   // const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;
   // const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address);
-  const nftPoolAddress = ARX_USDC_NFTPOOL;
+  // const nftPoolAddress = ARX_USDC_NFTPOOL;
   // await rewardManager.initialize(nftPoolAddress);
-
   // Need rewardManager init before creating positions
-
-  await chefRamsey.add(nftPoolAddress, 1000, true);
+  // await chefRamsey.add(nftPoolAddress, 1000, true);
 
   // const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
   // await lpInstance.approve(nftPool.address, MAX_UINT256);
