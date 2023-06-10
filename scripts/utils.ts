@@ -1,8 +1,7 @@
 import { ethers, upgrades } from 'hardhat';
-import { ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, ARX_ADDRESS, CHEF_RAMSEY_ADDRESS, xARX_ADDRESS } from './constants';
+import { ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, CHEF_RAMSEY_ADDRESS, xARX_ADDRESS } from './constants';
 import { BigNumber, Contract } from 'ethers';
-import { OLD_CHEF_ABI } from '../test/abis/arbidex-chef-abi';
-import { MAX_UINT256, ZERO_ADDRESS } from '../test/constants';
+import { MAX_UINT256 } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
 
@@ -25,8 +24,6 @@ export async function deployRewardManager() {
   const instance = await factory.deploy(ARBIDEX_TREASURY);
   await instance.deployed();
   console.log(`NFTPoolRewardManager deployed at: ${instance.address}`);
-
-  // return deployContract('NFTPoolFactory', [master, mainToken, xToken]);
 
   return instance;
 }

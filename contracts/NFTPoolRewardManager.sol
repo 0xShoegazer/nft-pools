@@ -153,7 +153,7 @@ contract NFTPoolRewardManager is AccessControl {
             return;
         }
 
-        require(recipient != address(0), "");
+        require(recipient != address(0), "NFTPoolRewardManager: Zero address recipient");
 
         RewardToken memory currentReward;
         uint256 pendingAmount;

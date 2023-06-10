@@ -86,5 +86,6 @@ export async function freshFixture() {
     nftPool,
     yieldBooster,
     tokenId,
+    rewardManager,
   };
 }

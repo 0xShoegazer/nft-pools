@@ -382,14 +382,12 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     ) external view returns (address[] memory tokens, uint256[] memory rewardAmounts) {
         StakingPosition storage position = _stakingPositions[tokenId];
         (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
-
-        return
-            rewardManager.pendingAdditionalRewards(
-                tokenId,
-                position.amountWithMultiplier,
-                _lpSupplyWithMultiplier,
-                lastRewardTime
-            );
+        (tokens, rewardAmounts) = rewardManager.pendingAdditionalRewards(
+            tokenId,
+            position.amountWithMultiplier,
+            _lpSupplyWithMultiplier,
+            lastRewardTime
+        );
     }
 
     /*******************************************************/
