@@ -85,7 +85,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     event WithdrawFromPosition(uint256 indexed tokenId, uint256 amount);
     event EmergencyWithdraw(uint256 indexed tokenId, uint256 amount);
     event LockPosition(uint256 indexed tokenId, uint256 lockDuration);
-    event HarvestPosition(uint256 indexed tokenId, address to, uint256 pending);
+    event HarvestPosition(uint256 indexed tokenId, address to, uint256 pending, uint256 pendingWETH);
     event SetBoost(uint256 indexed tokenId, uint256 boostPoints);
 
     event PoolUpdated(uint256 lastRewardTime, uint256 accRewardsPerShare, uint256 accRewardsPerShareWETH);
@@ -311,6 +311,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             uint256 lockDuration,
             uint256 lockMultiplier,
             uint256 rewardDebt,
+            uint256 rewardDebtWETH,
             uint256 boostPoints,
             uint256 totalMultiplier
         )
@@ -323,6 +324,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             position.lockDuration,
             position.lockMultiplier,
             position.rewardDebt,
+            position.rewardDebtWETH,
             position.boostPoints,
             position.totalMultiplier
         );
@@ -332,8 +334,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * @dev Returns pending rewards for a position
      */
     function pendingRewards(uint256 tokenId) external view returns (uint256 mainAmount, uint256 wethAmount) {
-        StakingPosition storage position = _stakingPositions[tokenId];
-
         (
             ,
             ,
@@ -344,21 +344,23 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             uint256 poolEmissionRateWETH
         ) = master.getPoolInfo(address(this));
 
+        StakingPosition storage position = _stakingPositions[tokenId];
         uint256 positionAmountMultiplied = position.amountWithMultiplier;
         uint256 accRewardsPerShare = _accRewardsPerShare;
         uint256 accRewardsPerShareWETH = _accRewardsPerShareWETH;
 
-        // recompute accRewardsPerShare if not up to date
-        if (
-            (reserve > 0 || reserveWETH > 0 || _currentBlockTimestamp() > lastRewardTime) && _lpSupplyWithMultiplier > 0
-        ) {
+        bool timeHasPassed = _currentBlockTimestamp() > lastRewardTime;
+        bool hasLpDeposits = _lpSupplyWithMultiplier > 0;
+
+        if ((reserve > 0 || reserveWETH > 0 || timeHasPassed) && hasLpDeposits) {
             uint256 duration = _currentBlockTimestamp().sub(lastRewardTime);
+
             // adding reserve here in case master has been synced but not the pool
             uint256 tokenRewards = duration.mul(poolEmissionRate).add(reserve);
             accRewardsPerShare = accRewardsPerShare.add(tokenRewards.mul(1e18).div(_lpSupplyWithMultiplier));
 
             uint256 wethRewards = duration.mul(poolEmissionRateWETH).add(reserveWETH);
-            accRewardsPerShareWETH = accRewardsPerShare.add(wethRewards.mul(1e18).div(_lpSupplyWithMultiplier));
+            accRewardsPerShareWETH = accRewardsPerShareWETH.add(wethRewards.mul(1e18).div(_lpSupplyWithMultiplier));
         }
 
         mainAmount = positionAmountMultiplied
@@ -368,7 +370,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             .add(position.pendingXGrailRewards)
             .add(position.pendingGrailRewards);
 
-        wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebtWETH);
+        wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebtWETH).add(
+            position.pendingWETHRewards
+        );
 
         return (mainAmount, wethAmount);
     }
@@ -890,7 +894,13 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         }
 
         // transfer rewards
-        if (pending > 0 || pendingWETH > 0 || position.pendingXGrailRewards > 0 || position.pendingGrailRewards > 0) {
+        if (
+            pending > 0 ||
+            pendingWETH > 0 ||
+            position.pendingXGrailRewards > 0 ||
+            position.pendingGrailRewards > 0 ||
+            position.pendingWETHRewards > 0
+        ) {
             uint256 xGrailRewards = pending.mul(xGrailRewardsShare).div(_TOTAL_REWARDS_SHARES);
             uint256 grailAmount = pending.add(position.pendingGrailRewards).sub(xGrailRewards);
 
@@ -900,23 +910,17 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             if (address(0) == to) {
                 position.pendingXGrailRewards = xGrailRewards;
                 position.pendingGrailRewards = grailAmount;
-                position.pendingWETHRewards = grailAmount;
+                position.pendingWETHRewards = pendingWETH;
             } else {
                 // convert and send xToken + main token rewards
                 position.pendingXGrailRewards = 0;
                 position.pendingGrailRewards = 0;
+                position.pendingWETHRewards = 0;
 
                 if (xGrailRewards > 0) xGrailRewards = _safeConvertTo(to, xGrailRewards);
 
-                // send share of main token rewards
-                uint256 balance = _grailToken.balanceOf(address(this));
-                // cap to available balance
-                if (grailAmount > balance) {
-                    grailAmount = balance;
-                }
-
-                // grailAmount = _safeRewardsTransfer(address(_grailToken), to, grailAmount);
-                _grailToken.safeTransfer(to, grailAmount);
+                grailAmount = _safeRewardsTransfer(address(_grailToken), to, grailAmount);
+                pendingWETH = _safeRewardsTransfer(master.wethToken(), to, pendingWETH);
 
                 // forbidden to harvest if contract has not explicitly confirmed it handle it
                 _checkOnNFTHarvest(to, tokenId, grailAmount, xGrailRewards);
@@ -924,7 +928,26 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
                 rewardManager.harvestAdditionalRewards(positionAmountMultiplied, to, tokenId);
             }
         }
-        emit HarvestPosition(tokenId, to, pending);
+
+        emit HarvestPosition(tokenId, to, pending, pendingWETH);
+    }
+
+    /**
+     * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
+     */
+    function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
+        IERC20Metadata token = IERC20Metadata(tokenAddress);
+        uint256 balance = token.balanceOf(address(this));
+        // cap to available balance
+        if (amount > balance) {
+            amount = balance;
+        }
+
+        if (amount > 0) {
+            token.safeTransfer(to, amount);
+        }
+
+        return amount;
     }
 
     /**

@@ -151,6 +151,10 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         return address(_mainToken);
     }
 
+    function wethToken() external view override returns (address) {
+        return address(WETH);
+    }
+
     /**
      * @dev Returns main token emission rate from main chef (allocated to this contract)
      */

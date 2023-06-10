@@ -14,7 +14,7 @@ interface INFTPool is IERC721 {
         returns (
             address lpToken,
             address grailToken,
-            address sbtToken,
+            address xToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
             uint256 accRewardsPerShareWETH,
@@ -35,6 +35,7 @@ interface INFTPool is IERC721 {
             uint256 lockDuration,
             uint256 lockMultiplier,
             uint256 rewardDebt,
+            uint256 rewardDebtWETH,
             uint256 boostPoints,
             uint256 totalMultiplier
         );

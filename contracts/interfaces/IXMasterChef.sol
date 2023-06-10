@@ -2,7 +2,9 @@
 pragma solidity =0.7.6;
 
 interface IXMasterChef {
-    function grailToken() external view returns (address);
+    function wethToken() external view returns (address);
+
+    function mainToken() external view returns (address);
 
     function yieldBooster() external view returns (address);
 

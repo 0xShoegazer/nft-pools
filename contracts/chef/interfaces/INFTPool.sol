@@ -14,9 +14,10 @@ interface INFTPool {
         returns (
             address lpToken,
             address grailToken,
-            address sbtToken,
+            address xToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
+            uint256 accRewardsPerShareWETH,
             uint256 lpSupply,
             uint256 lpSupplyWithMultiplier,
             uint256 allocPoint
@@ -34,6 +35,7 @@ interface INFTPool {
             uint256 lockDuration,
             uint256 lockMultiplier,
             uint256 rewardDebt,
+            uint256 rewardDebtWETH,
             uint256 boostPoints,
             uint256 totalMultiplier
         );

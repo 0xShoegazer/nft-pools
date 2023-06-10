@@ -2,6 +2,8 @@
 pragma solidity 0.8.15;
 
 interface IChefRamsey {
+    function wethToken() external view returns (address);
+
     function mainToken() external view returns (address);
 
     function yieldBooster() external view returns (address);
