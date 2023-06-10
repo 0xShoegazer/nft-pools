@@ -3,9 +3,10 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { formatEther } from 'ethers/lib/utils';
 import { freshFixture } from './fixtures/fresh.fixture';
-import { DUMMY_POOL_ID, DUMMY_TOKEN_ADDRESS } from '../scripts/constants';
+import { ARX_ADDRESS, DUMMY_POOL_ID, DUMMY_TOKEN_ADDRESS } from '../scripts/constants';
 import { getTokenBalance } from '../scripts/utils';
 import { ONE_DAY_SECONDS } from './constants';
+import { WETH } from '../scripts/token';
 
 describe('Chef Ramsey', () => {
   // describe('Emissions', () => {
@@ -55,38 +56,17 @@ describe('Chef Ramsey', () => {
 
       //   await chefRamsey.updatePool(nftPool.address);
 
-      //   // TODO: Reward amounts for both tokens coming back equal. Should not be so much WETH. Something from ARX being used in WETH calc?
-
       //   pendingRewards = await nftPool.pendingRewards(tokenId);
       //   console.log('ARX: ' + formatEther(pendingRewards.mainAmount));
       //   console.log('WETH: ' + formatEther(pendingRewards.wethAmount));
       // });
 
       it('lets position claim rewards', async () => {
-        const { nftPool, tokenId, chefRamsey } = await loadFixture(freshFixture);
+        const { nftPool, tokenId, chefRamsey, signer } = await loadFixture(freshFixture);
 
         // Position already created in fixture
 
-        // let balances = await chefRamsey.getRewardBalances();
-        // console.log('mainAmount: ' + formatEther(balances.mainAmount));
-        // console.log('amountWETH: ' + formatEther(balances.amountWETH));
-
-        // await time.increase(ONE_DAY_SECONDS);
-
-        // balances = await chefRamsey.getRewardBalances();
-        // console.log('mainAmount: ' + formatEther(balances.mainAmount));
-        // console.log('amountWETH: ' + formatEther(balances.amountWETH));
-
-        // await chefRamsey.harvest();
-
-        // balances = await chefRamsey.getRewardBalances();
-        // console.log('mainAmount: ' + formatEther(balances.mainAmount));
-        // console.log('amountWETH: ' + formatEther(balances.amountWETH));
-
-        // await chefRamsey.updatePool(nftPool.address);
-
-        // // TODO: Reward amounts for both tokens coming back equal. Should not be so much WETH. Something from ARX being used in WETH calc?
-
+        console.log('User pending rewards:');
         let pendingRewards = await nftPool.pendingRewards(tokenId);
         console.log('ARX: ' + formatEther(pendingRewards.mainAmount));
         console.log('WETH: ' + formatEther(pendingRewards.wethAmount));
@@ -96,6 +76,19 @@ describe('Chef Ramsey', () => {
         pendingRewards = await nftPool.pendingRewards(tokenId);
         console.log('ARX: ' + formatEther(pendingRewards.mainAmount));
         console.log('WETH: ' + formatEther(pendingRewards.wethAmount));
+
+        console.log('User balances:');
+        let mainBalance = await getTokenBalance(ARX_ADDRESS, signer.address, signer);
+        let wethBalance = await getTokenBalance(WETH, signer.address, signer);
+        console.log('USER ARX: ' + formatEther(mainBalance));
+        console.log('USER WETH: ' + formatEther(wethBalance));
+
+        await nftPool.harvestPosition(tokenId);
+
+        mainBalance = await getTokenBalance(ARX_ADDRESS, signer.address, signer);
+        wethBalance = await getTokenBalance(WETH, signer.address, signer);
+        console.log('USER ARX: ' + formatEther(mainBalance));
+        console.log('USER WETH: ' + formatEther(wethBalance));
       });
     });
 
@@ -103,7 +96,6 @@ describe('Chef Ramsey', () => {
     //   it('accumulates additional rewards', async () => {
     //     const { nftPool, tokenId, chefRamsey } = await loadFixture(freshFixture);
 
-    //     // TODO: Reward amounts for both tokens coming back equal. Should not be so much WETH. Something from ARX being used in WETH calc?
     //   });
 
     //   it('lets position claim additional rewards', async () => {

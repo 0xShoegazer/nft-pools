@@ -105,7 +105,7 @@ export async function getSignerAccount() {
 export async function getTokenBalance(token: string, who: string, signer) {
   const tc = getERC20(token, signer);
   const balance = await tc.balanceOf(who);
-  console.log('Token balance: ' + formatEther(balance));
+  // console.log('Token balance: ' + formatEther(balance));
 
   return balance;
 }
