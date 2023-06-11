@@ -12,6 +12,7 @@ import {
   createPool,
   createPosition,
   deployPoolFactory,
+  deployPoolRewardManagerUpgradeable,
   deployRewardManager,
   getERC20WithSigner,
   getTokenAllowance,
@@ -47,11 +48,13 @@ export async function awesomeFixture() {
   const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
 
   // Pool creation setup
-  const rewardManager = await deployRewardManager(ARBIDEX_TREASURY);
+  // const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
+  const rewardManager = await deployPoolRewardManagerUpgradeable(ARBIDEX_TREASURY, signer);
   const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);
   const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
   // Needs pool address for init
-  await rewardManager.initialize(nftPoolAddress);
+  // await rewardManager.initialize(nftPoolAddress);
+  await rewardManager.initializePool(nftPoolAddress);
 
   // Add new pool to chef
   const chefRamsey = new Contract(CHEF_RAMSEY_ADDRESS, RAMSEY_ABI, signer);
@@ -64,7 +67,7 @@ export async function awesomeFixture() {
   // await nftPool.createPosition(lpBalance.div(2), ONE_DAY_SECONDS * 100);
   await nftPool.createPosition(lpBalance.div(2), 0);
 
-  await addRewardToken(rewardManager.address, WBTC, parseUnits('0.01'), signer);
+  const randomAccount = (await ethers.getSigners())[2];
 
   return {
     factory,
@@ -77,5 +80,7 @@ export async function awesomeFixture() {
     ARXToken: await getERC20WithSigner(ARX_ADDRESS, signer),
     xARXToken: await getERC20WithSigner(xARX_ADDRESS, signer),
     oldChef: new Contract(ARBIDEX_CHEF_ADDRESS, OLD_CHEF_ABI, signer),
+    rewardManager,
+    randomAccount,
   };
 }

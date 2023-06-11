@@ -34,7 +34,7 @@ const config: HardhatUserConfig = {
     hardhat: {
       forking: {
         url: process.env.ARBITRUM_RPC || '',
-        blockNumber: 99471059,
+        blockNumber: 100035054,
       },
       // loggingEnabled: true,
     },

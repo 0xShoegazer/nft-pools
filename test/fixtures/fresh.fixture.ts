@@ -20,7 +20,7 @@ import {
   DUMMY_TOKEN_ADDRESS,
   xARX_ADDRESS,
 } from '../../scripts/constants';
-import { impersonateAccount } from '@nomicfoundation/hardhat-network-helpers';
+import { impersonateAccount, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { Contract } from 'ethers';
 import { OLD_CHEF_ABI } from '../abis/arbidex-chef-abi';
 import { MAX_UINT256, UNIV2_POOL_BALANCEOF_SLOT } from '../constants';
@@ -31,6 +31,7 @@ import { parseUnits } from 'ethers/lib/utils';
 export async function freshFixture() {
   await impersonateAccount(DEV_ACCOUNT);
   const signer = await ethers.getSigner(DEV_ACCOUNT);
+  // await setBalance(DEV_ACCOUNT, '10000');
 
   // Test LP pool
   const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;

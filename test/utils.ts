@@ -47,9 +47,21 @@ export function getRandomBytes32() {
   return ethers.utils.hexZeroPad(parseEther(values[rand]).toHexString(), 32);
 }
 
+export function getOneToThePowerOf(decimals: number) {
+  let one = '1';
+
+  let places = 0;
+  while (places <= decimals) {
+    one += '0';
+    places++;
+  }
+
+  return one;
+}
+
 /**
  * Replicates error string return from OpenZeppelin AccessControl contract (solc 0.8+)
  */
 export function getAccessControlRevertString(account: string, role: string) {
-  return `AccessControl: account ${account.toLowerCase()} is missing role ${role}`;
+  return `AccessControl: account ${account.toLowerCase()} is missing role ${role}}`;
 }

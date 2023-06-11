@@ -19,11 +19,20 @@ export async function deployRamsey(yieldBoooster: string, signer) {
   return instance;
 }
 
-export async function deployRewardManager(treasury: string) {
-  const factory = await ethers.getContractFactory('NFTPoolRewardManager');
+export async function deployRewardManager(treasury: string, signer) {
+  const factory = await ethers.getContractFactory('NFTPoolRewardManager', signer);
   const instance = await factory.deploy(treasury);
   await instance.deployed();
   console.log(`NFTPoolRewardManager deployed at: ${instance.address}`);
+
+  return instance;
+}
+
+export async function deployPoolRewardManagerUpgradeable(treasury: string, signer) {
+  const factory = await ethers.getContractFactory('PoolRewardManager', signer);
+  const instance = await upgrades.deployProxy(factory, [treasury]);
+  await instance.deployed();
+  console.log(`PoolRewardManager deployed at: ${instance.address}`);
 
   return instance;
 }

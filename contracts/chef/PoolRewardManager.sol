@@ -20,11 +20,16 @@ contract PoolRewardManager is AccessControlUpgradeable {
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
+    uint256 public currentRewardCount;
+
     address public poolAddress;
     address public treasury;
 
     EnumerableSetUpgradeable.AddressSet private _rewardTokenAddresses;
     RewardToken[] public rewardTokens;
+
+    mapping(address => RewardToken) private _rewardTokens;
+
     mapping(uint256 => mapping(address => uint256)) public positionRewardDebts; // per token reward debt for each NFT position
 
     event RewardTokenAdded(IERC20MetadataUpgradeable token, uint256 sharesPerSecond);
@@ -42,6 +47,7 @@ contract PoolRewardManager is AccessControlUpgradeable {
         _;
     }
 
+    /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
     }
@@ -63,6 +69,10 @@ contract PoolRewardManager is AccessControlUpgradeable {
         require(_incomingPoolAddress != address(0), "Address not provided");
 
         poolAddress = _incomingPoolAddress;
+    }
+
+    function getRewardTokenAddresses() external view returns (address[] memory) {
+        return _rewardTokenAddresses.values();
     }
 
     function getRewardTokens() external view returns (RewardToken[] memory) {
@@ -201,6 +211,8 @@ contract PoolRewardManager is AccessControlUpgradeable {
                 ++i;
             }
         }
+
+        // TODO: Test reward debt after this. I think pool triggers updatePositionRewardDebts as needed
     }
 
     // ==================================== ADMIN ================================== //
@@ -209,39 +221,57 @@ contract PoolRewardManager is AccessControlUpgradeable {
         require(tokenAddress != address(0), "Token not provided");
         require(!_rewardTokenAddresses.contains(tokenAddress), "Token already added");
 
-        _rewardTokenAddresses.add(tokenAddress);
-
         IERC20MetadataUpgradeable token = IERC20MetadataUpgradeable(tokenAddress);
         uint256 decimalsRewardToken = uint256(token.decimals());
         require(decimalsRewardToken < 30, "Must be less than 30");
 
-        rewardTokens.push(
-            RewardToken({
-                token: token,
-                sharesPerSecond: sharesPerSecond,
-                accTokenPerShare: 0,
-                PRECISION_FACTOR: uint256(10 ** (uint256(30) - decimalsRewardToken))
-            })
-        );
+        // rewardTokens.push(
+        //     RewardToken({
+        //         token: token,
+        //         sharesPerSecond: sharesPerSecond,
+        //         accTokenPerShare: 0,
+        //         PRECISION_FACTOR: uint256(10 ** (uint256(30) - decimalsRewardToken))
+        //     })
+        // );
+
+        currentRewardCount++;
+
+        _rewardTokenAddresses.add(tokenAddress);
+        _rewardTokens[tokenAddress] = RewardToken({
+            token: token,
+            sharesPerSecond: sharesPerSecond,
+            accTokenPerShare: 0,
+            PRECISION_FACTOR: uint256(10 ** (uint256(30) - decimalsRewardToken))
+        });
 
         emit RewardTokenAdded(token, sharesPerSecond);
     }
 
     function updateRewardToken(address tokenAddress, uint256 tokenIndex, uint256 sharesPerSecond) external onlyAdmin {
-        require(tokenAddress != address(0), "Token not provided");
-        require(tokenIndex < rewardTokens.length, "Invalid token index");
-        require(_rewardTokenAddresses.contains(tokenAddress), "Token not added");
+        _validateToken(tokenAddress, tokenIndex);
 
         RewardToken storage reward = rewardTokens[tokenIndex];
         require(address(reward.token) == tokenAddress, "Wrong token address for token index");
+
+        _rewardTokens[tokenAddress].sharesPerSecond = sharesPerSecond;
 
         reward.sharesPerSecond = sharesPerSecond;
         emit RewardTokenUpdated(reward.token, sharesPerSecond);
     }
 
-    function removeRewardToken(uint256 tokenIndex) external {
+    function removeRewardToken(address tokenAddress, uint256 tokenIndex) external {
         require(msg.sender == treasury, "Only treasury");
-        require(tokenIndex < rewardTokens.length, "Invalid token index");
+        _validateToken(tokenAddress, tokenIndex);
+
+        // RewardToken memory reward = rewardTokens[tokenIndex];
+        // _rewardTokenAddresses.remove(address(reward.token));
+
+        // uint256 balance = reward.token.balanceOf(address(this));
+        // if (balance > 0) {
+        //     reward.token.safeTransfer(treasury, balance);
+        // }
+
+        // delete rewardTokens[tokenIndex];
 
         RewardToken memory reward = rewardTokens[tokenIndex];
         _rewardTokenAddresses.remove(address(reward.token));
@@ -251,8 +281,15 @@ contract PoolRewardManager is AccessControlUpgradeable {
             reward.token.safeTransfer(treasury, balance);
         }
 
+        delete _rewardTokens[tokenAddress];
+
         emit RewardTokenRemoved(reward.token);
-        delete rewardTokens[tokenIndex];
+    }
+
+    function _validateToken(address tokenAddress, uint256 tokenIndex) internal view {
+        require(tokenAddress != address(0), "Token not provided");
+        // require(tokenIndex < rewardTokens.length, "Invalid token index");
+        require(_rewardTokenAddresses.contains(tokenAddress), "Token not added");
     }
 
     function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {

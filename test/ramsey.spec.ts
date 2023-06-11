@@ -84,7 +84,7 @@ describe('Chef Ramsey', () => {
       it('accumulates additional rewards', async () => {
         const { nftPool, tokenId, signer, rewardManager } = await loadFixture(freshFixture);
 
-        await addRewardToken(rewardManager.address, WBTC, parseUnits('0.01'));
+        await addRewardToken(rewardManager.address, WBTC, parseUnits('0.01'), signer);
 
         await time.increase(ONE_DAY_SECONDS);
 
