@@ -59,12 +59,7 @@ contract PoolRewardManager is AccessControlUpgradeable {
         _grantRole(ADMIN_ROLE, _treasury);
     }
 
-    function initializePool(address _incomingPoolAddress) external onlyAdmin {
-        require(poolAddress == address(0), "Already initialized");
-        require(_incomingPoolAddress != address(0), "Address not provided");
-
-        poolAddress = _incomingPoolAddress;
-    }
+    // ==================================== VIEW ====================================== //
 
     function getRewardTokenAddresses() external view returns (address[] memory) {
         return _rewardTokenAddresses.values();
@@ -89,6 +84,8 @@ contract PoolRewardManager is AccessControlUpgradeable {
     function getCurrentRewardCount() public view returns (uint256) {
         return _rewardTokenAddresses.length();
     }
+
+    // ==================================== ONLY POOL ====================================== //
 
     /**
      * @dev Get pending rewards for a position
@@ -143,6 +140,7 @@ contract PoolRewardManager is AccessControlUpgradeable {
     /**
      * @dev Update reward debt for any/all additional reward tokens
      * Only callable by pool
+     * Pool calls this each time _updateBoostMultiplierInfoAndRewardDebt() is called
      */
     function updatePositionRewardDebts(uint256 positionAmountMultiplied, uint256 tokenId) external onlyPool {
         uint256 currentRewardCount = getCurrentRewardCount();
@@ -171,6 +169,7 @@ contract PoolRewardManager is AccessControlUpgradeable {
     /**
      * @dev Update reward per share for all current reward tokens
      * Only callable by pool
+     * Pools calls each time _updatePool() is called
      */
     function updateRewardsPerShare(uint256 lpSupplyMultiplied, uint256 lastRewardTime) external onlyPool {
         uint256 currentRewardCount = getCurrentRewardCount();
@@ -193,6 +192,12 @@ contract PoolRewardManager is AccessControlUpgradeable {
         }
     }
 
+    /**
+     * @dev Harvests any additional rewards for the position
+     * Only callable by pool
+     * Pools calls each time _harvestPosition() is called
+     * All harvest function variants in pool contract result in call to _harvestPosition()
+     */
     function harvestAdditionalRewards(
         uint256 positionAmountMultiplied,
         address recipient,
@@ -228,11 +233,16 @@ contract PoolRewardManager is AccessControlUpgradeable {
                 ++i;
             }
         }
-
-        // TODO: Test reward debt after this. I think pool triggers updatePositionRewardDebts as needed
     }
 
-    // ==================================== ADMIN ================================== //
+    // ==================================== ADMIN ====================================== //
+
+    function initializePool(address _incomingPoolAddress) external onlyAdmin {
+        require(poolAddress == address(0), "Already initialized");
+        require(_incomingPoolAddress != address(0), "Address not provided");
+
+        poolAddress = _incomingPoolAddress;
+    }
 
     function addRewardToken(address tokenAddress, uint256 sharesPerSecond) external onlyAdmin {
         require(tokenAddress != address(0), "Token not provided");
