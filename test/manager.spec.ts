@@ -3,12 +3,12 @@ import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { formatEther, formatUnits, parseUnits } from 'ethers/lib/utils';
 import { ARX_ADDRESS, DUMMY_POOL_ID, DUMMY_TOKEN_ADDRESS } from '../scripts/constants';
-import { addRewardToken, getTokenBalance } from '../scripts/utils';
-import { ONE_DAY_SECONDS, ONE_E_18_BN, TEN_POW_18_BN, ZERO_ADDRESS } from './constants';
+import { addRewardToken, getERC20, getTokenBalance } from '../scripts/utils';
+import { ONE_DAY_SECONDS, ONE_E_18_BN, TEN_POW_18_BN, USDC_BALANCEOF_SLOT, ZERO_ADDRESS } from './constants';
 import { USDC, WBTC, WETH } from '../scripts/token';
 import { awesomeFixture } from './fixtures/awesome.fixture';
 import { BigNumber } from 'ethers';
-import { getAccessControlRevertString, getOneToThePowerOf } from './utils';
+import { getAccessControlRevertString, getOneToThePowerOf, giveTokenBalanceFor } from './utils';
 
 describe('Reward manager', () => {
   describe('adding rewards', () => {
@@ -21,7 +21,6 @@ describe('Reward manager', () => {
     //   expect(tokenAddresses[0]).to.equal(WBTC);
     //   const rewards = await rewardManager.getRewardTokens();
     //   expect(rewards.length).to.equal(1);
-    //   expect(rewards[0].token).to.equal(WBTC);
     //   expect(rewards[0].sharesPerSecond).to.equal(rewardPerSecond);
     // });
     // it('gives correct reward decimal precision', async () => {
@@ -48,69 +47,66 @@ describe('Reward manager', () => {
     //   const expectedPrecisionBTC = BigNumber.from(10).pow(scalingDiffBTC);
     //   expect(rewards[1].PRECISION_FACTOR).to.equal(expectedPrecisionBTC);
     // });
-    //   it('gives correct reward amounts based on token decimal precision', async () => {
-    //     const { rewardManager, nftPool, tokenId } = await loadFixture(awesomeFixture);
-    //     // The precision factor setup in the contract is aimed at making all math relative to 18 decimals
-    //     // formatEther shows correct USDC amount without specifying the decimals
-    //     // So contract math is always returning to you the proper scaled amount relative to 18 decimals
-    //     // regardless of the tokens decimals
-    //     const rewardPerSecond = parseUnits('0.01');
-    //     await rewardManager.addRewardToken(USDC, rewardPerSecond);
-    //     let pendingAdditionalRewards = await nftPool.pendingAdditionalRewards(tokenId);
-    //     let amounts = pendingAdditionalRewards.rewardAmounts;
-    //     // Hardhat default has 1 second block time and is triggered/advanced by any transaction
-    //     // So 1 tx here has moved time up just one second
-    //     expect(amounts[0]).to.equal(rewardPerSecond);
-    //     await time.increase(ONE_DAY_SECONDS);
-    //     pendingAdditionalRewards = await nftPool.pendingAdditionalRewards(tokenId);
-    //     amounts = pendingAdditionalRewards.rewardAmounts;
-    //     expect(amounts[0]).to.equal(rewardPerSecond.mul(ONE_DAY_SECONDS).add(rewardPerSecond));
-    //   });
-  });
-
-  describe('updating rewards', () => {
-    // it('updates reward reward rate', async () => {
-    //   const { rewardManager } = await loadFixture(awesomeFixture);
+    // it('gives correct reward amounts based on token decimal precision', async () => {
+    //   const { rewardManager, nftPool, tokenId } = await loadFixture(awesomeFixture);
+    //   // The precision factor setup in the contract is aimed at making all math relative to 18 decimals
+    //   // formatEther shows correct USDC amount without specifying the decimals
+    //   // So contract math is always returning to you the proper scaled amount relative to 18 decimals
+    //   // regardless of the tokens decimals
     //   const rewardPerSecond = parseUnits('0.01');
     //   await rewardManager.addRewardToken(USDC, rewardPerSecond);
-    //   const tokenIndex = 0;
-    //   let rewards = await rewardManager.getRewardTokens();
-    //   expect(rewards[tokenIndex].sharesPerSecond).to.equal(rewardPerSecond);
-    //   const newRewardRate = rewardPerSecond.mul(2);
-    //   await rewardManager.updateRewardToken(USDC, tokenIndex, newRewardRate);
-    //   rewards = await rewardManager.getRewardTokens();
-    //   expect(rewards[tokenIndex].sharesPerSecond).to.equal(newRewardRate);
-    // });
-    // describe('invalid arguments', () => {
-    //   it('reverts when token index is out of bounds', async () => {
-    //     const { rewardManager } = await loadFixture(awesomeFixture);
-    //     const rewardPerSecond = parseUnits('0.01');
-    //     await rewardManager.addRewardToken(USDC, rewardPerSecond);
-    //     const invalidIndex = 1;
-    //     await expect(rewardManager.updateRewardToken(USDC, invalidIndex, rewardPerSecond)).to.be.revertedWith(
-    //       'Invalid token index'
-    //     );
-    //   });
-    //   it('reverts when token addresses has not been added', async () => {
-    //     const { rewardManager } = await loadFixture(awesomeFixture);
-    //     const rewardPerSecond = parseUnits('0.01');
-    //     await rewardManager.addRewardToken(USDC, rewardPerSecond);
-    //     const invalidToken = WBTC;
-    //     await expect(rewardManager.updateRewardToken(invalidToken, 0, rewardPerSecond)).to.be.revertedWith(
-    //       'Token not added'
-    //     );
-    //   });
-    //   it('reverts when token addresses is zero address', async () => {
-    //     const { rewardManager } = await loadFixture(awesomeFixture);
-    //     const rewardPerSecond = parseUnits('0.01');
-    //     await rewardManager.addRewardToken(USDC, rewardPerSecond);
-    //     const invalidToken = ZERO_ADDRESS;
-    //     await expect(rewardManager.updateRewardToken(invalidToken, 0, rewardPerSecond)).to.be.revertedWith(
-    //       'Token not provided'
-    //     );
-    //   });
+    //   let pendingAdditionalRewards = await nftPool.pendingAdditionalRewards(tokenId);
+    //   let amounts = pendingAdditionalRewards.rewardAmounts;
+    //   // Hardhat default has 1 second block time and is triggered/advanced by any transaction
+    //   // So 1 tx here has moved time up just one second
+    //   expect(amounts[0]).to.equal(rewardPerSecond);
+    //   await time.increase(ONE_DAY_SECONDS);
+    //   pendingAdditionalRewards = await nftPool.pendingAdditionalRewards(tokenId);
+    //   amounts = pendingAdditionalRewards.rewardAmounts;
+    //   expect(amounts[0]).to.equal(rewardPerSecond.mul(ONE_DAY_SECONDS).add(rewardPerSecond));
     // });
   });
+
+  // describe('updating rewards', () => {
+  //   it('updates reward reward rate', async () => {
+  //     const { rewardManager } = await loadFixture(awesomeFixture);
+
+  //     const rewardPerSecond = parseUnits('0.01');
+  //     await rewardManager.addRewardToken(USDC, rewardPerSecond);
+
+  //     let rewards = await rewardManager.getRewardTokens();
+
+  //     expect(rewards[0].sharesPerSecond).to.equal(rewardPerSecond);
+
+  //     const newRewardRate = rewardPerSecond.mul(2);
+  //     await rewardManager.updateRewardToken(USDC, newRewardRate);
+  //     rewards = await rewardManager.getRewardTokens();
+
+  //     expect(rewards[0].sharesPerSecond).to.equal(newRewardRate);
+  //   });
+
+  //   describe('invalid arguments', () => {
+  //     it('reverts when token addresses has not been added', async () => {
+  //       const { rewardManager } = await loadFixture(awesomeFixture);
+  //       const rewardPerSecond = parseUnits('0.01');
+  //       await rewardManager.addRewardToken(USDC, rewardPerSecond);
+  //       const invalidToken = WBTC;
+  //       await expect(rewardManager.updateRewardToken(invalidToken, rewardPerSecond)).to.be.revertedWith(
+  //         'Token not added'
+  //       );
+  //     });
+
+  //     it('reverts when token addresses is zero address', async () => {
+  //       const { rewardManager } = await loadFixture(awesomeFixture);
+  //       const rewardPerSecond = parseUnits('0.01');
+  //       await rewardManager.addRewardToken(USDC, rewardPerSecond);
+  //       const invalidToken = ZERO_ADDRESS;
+  //       await expect(rewardManager.updateRewardToken(invalidToken, rewardPerSecond)).to.be.revertedWith(
+  //         'Token not provided'
+  //       );
+  //     });
+  //   });
+  // });
 
   describe('removing rewards', () => {
     describe('authorization', () => {
@@ -118,60 +114,52 @@ describe('Reward manager', () => {
       //   const { rewardManager, randomAccount } = await loadFixture(awesomeFixture);
 
       //   // Dont need to bothering adding token first for this check
-      //   await expect(rewardManager.connect(randomAccount).removeRewardToken(USDC, 0)).to.be.revertedWith(
-      //     'Only treasury'
-      //   );
+      //   await expect(rewardManager.connect(randomAccount).removeRewardToken(USDC)).to.be.revertedWith('Only treasury');
       // });
 
-      // it('reverts  when token index is out of bounds', async () => {
+      // it('removes token when caller is the treasury', async () => {
       //   const { rewardManager } = await loadFixture(awesomeFixture);
 
       //   const rewardPerSecond = parseUnits('0.01');
       //   await rewardManager.addRewardToken(USDC, rewardPerSecond);
 
-      //   const invalidIndex = 1;
-      //   await expect(rewardManager.removeRewardToken(USDC, invalidIndex)).to.be.revertedWith('Invalid token index');
+      //   let rewards = await rewardManager.getRewardTokens();
+      //   let rewardAddresses = await rewardManager.getRewardTokenAddresses();
+
+      //   // sanity check
+      //   expect(rewards.length).to.equal(1);
+      //   expect(rewardAddresses.length).to.equal(1);
+
+      //   await rewardManager.removeRewardToken(USDC);
+
+      //   rewards = await rewardManager.getRewardTokens();
+      //   rewardAddresses = await rewardManager.getRewardTokenAddresses();
+
+      //   // Associated address should be removed from the address set as well
+      //   expect(rewards.length).to.equal(0);
+      //   expect(rewardAddresses.length).to.equal(0);
       // });
 
-      it('removes token when caller is the treasury', async () => {
-        const { rewardManager } = await loadFixture(awesomeFixture);
+      it('transfer contract token balance to the treasury', async () => {
+        const { rewardManager, signer } = await loadFixture(awesomeFixture);
 
         const rewardPerSecond = parseUnits('0.01');
         await rewardManager.addRewardToken(USDC, rewardPerSecond);
 
-        let rewards = await rewardManager.getRewardTokens();
-        let rewardAddresses = await rewardManager.getRewardTokenAddresses();
+        const token = getERC20(USDC, signer);
 
-        // sanity check
-        expect(rewards.length).to.equal(1);
-        expect(rewardAddresses.length).to.equal(1);
+        const amount = parseUnits('1000', 6);
+        await giveTokenBalanceFor(ethers.provider, USDC, signer.address, USDC_BALANCEOF_SLOT, amount);
 
-        await rewardManager.removeRewardToken(USDC, 0);
+        await token.transfer(rewardManager.address, amount);
 
-        await rewardManager.addRewardToken(WBTC, rewardPerSecond);
+        expect(await token.balanceOf(rewardManager.address)).to.equal(amount);
 
-        rewards = await rewardManager.getRewardTokens();
-        rewardAddresses = await rewardManager.getRewardTokenAddresses();
+        await rewardManager.removeRewardToken(USDC);
 
-        console.log(rewards);
-
-        // Associated address should be removed from the address set as well
-
-        // expect(rewards.length).to.equal(0);
-        // expect(rewardAddresses.length).to.equal(0);
+        expect(await token.balanceOf(signer.address)).to.be.greaterThanOrEqual(amount);
+        expect(await token.balanceOf(rewardManager.address)).to.equal(0);
       });
-
-      // it('removes the associated token address', async () => {
-      //   const { nftPool, tokenId, signer, rewardManager } = await loadFixture(awesomeFixture);
-
-      //   expect(false).to.be.true;
-      // });
-
-      // it('transfer contract token balance to the treasury', async () => {
-      //   const { nftPool, tokenId, signer, rewardManager } = await loadFixture(awesomeFixture);
-
-      //   expect(false).to.be.true;
-      // });
     });
   });
 });
