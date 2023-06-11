@@ -12,6 +12,7 @@ import {
 } from '../../scripts/utils';
 import {
   ARBIDEX_CHEF_ADDRESS,
+  ARBIDEX_TREASURY,
   ARX_ADDRESS,
   CHEF_RAMSEY_ADDRESS,
   DEV_ACCOUNT,
@@ -55,12 +56,12 @@ export async function freshFixture() {
     oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS as any),
     dummyToken.approve(chefRamsey.address, MAX_UINT256),
     deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS),
-    deployRewardManager(),
+    deployRewardManager(ARBIDEX_TREASURY),
   ]);
 
   await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
 
-  const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address);
+  const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
   await rewardManager.initialize(nftPoolAddress);
 
   // Need rewardManager init before creating positions

@@ -19,9 +19,9 @@ export async function deployRamsey(yieldBoooster: string, signer) {
   return instance;
 }
 
-export async function deployRewardManager() {
+export async function deployRewardManager(treasury: string) {
   const factory = await ethers.getContractFactory('NFTPoolRewardManager');
-  const instance = await factory.deploy(ARBIDEX_TREASURY);
+  const instance = await factory.deploy(treasury);
   await instance.deployed();
   console.log(`NFTPoolRewardManager deployed at: ${instance.address}`);
 
@@ -37,8 +37,13 @@ export async function deployPoolFactory(master: string, mainToken: string, xToke
   return instance;
 }
 
-export async function createPool(factoryAddress: string, lpToken: string, rewardManager: string): Promise<string> {
-  const factory = await ethers.getContractAt('NFTPoolFactory', factoryAddress);
+export async function createPool(
+  factoryAddress: string,
+  lpToken: string,
+  rewardManager: string,
+  signer
+): Promise<string> {
+  const factory = await ethers.getContractAt('NFTPoolFactory', factoryAddress, signer);
   const tx = await factory.createPool(lpToken, rewardManager);
   const receipt = await tx.wait();
 
@@ -49,8 +54,8 @@ export async function createPool(factoryAddress: string, lpToken: string, reward
   return poolAddress;
 }
 
-export async function addPoolToChef(nftPoolAddress: string, allocationPoints: number) {
-  const chef = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS);
+export async function addPoolToChef(nftPoolAddress: string, allocationPoints: number, signer) {
+  const chef = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
   await chef.add(nftPoolAddress, allocationPoints, true);
   console.log(`New pool added to chef`);
 }
@@ -64,8 +69,8 @@ export async function deployYieldBooster(xToken: string) {
   return instance;
 }
 
-export async function addRewardToken(rewardManager: string, token: string, sharesPerSecond: BigNumber) {
-  const manager = await ethers.getContractAt('NFTPoolRewardManager', rewardManager);
+export async function addRewardToken(rewardManager: string, token: string, sharesPerSecond: BigNumber, signer) {
+  const manager = await ethers.getContractAt('NFTPoolRewardManager', rewardManager, signer);
   await manager.addRewardToken(token, sharesPerSecond);
 }
 
@@ -119,4 +124,11 @@ export async function getTokenAllowance(token: string, spender: string) {
   const signer = await getSignerAccount();
   const tc = await getERC20(token, signer);
   console.log(`Allowance for ${token}: ${formatEther(await tc.allowance(signer.address, spender))}`);
+}
+
+export async function sleepWait(ms = 1000) {
+  console.log(`Sleeping for ${ms / 1000} seconds...`);
+  return new Promise((res) => {
+    setTimeout(res, ms);
+  });
 }

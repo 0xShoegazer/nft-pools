@@ -17,7 +17,7 @@ import {
   ARX_USDC_NFTPOOL_MANAGER,
   CHEF_RAMSEY_ADDRESS,
   DEV_ACCOUNT,
-  YEILD_BOOST_ADDRESS,
+  YIELD_BOOST_ADDRESS,
   xARX_ADDRESS,
 } from '../../scripts/constants';
 import { impersonateAccount } from '@nomicfoundation/hardhat-network-helpers';
@@ -30,7 +30,7 @@ export async function liveItemsFixture() {
   await impersonateAccount(DEV_ACCOUNT);
   const signer = await ethers.getSigner(DEV_ACCOUNT);
 
-  const yieldBooster = await ethers.getContractAt('YieldBooster', YEILD_BOOST_ADDRESS, signer);
+  const yieldBooster = await ethers.getContractAt('YieldBooster', YIELD_BOOST_ADDRESS, signer);
   const chefRamsey = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
   const xToken = await ethers.getContractAt(XTOKEN_ABI, xARX_ADDRESS, signer);
 

@@ -47,9 +47,9 @@ export async function awesomeFixture() {
   const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
 
   // Pool creation setup
-  const rewardManager = await deployRewardManager();
+  const rewardManager = await deployRewardManager(ARBIDEX_TREASURY);
   const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);
-  const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address);
+  const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
   // Needs pool address for init
   await rewardManager.initialize(nftPoolAddress);
 
@@ -64,7 +64,7 @@ export async function awesomeFixture() {
   // await nftPool.createPosition(lpBalance.div(2), ONE_DAY_SECONDS * 100);
   await nftPool.createPosition(lpBalance.div(2), 0);
 
-  await addRewardToken(rewardManager.address, WBTC, parseUnits('0.01'));
+  await addRewardToken(rewardManager.address, WBTC, parseUnits('0.01'), signer);
 
   return {
     factory,
