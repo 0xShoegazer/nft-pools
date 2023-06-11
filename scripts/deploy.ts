@@ -11,6 +11,7 @@ import {
   getERC20WithSigner,
   getTokenBalance,
   sleepWait,
+  updateRewardToken,
 } from './utils';
 import {
   ARBIDEX_TREASURY,
@@ -24,12 +25,12 @@ import {
 } from './constants';
 import { ARBIDEX_CHEF_ADDRESS } from './constants';
 import { Contract } from 'ethers';
-import { MAX_UINT256 } from '../test/constants';
+import { MAX_UINT256, ONE_DAY_SECONDS } from '../test/constants';
 import { xPools } from './xPools';
 import { getNFTPool } from '../test/utils';
 import { runAddPoolFlow } from './utils2';
 import { USDC } from './token';
-import { parseUnits } from 'ethers/lib/utils';
+import { formatEther, parseUnits } from 'ethers/lib/utils';
 
 // const OLD_BOOST = '0x06EE396734101741f5cc964349C85a0D60c63d89';
 // const OLD_RAMSEY = '0x455AA6c27BF44060A967364673C326fB2EcEd15B';
@@ -50,7 +51,9 @@ async function main() {
   const signer = (await ethers.getSigners())[0];
   //
   // await runAddPoolFlow(xPools.WETH_USDC.lpPoolAddress, ARBIDEX_TREASURY, NFT_POOL_FACTORY, CHEF_RAMSEY_ADDRESS);
-  // await addRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.0001'), signer);
+  // console.log(formatEther(parseUnits('0.005').mul(ONE_DAY_SECONDS)));
+  // await addRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.005'), signer);
+  // await updateRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.0001'), signer);
   //
 
   // const yieldBooster = await deployYieldBooster(xARX_ADDRESS);

@@ -79,8 +79,13 @@ export async function deployYieldBooster(xToken: string) {
 }
 
 export async function addRewardToken(rewardManager: string, token: string, sharesPerSecond: BigNumber, signer) {
-  const manager = await ethers.getContractAt('NFTPoolRewardManager', rewardManager, signer);
+  const manager = await ethers.getContractAt('PoolRewardManager', rewardManager, signer);
   await manager.addRewardToken(token, sharesPerSecond);
+}
+
+export async function updateRewardToken(rewardManager: string, token: string, sharesPerSecond: BigNumber, signer) {
+  const manager = await ethers.getContractAt('PoolRewardManager', rewardManager, signer);
+  await manager.updateRewardToken(token, sharesPerSecond);
 }
 
 export async function createPosition(
