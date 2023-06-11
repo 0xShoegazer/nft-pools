@@ -8,7 +8,7 @@ export async function runAddPoolFlow(lpPoolAddress: string, treasury: string, po
   const chefRamsey = await ethers.getContractAt('ChefRamsey', chef, signer);
 
   console.log('Deploying pool reward manager..');
-  const rewardManager = await deployRewardManager(treasury);
+  const rewardManager = await deployRewardManager(treasury, signer);
   await sleepWait();
   console.log('Creating new NFTPool..');
   const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
