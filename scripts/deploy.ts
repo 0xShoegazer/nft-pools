@@ -1,6 +1,7 @@
 import { ethers } from 'hardhat';
 import {
   addPoolToChef,
+  addRewardToken,
   createPool,
   deployPoolFactory,
   deployRamsey,
@@ -26,6 +27,8 @@ import { MAX_UINT256 } from '../test/constants';
 import { xPools } from './xPools';
 import { getNFTPool } from '../test/utils';
 import { runAddPoolFlow } from './utils2';
+import { USDC } from './token';
+import { parseUnits } from 'ethers/lib/utils';
 
 const BOOST = '0x06EE396734101741f5cc964349C85a0D60c63d89';
 const RAMSEY = '0x455AA6c27BF44060A967364673C326fB2EcEd15B';
@@ -34,10 +37,12 @@ const ARX_USDC_NFTPOOL = '0xe1e99841Ea929671f403B219e9Eb75d69944A6d5';
 const ARX_USDC_NFTPOOL_MANAGER = '0xc4E3b4690273ca3f482a4FeEc47F7d6b68aF927e';
 
 async function main() {
+  const signer = (await ethers.getSigners())[0];
   //
   // await runAddPoolFlow(xPools.WETH_USDC.lpPoolAddress, ARBIDEX_TREASURY, NFT_POOL_FACTORY, CHEF_RAMSEY_ADDRESS);
+  await addRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.0001'), signer);
   //
-  // const signer = (await ethers.getSigners())[0];
+
   // await addPoolToChef(xPools.ARX_USDC.nftPoolAddress, xPools.ARX_USDC.initialChefAllocationPoints);
   // await createPool(NFT_POOL_FACTORY, POOLS.WETH_USDC);
   // await addPoolToChef(xPools.WETH_USDC.nftPoolAddress, xPools.WETH_USDC.initialChefAllocationPoints);
