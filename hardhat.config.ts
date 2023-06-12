@@ -2,6 +2,7 @@ import * as dotenv from 'dotenv';
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
 import '@openzeppelin/hardhat-upgrades';
+import '@nomiclabs/hardhat-etherscan';
 
 dotenv.config();
 
@@ -47,9 +48,9 @@ const config: HardhatUserConfig = {
       accounts,
     },
   },
-  // etherscan: {
-  //   apiKey: process.env.ETHERSCAN_API_KEY,
-  // },
+  etherscan: {
+    apiKey: process.env.ETHERSCAN_API_KEY,
+  },
 };
 
 export default config;

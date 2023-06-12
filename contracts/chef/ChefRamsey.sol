@@ -10,7 +10,6 @@ import "./interfaces/IArbidexMasterChef.sol";
 import "./interfaces/IChefRamsey.sol";
 import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
-import "./interfaces/IXToken.sol";
 
 contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     using SafeERC20Upgradeable for IERC20Upgradeable;
@@ -37,9 +36,6 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     IArbidexMasterChef public mainChef;
     IYieldBooster private _yieldBooster; // Contract address handling yield boosts
 
-    // This contract will need to be whitelisted by xToken since xToken is non transferable by default
-    IXToken public xToken;
-
     mapping(address => PoolInfo) private _poolInfo; // Pools' information
     EnumerableSetUpgradeable.AddressSet private _pools; // All existing pool addresses
     EnumerableSetUpgradeable.AddressSet private _activePools; // Only contains pool addresses w/ allocPoints > 0
@@ -60,8 +56,6 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     event PoolUpdated(address indexed poolAddress, uint256 reserve, uint256 reserveWETH, uint256 lastRewardTime);
     event SetEmergencyUnlock(bool emergencyUnlock);
     event Harvest(uint256 arxAmount, uint256 wethAmount);
-    event AddRewardToken(address token, uint256 rewardPerSecond);
-    event SetTokenRewardRate(address token, uint256 oldRate, uint256 newRate);
 
     /***********************************************/
     /****************** MODIFIERS ******************/
@@ -85,22 +79,16 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         _disableInitializers();
     }
 
-    function initialize(
-        IXToken _xToken,
-        IArbidexMasterChef _chef,
-        address _treasury,
-        IYieldBooster _boost
-    ) public initializer {
+    function initialize(IArbidexMasterChef _chef, address _treasury, IYieldBooster _boost) public initializer {
         __AccessControl_init();
 
-        xToken = _xToken;
         mainChef = _chef;
         _mainToken = IERC20Upgradeable(mainChef.arx());
         WETH = IERC20Upgradeable(mainChef.WETH());
         treasury = _treasury;
         _yieldBooster = _boost;
 
-        _grantRole(DEFAULT_ADMIN_ROLE, _msgSender());
+        _grantRole(DEFAULT_ADMIN_ROLE, _treasury);
         _grantRole(ADMIN_ROLE, _msgSender());
         _grantRole(ADMIN_ROLE, _treasury);
 
