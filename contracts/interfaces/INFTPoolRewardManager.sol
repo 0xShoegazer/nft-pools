@@ -11,7 +11,12 @@ interface INFTPoolRewardManager {
 
     function updateRewardsPerShare(uint256 lpSupplyMultiplied, uint256 lastRewardTime) external;
 
-    function updatePositionRewardDebts(uint256 positionAmountMultiplied, uint256 tokenId) external;
+    function updatePositionRewardDebts(
+        uint256 lpSupplyMultiplied,
+        uint256 positionAmountMultiplied,
+        uint256 lastRewardTime,
+        uint256 tokenId
+    ) external;
 
     function harvestAdditionalRewards(uint256 positionAmountMultiplied, address to, uint256 tokenId) external;
 

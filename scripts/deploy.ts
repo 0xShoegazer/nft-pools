@@ -90,6 +90,8 @@ async function main() {
   // Need rewardManager init before creating positions
   // console.log('Adding pool to chef..');
   // await chefRamsey.add(WETH_USDC_NFTPOOL, 1000, true);
+  // const rewardManager = await ethers.getContractAt('PoolRewardManager', WETH_USDC_REWARD_MANAGER, signer);
+  // await rewardManager.initializePool(WETH_USDC_NFTPOOL);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

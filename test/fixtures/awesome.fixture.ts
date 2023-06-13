@@ -36,16 +36,25 @@ export async function awesomeFixture() {
 
   // Test LP pool
   const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;
-
+  const userOneLpBalance = parseUnits('100');
   // Setup account funds
   await giveTokenBalanceFor(
     ethers.provider,
     lpPoolAddress,
     signer.address,
     UNIV2_POOL_BALANCEOF_SLOT,
-    parseUnits('100')
+    userOneLpBalance
   );
-  const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
+
+  const randomAccount = (await ethers.getSigners())[2];
+
+  // await giveTokenBalanceFor(
+  //   ethers.provider,
+  //   lpPoolAddress,
+  //   randomAccount.address,
+  //   UNIV2_POOL_BALANCEOF_SLOT,
+  //   lpBalanceRandomAccount
+  // );
 
   // Pool creation setup
   // const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
@@ -64,10 +73,10 @@ export async function awesomeFixture() {
   const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
   await lpInstance.approve(nftPool.address, MAX_UINT256);
 
-  // await nftPool.createPosition(lpBalance.div(2), ONE_DAY_SECONDS * 100);
-  await nftPool.createPosition(lpBalance.div(2), 0);
-
-  const randomAccount = (await ethers.getSigners())[2];
+  // const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
+  await nftPool.createPosition(userOneLpBalance.div(2), 0);
+  const lpBalanceRandomAccount = userOneLpBalance.div(2);
+  await lpInstance.transfer(randomAccount.address, lpBalanceRandomAccount);
 
   return {
     factory,
@@ -82,5 +91,7 @@ export async function awesomeFixture() {
     oldChef: new Contract(ARBIDEX_CHEF_ADDRESS, OLD_CHEF_ABI, signer),
     rewardManager,
     randomAccount,
+    lpBalanceRandomAccount,
+    lpInstance,
   };
 }

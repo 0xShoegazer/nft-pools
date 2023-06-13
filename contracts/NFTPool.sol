@@ -553,6 +553,14 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _lpSupply = _lpSupply.add(amount);
         _lpSupplyWithMultiplier = _lpSupplyWithMultiplier.add(amountWithMultiplier);
 
+        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
+        rewardManager.updatePositionRewardDebts(
+            _lpSupplyWithMultiplier,
+            amountWithMultiplier,
+            lastRewardTime,
+            currentTokenId
+        );
+
         emit CreatePosition(currentTokenId, amount, lockDuration);
     }
 
@@ -765,10 +773,14 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * @dev Updates rewards states of this pool to be up-to-date
      */
     function _updatePool() internal {
+        uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier; // stash
+
+        (, , uint256 currentLastRewardTime, , , , ) = master.getPoolInfo(address(this));
+        rewardManager.updateRewardsPerShare(lpSupplyMultiplied, currentLastRewardTime);
+
         // Returns the amount of main token. WETH is already transfered to this contract at this time
         (uint256 rewardAmount, uint256 amountWETH) = master.claimRewards();
 
-        uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier;
         if (rewardAmount > 0) {
             _accRewardsPerShare = _accRewardsPerShare.add(rewardAmount.mul(1e18).div(lpSupplyMultiplied));
         }
@@ -776,9 +788,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         if (amountWETH > 0) {
             _accRewardsPerShareWETH = _accRewardsPerShareWETH.add(amountWETH.mul(1e18).div(lpSupplyMultiplied));
         }
-
-        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
-        rewardManager.updateRewardsPerShare(lpSupplyMultiplied, lastRewardTime);
 
         emit PoolUpdated(_currentBlockTimestamp(), _accRewardsPerShare, _accRewardsPerShareWETH);
     }
@@ -861,14 +870,17 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
         position.totalMultiplier = newTotalMultiplier;
         uint256 amountWithMultiplier = position.amount.mul(newTotalMultiplier.add(1e4)).div(1e4);
+
+        uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier;
         // update global supply
-        _lpSupplyWithMultiplier = _lpSupplyWithMultiplier.sub(position.amountWithMultiplier).add(amountWithMultiplier);
+        _lpSupplyWithMultiplier = lpSupplyMultiplied.sub(position.amountWithMultiplier).add(amountWithMultiplier);
         position.amountWithMultiplier = amountWithMultiplier;
 
         position.rewardDebt = amountWithMultiplier.mul(_accRewardsPerShare).div(1e18);
         position.rewardDebtWETH = amountWithMultiplier.mul(_accRewardsPerShareWETH).div(1e18);
 
-        rewardManager.updatePositionRewardDebts(amountWithMultiplier, tokenId);
+        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
+        rewardManager.updatePositionRewardDebts(lpSupplyMultiplied, lastRewardTime, amountWithMultiplier, tokenId);
     }
 
     /**
