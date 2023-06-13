@@ -250,6 +250,8 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
     // ==================================== HOOKS ====================================== //
 
+    // Before continuing the process of updating/creating a position
+    // _updatePool() item
     function beforePositionUpdate(
         uint256 lastRewardTime,
         uint256 lpSupplyMultiplied,
@@ -261,18 +263,9 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         _harvestPendingRewards(positionAmountBeforeUpdateMultiplied, recipient, tokenId);
     }
 
-    function afterPositionUpdate(
-        uint256 lpSupplyAfterUpdateMultiplied,
-        uint256 positionAmountAfterUpdateMultiplied,
-        uint256 lastRewardTime,
-        uint256 tokenId
-    ) external onlyPool {
-        _updatePositionRewardDebts(
-            lpSupplyAfterUpdateMultiplied,
-            positionAmountAfterUpdateMultiplied,
-            lastRewardTime,
-            tokenId
-        );
+    // Position deposit amount and total deposits have been updated at this point
+    function afterPositionUpdate(uint256 positionAmountAfterUpdateMultiplied, uint256 tokenId) external onlyPool {
+        _updatePositionRewardDebts(positionAmountAfterUpdateMultiplied, tokenId);
     }
 
     function _updateRewardShares(uint256 lastRewardTime, uint256 lpSupplyMultiplied) internal {
@@ -333,12 +326,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         }
     }
 
-    function _updatePositionRewardDebts(
-        uint256 lpSupplyAfterUpdateMultiplied,
-        uint256 positionAmountAfterUpdateMultiplied,
-        uint256 lastRewardTime,
-        uint256 tokenId
-    ) internal {
+    function _updatePositionRewardDebts(uint256 positionAmountAfterUpdateMultiplied, uint256 tokenId) internal {
         uint256 currentRewardCount = getCurrentRewardCount();
 
         if (currentRewardCount == 0) {
@@ -346,19 +334,13 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         }
 
         RewardToken memory currentReward;
-        uint256 currentDuration = block.timestamp - lastRewardTime;
+        // uint256 currentDuration = block.timestamp - lastRewardTime;
         address tokenAddress;
-        uint256 rewardAmountForDuration;
-        uint256 adjustedTokenPerShare;
+        // uint256 rewardAmountForDuration;
+        // uint256 adjustedTokenPerShare;
 
         for (uint256 i = 0; i < currentRewardCount; ) {
             tokenAddress = _rewardTokenAddresses.at(i);
-            currentReward = _rewardTokens[tokenAddress];
-
-            rewardAmountForDuration = currentDuration * currentReward.sharesPerSecond;
-            adjustedTokenPerShare =
-                (rewardAmountForDuration * currentReward.PRECISION_FACTOR) /
-                lpSupplyAfterUpdateMultiplied;
 
             positionRewardDebts[tokenId][tokenAddress] =
                 (positionAmountAfterUpdateMultiplied * currentReward.accTokenPerShare) /
