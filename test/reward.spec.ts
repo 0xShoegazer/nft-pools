@@ -67,7 +67,7 @@ describe('Rewards', () => {
       await rewardManager.addRewardToken(USDC, rewardPerSecond);
 
       // give contract reward amounts to distribute
-      await giveTokens(USDC, USDC_ARBITRUM_BALANCE_SLOT, rewardManager.address, parseUnits('10000'));
+      await giveTokens(USDC, USDC_ARBITRUM_BALANCE_SLOT, rewardManager.address, parseUnits('1000'));
 
       // position already created
       // fast forward, check pending, claim, check balance
@@ -105,9 +105,17 @@ describe('Rewards', () => {
       console.log(`
       `);
       console.log('Claiming user 1..');
+
       // claim
       await nftPool.connect(signer).harvestPosition(tokenId);
       await time.increase(1);
+
+      // check balances
+      const usdcToken = getERC20(USDC, signer);
+      let balance = await usdcToken.balanceOf(signer.address);
+      console.log('user 1 usdc after claim: ' + formatEther(balance));
+      balance = await usdcToken.balanceOf(rewardManager.address);
+      console.log('contract usdc after claim: ' + formatEther(balance));
 
       pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
       console.log('user 1 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
@@ -125,12 +133,10 @@ describe('Rewards', () => {
       pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
       console.log('user 2 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
 
-      // // check balances
-      // const usdcToken = getERC20(USDC, signer);
-      // let balance = await usdcToken.balanceOf(signer.address);
-      // console.log('user usdc after claim: ' + formatEther(balance));
-      // balance = await usdcToken.balanceOf(rewardManager.address);
-      // console.log('contract usdc after claim: ' + formatEther(balance));
+      balance = await usdcToken.balanceOf(randomAccount.address);
+      console.log('user 2 usdc after claim: ' + formatEther(balance));
+      balance = await usdcToken.balanceOf(rewardManager.address);
+      console.log('contract usdc after claim: ' + formatEther(balance));
 
       // check reward debt
     });
