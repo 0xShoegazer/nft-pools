@@ -169,12 +169,12 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     /****************** PUBLIC VIEWS ******************/
     /**************************************************/
 
-    // /**
-    //  * @dev Returns this contract's owner (= master contract's owner)
-    //  */
-    // function owner() public view returns (address) {
-    //     return master.owner();
-    // }
+    /**
+     * @dev Returns this contract's owner (= master contract's owner)
+     */
+    function owner() public view returns (address) {
+        return master.owner();
+    }
 
     /**
      * @dev Get master-defined yield booster contract address

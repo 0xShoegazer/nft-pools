@@ -23,7 +23,7 @@ export async function deployRewardManager(treasury: string, signer) {
   return instance;
 }
 
-export async function deployGolbalRewardManager(treasury: string, signer) {
+export async function deployGlobalRewardManager(treasury: string, signer) {
   const factory = await ethers.getContractFactory('RewardManager', signer);
   const instance = await upgrades.deployProxy(factory, [treasury]);
   await instance.deployed();

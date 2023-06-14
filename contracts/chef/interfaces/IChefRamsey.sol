@@ -8,8 +8,6 @@ interface IChefRamsey {
 
     function yieldBooster() external view returns (address);
 
-    function owner() external view returns (address);
-
     function emergencyUnlock() external view returns (bool);
 
     function getPoolInfo(

@@ -7,7 +7,15 @@ import {
   xARX_ADDRESS,
 } from '../../scripts/constants';
 import { ethers } from 'hardhat';
-import { createPool, deployPoolFactory, deployRewardManager, getERC20WithSigner } from '../../scripts/utils';
+import {
+  createPool,
+  deployGlobalRewardManager,
+  deployPoolFactory,
+  deployRamsey,
+  deployRewardManager,
+  deployYieldBooster,
+  getERC20WithSigner,
+} from '../../scripts/utils';
 import { xPools } from '../../scripts/xPools';
 import { RAMSEY_ABI } from '../abis/chef-ramsey-abi';
 import { Contract } from 'ethers';
@@ -35,17 +43,16 @@ export async function awesomeFixture() {
   );
 
   const randomAccount = (await ethers.getSigners())[2];
+  const yieldBoooster = await deployYieldBooster(xARX_ADDRESS);
+  const chefRamsey = await deployRamsey(yieldBoooster.address, signer);
 
   // Pool creation setup
-  const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
-  const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);
+  const rewardManager = await deployGlobalRewardManager(ARBIDEX_TREASURY, signer);
+  const factory = await deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS);
   const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
-  // Needs pool address for init
-  // await rewardManager.initialize(nftPoolAddress);
-  await rewardManager.initializePool(nftPoolAddress);
 
+  await rewardManager.addPool(nftPoolAddress);
   // Add new pool to chef
-  const chefRamsey = new Contract(CHEF_RAMSEY_ADDRESS, RAMSEY_ABI, signer);
   await chefRamsey.add(nftPoolAddress, 1, true);
 
   const nftPool = getNFTPool(nftPoolAddress, signer);
@@ -54,7 +61,6 @@ export async function awesomeFixture() {
 
   // const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
   await nftPool.createPosition(userOneLpBalance.div(2), 0);
-  await nftPool.harvestPosition(1);
   const lpBalanceRandomAccount = userOneLpBalance.div(2);
   await lpInstance.transfer(randomAccount.address, lpBalanceRandomAccount);
 

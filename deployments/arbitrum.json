@@ -1,18 +1,18 @@
 {
-  "NFTPoolFactory": "0x4973aFa3344a6b4c3c352b6c93115aD97f7fB12a",
+  "NFTPoolFactory": "",
   "ChefRamsey": "",
   "pools": [
     {
       "name": "ARX-USDC",
-      "lpAddress": "0xA6efAE0C9293B4eE340De31022900bA747eaA92D",
-      "nftPoolAddress": "0xe1e99841Ea929671f403B219e9Eb75d69944A6d5",
-      "nftPoolRewardManager": "0xc4E3b4690273ca3f482a4FeEc47F7d6b68aF927e"
+      "lpAddress": "",
+      "nftPoolAddress": "",
+      "nftPoolRewardManager": ""
     },
     {
       "name": "WETH-USDC",
-      "lpAddress": "0xcf8ea96ecfdb7800e1eb413bde4af6ce984ab079",
-      "nftPoolAddress": "0x437158352C56C16b3D20a91C46EfA78CB3cB43C6",
-      "nftPoolRewardManager": "0xdf02FffF40a77F7821bb8774Ce07dFb2Ccc218e2"
+      "lpAddress": "",
+      "nftPoolAddress": "",
+      "nftPoolRewardManager": ""
     }
   ]
 }

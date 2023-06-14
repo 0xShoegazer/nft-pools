@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.15;
 
-import "@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol";
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/ERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
@@ -11,12 +11,9 @@ import "./interfaces/IChefRamsey.sol";
 import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
 
-contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
+contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
     using SafeERC20Upgradeable for IERC20Upgradeable;
-    // using SafeMathUpgradeable for uint256; // solc 0.8+ version to not fuck up Cam teams math
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
-
-    bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
 
     // Info of each NFT pool
     struct PoolInfo {
@@ -57,15 +54,6 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     event SetEmergencyUnlock(bool emergencyUnlock);
     event Harvest(uint256 arxAmount, uint256 wethAmount);
 
-    /***********************************************/
-    /****************** MODIFIERS ******************/
-    /***********************************************/
-
-    modifier onlyAdmin() {
-        require(hasRole(ADMIN_ROLE, _msgSender()), "Not an admin");
-        _;
-    }
-
     /*
      * @dev Check if a pool exists
      */
@@ -80,7 +68,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     }
 
     function initialize(IArbidexMasterChef _chef, address _treasury, IYieldBooster _boost) public initializer {
-        __AccessControl_init();
+        __Ownable_init();
 
         mainChef = _chef;
         _mainToken = IERC20Upgradeable(mainChef.arx());
@@ -88,16 +76,16 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         treasury = _treasury;
         _yieldBooster = _boost;
 
-        _grantRole(DEFAULT_ADMIN_ROLE, _treasury);
-        _grantRole(ADMIN_ROLE, _msgSender());
-        _grantRole(ADMIN_ROLE, _treasury);
+        // _grantRole(DEFAULT_ADMIN_ROLE, _treasury);
+        // _grantRole(ADMIN_ROLE, _msgSender());
+        // _grantRole(ADMIN_ROLE, _treasury);
 
         // Sentinel value used to checked in start function
         mainChefPoolId = type(uint256).max;
     }
 
     // Allow approval to happen after initialize function instead of bothering with predict address stuff right now
-    function start(IERC20Upgradeable _dummyToken, uint256 _poolId) external onlyAdmin {
+    function start(IERC20Upgradeable _dummyToken, uint256 _poolId) external onlyOwner {
         require(mainChefPoolId == type(uint256).max, "Already initialized");
 
         uint256 callerBalance = _dummyToken.balanceOf(msg.sender);
@@ -174,12 +162,9 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         return mainChef.poolInfo(mainChefPoolId);
     }
 
-    function owner() external view override returns (address) {
-        return treasury;
-    }
-
     function isAdmin(address account) external view returns (bool) {
-        return hasRole(ADMIN_ROLE, account);
+        //return hasRole(ADMIN_ROLE, account);
+        return false;
     }
 
     function yieldBooster() external view override returns (address) {
@@ -378,7 +363,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
     /****************** ADMIN FUNCTIONS ******************/
     /********************************************************/
 
-    function withdrawFromPool(IERC20Upgradeable _dummyToken) external onlyAdmin {
+    function withdrawFromPool(IERC20Upgradeable _dummyToken) external onlyOwner {
         ArbidexPoolUserInfo memory poolInfo = mainChef.userInfo(mainChefPoolId, address(this));
         if (poolInfo.amount > 0) {
             mainChef.withdraw(mainChefPoolId, poolInfo.amount);
@@ -391,7 +376,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
      *
      * Must only be called by the owner
      */
-    function setYieldBooster(IYieldBooster yieldBooster_) external onlyAdmin {
+    function setYieldBooster(IYieldBooster yieldBooster_) external onlyOwner {
         require(address(yieldBooster_) != address(0), "setYieldBooster: cannot be set to zero address");
         emit SetYieldBooster(address(_yieldBooster), address(yieldBooster_));
         _yieldBooster = yieldBooster_;
@@ -402,7 +387,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
      *
      * Must only be called by the owner
      */
-    function setEmergencyUnlock(bool emergencyUnlock_) external onlyAdmin {
+    function setEmergencyUnlock(bool emergencyUnlock_) external onlyOwner {
         emergencyUnlock = emergencyUnlock_;
         emit SetEmergencyUnlock(emergencyUnlock);
     }
@@ -413,7 +398,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
      *
      * Must only be called by the owner
      */
-    function add(INFTPool nftPool, uint256 allocPoint, bool withUpdate) external onlyAdmin {
+    function add(INFTPool nftPool, uint256 allocPoint, bool withUpdate) external onlyOwner {
         address poolAddress = address(nftPool);
         require(!_pools.contains(poolAddress), "add: pool already exists");
 
@@ -453,7 +438,7 @@ contract ChefRamsey is AccessControlUpgradeable, IChefRamsey {
         address poolAddress,
         uint256 allocPoint,
         bool withUpdate
-    ) external validatePool(poolAddress) onlyAdmin {
+    ) external validatePool(poolAddress) onlyOwner {
         PoolInfo storage pool = _poolInfo[poolAddress];
         uint256 prevAllocPoint = pool.allocPoint;
 
