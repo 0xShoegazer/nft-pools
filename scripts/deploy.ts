@@ -47,15 +47,22 @@ const ARX_USDC_NFTPOOL_MANAGER = '0xafC80d286713706297f01aE5c1DeD28683df826d';
 const WETH_USDC_NFTPOOL = '0xB98ced1fab671Ac55562F28d0E40af0BDDeE4065';
 const WETH_USDC_REWARD_MANAGER = '0xcA7ea1d7B85B984aF228D7210ba7B9e9b8cBEDcb';
 
+/**
+ * FINAL SHOW
+ */
+
+const BOOST_DEEZ = '';
+const RAMSEY_DEEZ = '';
+
 async function main() {
   const signer = (await ethers.getSigners())[0];
   //
   // The flow
   // const oldRamsey = await ethers.getContractAt('ChefRamsey', OLD_CHEF_RAMSEY_ADDRESS, signer);
   // oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS);
-  // const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
-  // await sleepWait();
-  // const chefRamsey = await deployRamsey(BOOST, signer);
+  const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
+  await sleepWait();
+  const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, BOOST, signer);
   // await sleepWait();
   // const chefRamsey = await ethers.getContractAt('ChefRamsey', RAMSEY, signer);
   // const dummyToken = getERC20WithSigner(DUMMY_TOKEN_ADDRESS, signer);

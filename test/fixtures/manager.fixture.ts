@@ -44,7 +44,7 @@ export async function awesomeFixture() {
   const randomAccount = (await ethers.getSigners())[2];
 
   const yieldBoooster = await deployYieldBooster(xARX_ADDRESS);
-  const chefRamsey = await deployRamsey(yieldBoooster.address, signer);
+  const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster.address, signer);
   // Pool creation setup
   const rewardManager = await deployGlobalRewardManager(ARBIDEX_TREASURY, signer);
   const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);

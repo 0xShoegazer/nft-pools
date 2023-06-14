@@ -63,8 +63,8 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
         _;
     }
 
-    modifier onlyOwnerOrOperator() {
-        require(_unlockOperators.contains(msg.sender) || msg.sender == owner(), "Not permitted");
+    modifier onlyTreasury() {
+        require(msg.sender == treasury, "Only treasury");
         _;
     }
 
@@ -74,6 +74,9 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
     }
 
     function initialize(IArbidexMasterChef _chef, address _treasury, IYieldBooster _boost) public initializer {
+        require(_treasury != address(0), "Treasury not provided");
+        require(address(_chef) != address(0), "Old chef not provided");
+
         __Ownable_init();
 
         mainChef = _chef;
@@ -367,14 +370,6 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
     /****************** ADMIN FUNCTIONS ******************/
     /********************************************************/
 
-    function withdrawFromPool(IERC20Upgradeable _dummyToken) external onlyOwner {
-        ArbidexPoolUserInfo memory poolInfo = mainChef.userInfo(mainChefPoolId, address(this));
-        if (poolInfo.amount > 0) {
-            mainChef.withdraw(mainChefPoolId, poolInfo.amount);
-            _dummyToken.safeTransfer(_msgSender(), _dummyToken.balanceOf(address(this)));
-        }
-    }
-
     /**
      * @dev Set YieldBooster contract's address
      *
@@ -466,5 +461,24 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
         }
 
         emit PoolSet(poolAddress, allocPoint);
+    }
+
+    /// @dev Helper for migrating to new chef but keep old chef state for dummy pool intact
+    function withdrawFromPool(IERC20Upgradeable _dummyToken) external onlyOwner {
+        ArbidexPoolUserInfo memory poolInfo = mainChef.userInfo(mainChefPoolId, address(this));
+        if (poolInfo.amount > 0) {
+            mainChef.withdraw(mainChefPoolId, poolInfo.amount);
+            _dummyToken.safeTransfer(_msgSender(), _dummyToken.balanceOf(address(this)));
+        }
+    }
+
+    // ============================== TREASURY =============================== //
+
+    function addUnlockOperator(address account) external onlyTreasury {
+        _unlockOperators.add(account);
+    }
+
+    function removeUnlockOperator(address account) external onlyTreasury {
+        _unlockOperators.remove(account);
     }
 }

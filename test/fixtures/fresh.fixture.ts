@@ -49,7 +49,7 @@ export async function freshFixture() {
   const oldRamsey = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
 
   const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
-  const chefRamsey = await deployRamsey(yieldBooster.address, signer);
+  const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBooster.address, signer);
   const dummyToken = getERC20WithSigner(DUMMY_TOKEN_ADDRESS, signer);
 
   // Migration flow
@@ -57,7 +57,7 @@ export async function freshFixture() {
     oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS as any),
     dummyToken.approve(chefRamsey.address, MAX_UINT256),
     deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS),
-    deployRewardManager(ARBIDEX_TREASURY),
+    deployRewardManager(ARBIDEX_TREASURY, signer),
   ]);
 
   await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);

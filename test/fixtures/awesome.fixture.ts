@@ -2,7 +2,6 @@ import {
   ARBIDEX_CHEF_ADDRESS,
   ARBIDEX_TREASURY,
   ARX_ADDRESS,
-  CHEF_RAMSEY_ADDRESS,
   DEV_ACCOUNT,
   xARX_ADDRESS,
 } from '../../scripts/constants';
@@ -12,12 +11,10 @@ import {
   deployGlobalRewardManager,
   deployPoolFactory,
   deployRamsey,
-  deployRewardManager,
   deployYieldBooster,
   getERC20WithSigner,
 } from '../../scripts/utils';
 import { xPools } from '../../scripts/xPools';
-import { RAMSEY_ABI } from '../abis/chef-ramsey-abi';
 import { Contract } from 'ethers';
 import { parseUnits } from 'ethers/lib/utils';
 import { getNFTPool, giveTokenBalanceFor } from '../utils';
@@ -44,7 +41,7 @@ export async function awesomeFixture() {
 
   const randomAccount = (await ethers.getSigners())[2];
   const yieldBoooster = await deployYieldBooster(xARX_ADDRESS);
-  const chefRamsey = await deployRamsey(yieldBoooster.address, signer);
+  const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster.address, signer);
 
   // Pool creation setup
   const rewardManager = await deployGlobalRewardManager(ARBIDEX_TREASURY, signer);

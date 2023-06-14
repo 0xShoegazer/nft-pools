@@ -1,13 +1,13 @@
 import { ethers, upgrades } from 'hardhat';
-import { ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, CHEF_RAMSEY_ADDRESS, xARX_ADDRESS } from './constants';
+import { CHEF_RAMSEY_ADDRESS } from './constants';
 import { BigNumber, Contract } from 'ethers';
 import { MAX_UINT256 } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
 
-export async function deployRamsey(yieldBoooster: string, signer) {
+export async function deployRamsey(oldChef: string, treasury: string, yieldBoooster: string, signer) {
   const factory = await ethers.getContractFactory('ChefRamsey', signer);
-  const instance = await upgrades.deployProxy(factory, [ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster]);
+  const instance = await upgrades.deployProxy(factory, [oldChef, treasury, yieldBoooster]);
   await instance.deployed();
   console.log(`ChefRamsey deployed at: ${instance.address}`);
 
@@ -58,8 +58,8 @@ export async function createPool(
   return poolAddress;
 }
 
-export async function addPoolToChef(nftPoolAddress: string, allocationPoints: number, signer) {
-  const chef = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
+export async function addPoolToChef(ramsey: string, nftPoolAddress: string, allocationPoints: number, signer) {
+  const chef = await ethers.getContractAt('ChefRamsey', ramsey, signer);
   await chef.add(nftPoolAddress, allocationPoints, true);
   console.log(`New pool added to chef`);
 }
