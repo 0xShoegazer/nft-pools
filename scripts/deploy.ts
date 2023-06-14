@@ -88,36 +88,7 @@ async function main() {
   //   signer
   // );
 
-  // const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
-  // await sleepWait();
-  // const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;
-  // const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
-  // const rewardManager = await ethers.getContractAt('PoolRewardManager', ARX_USDC_NFTPOOL_MANAGER, signer);
-  // const nftPoolAddress = ARX_USDC_NFTPOOL;
-  // await rewardManager.initializePool(nftPoolAddress);
-  // await sleepWait();
-  // // Need rewardManager init before creating positions
-  // console.log('Adding pool to chef..');
-  // await chefRamsey.add(nftPoolAddress, 1000, true);
-
-  // console.log(formatEther(parseUnits('0.005').mul(ONE_DAY_SECONDS)));
-  // await addRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.005'), signer);
-  // await updateRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.0001'), signer);
-
-  // const wethUsdcRewardManager = await deployPoolRewardManagerUpgradeable(ARBIDEX_TREASURY, signer);
-  // await sleepWait();
-  // const wethUsdcPoolAddress = await createPool(
-  //   FACTORY,
-  //   xPools.WETH_USDC.lpPoolAddress,
-  //   wethUsdcRewardManager.address,
-  //   signer
-  // );
-  // await sleepWait();
-  // Need rewardManager init before creating positions
-  // console.log('Adding pool to chef..');
-  // await chefRamsey.add(WETH_USDC_NFTPOOL, 1000, true);
-  // const rewardManager = await ethers.getContractAt('PoolRewardManager', WETH_USDC_REWARD_MANAGER, signer);
-  // await rewardManager.initializePool(WETH_USDC_NFTPOOL);
+  // await addRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.01'), signer);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

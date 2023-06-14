@@ -32,7 +32,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     event RewardTokenAdded(address token, uint256 sharesPerSecond);
     event RewardTokenUpdated(address token, uint256 sharesPerSecond);
     event RewardTokenRemoved(address token);
-    event RewardTokenHarvested(address token, uint256 amount);
+    event RewardTokenHarvested(address token, uint256 amount, uint256 tokenId);
 
     modifier onlyAdmin() {
         require(hasRole(ADMIN_ROLE, msg.sender), "Not an admin");
@@ -56,7 +56,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
         treasury = _treasury;
 
-        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(DEFAULT_ADMIN_ROLE, _treasury);
         _grantRole(ADMIN_ROLE, msg.sender);
         _grantRole(ADMIN_ROLE, _treasury);
     }
@@ -238,7 +238,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
             );
 
             if (pendingAmount > 0) {
-                emit RewardTokenHarvested(tokenAddress, pendingAmount);
+                emit RewardTokenHarvested(tokenAddress, pendingAmount, tokenId);
                 _safeRewardsTransfer(tokenAddress, recipient, pendingAmount);
             }
 
