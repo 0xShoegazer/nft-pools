@@ -647,8 +647,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _requireOnlyApprovedOrOwnerOf(tokenId);
 
         _updatePool();
-        _harvestPosition(tokenId, ERC721.ownerOf(tokenId));
-        _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId], tokenId);
+        // _harvestPosition(tokenId, ERC721.ownerOf(tokenId));
+        // _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId], tokenId);
     }
 
     /**
@@ -775,10 +775,11 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     function _updatePool() internal {
         uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier; // stash
 
+        // User current reward time before pool claims and updates it
         (, , uint256 currentLastRewardTime, , , , ) = master.getPoolInfo(address(this));
         rewardManager.updateRewardsPerShare(lpSupplyMultiplied, currentLastRewardTime);
 
-        // Returns the amount of main token. WETH is already transfered to this contract at this time
+        // Returns the amount of main token and WETH. Both amounts are transfered to this contract at this time
         (uint256 rewardAmount, uint256 amountWETH) = master.claimRewards();
 
         if (rewardAmount > 0) {

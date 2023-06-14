@@ -6,19 +6,13 @@ import {
   xARX_ADDRESS,
 } from '../../scripts/constants';
 import { ethers } from 'hardhat';
-import {
-  createPool,
-  deployPoolFactory,
-  deployPoolRewardManagerUpgradeable,
-  getERC20WithSigner,
-} from '../../scripts/utils';
+import { createPool, deployPoolFactory, deployRewardManager, getERC20WithSigner } from '../../scripts/utils';
 import { xPools } from '../../scripts/xPools';
 import { RAMSEY_ABI } from '../abis/chef-ramsey-abi';
 import { Contract } from 'ethers';
-import { USDC, WBTC } from '../../scripts/token';
 import { parseUnits } from 'ethers/lib/utils';
 import { getNFTPool, giveTokenBalanceFor } from '../utils';
-import { MAX_UINT256, UNIV2_POOL_BALANCEOF_SLOT, USDC_ARBITRUM_BALANCE_SLOT } from '../constants';
+import { MAX_UINT256, UNIV2_POOL_BALANCEOF_SLOT } from '../constants';
 import { impersonateAccount, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { OLD_CHEF_ABI } from '../abis/arbidex-chef-abi';
 
@@ -43,8 +37,7 @@ export async function awesomeFixture() {
   const randomAccount = (await ethers.getSigners())[2];
 
   // Pool creation setup
-  // const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
-  const rewardManager = await deployPoolRewardManagerUpgradeable(ARBIDEX_TREASURY, signer);
+  const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
   const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);
   const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
   // Needs pool address for init
@@ -61,6 +54,7 @@ export async function awesomeFixture() {
 
   // const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
   await nftPool.createPosition(userOneLpBalance.div(2), 0);
+  await nftPool.harvestPosition(1);
   const lpBalanceRandomAccount = userOneLpBalance.div(2);
   await lpInstance.transfer(randomAccount.address, lpBalanceRandomAccount);
 
@@ -70,7 +64,6 @@ export async function awesomeFixture() {
     signer,
     nftPool,
     chefRamsey,
-    rewardToken: await getERC20WithSigner(WBTC, signer),
     tokenId: 1,
     ARXToken: await getERC20WithSigner(ARX_ADDRESS, signer),
     xARXToken: await getERC20WithSigner(xARX_ADDRESS, signer),

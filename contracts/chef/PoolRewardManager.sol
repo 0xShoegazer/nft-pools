@@ -103,33 +103,35 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         tokens = new address[](currentRewardTokenCount);
         rewardAmounts = new uint256[](currentRewardTokenCount);
 
+        if (currentRewardTokenCount == 0) {
+            return (tokens, rewardAmounts);
+        }
+
         // Stack too deep
         RewardToken memory currentReward;
         uint256 timeSinceLastReward = block.timestamp - lastRewardTime;
         uint256 positionAmount = positionAmountMultiplied;
         uint256 positionTokenId = tokenId;
-        uint256 currentRewardDebt;
         address tokenAddress;
-        uint256 accTokenPerShare;
+        uint256 currentAccTokenPerShare;
 
         for (uint256 i = 0; i < currentRewardTokenCount; ) {
             tokenAddress = _rewardTokenAddresses.at(i);
-            currentReward = _rewardTokens[tokenAddress];
-            accTokenPerShare = currentReward.accTokenPerShare;
             tokens[i] = tokenAddress;
 
+            currentReward = _rewardTokens[tokenAddress];
+            currentAccTokenPerShare = currentReward.accTokenPerShare;
+
             if (block.timestamp > lastRewardTime && lpSupplyWithMultiplier > 0) {
-                accTokenPerShare +=
+                // build up would be accumulated amount at this time
+                currentAccTokenPerShare +=
                     (timeSinceLastReward * currentReward.sharesPerSecond * currentReward.PRECISION_FACTOR) /
                     lpSupplyWithMultiplier;
 
-                // For readability
-                currentRewardDebt = positionRewardDebts[positionTokenId][tokenAddress];
-
                 rewardAmounts[i] =
-                    (positionAmount * accTokenPerShare) /
+                    (positionAmount * currentAccTokenPerShare) /
                     currentReward.PRECISION_FACTOR -
-                    currentRewardDebt;
+                    positionRewardDebts[positionTokenId][tokenAddress];
             } else {
                 rewardAmounts[i] = 0;
             }
@@ -223,11 +225,9 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     ) external onlyPool {
         uint256 currentRewardCount = getCurrentRewardCount();
 
-        if (currentRewardCount == 0) {
-            return;
-        }
+        if (currentRewardCount == 0) return;
 
-        require(recipient != address(0), "NFTPoolRewardManager: Zero address recipient");
+        require(recipient != address(0), "PoolRewardManager: Zero address recipient");
 
         RewardToken memory currentReward;
         uint256 pendingAmount;
@@ -242,6 +242,15 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
                 currentReward.PRECISION_FACTOR -
                 positionRewardDebts[tokenId][tokenAddress];
 
+            // update debt for current position amount and accPer
+            _updateDebtForToken(
+                tokenId,
+                tokenAddress,
+                positionAmountMultiplied,
+                currentReward.accTokenPerShare,
+                currentReward.PRECISION_FACTOR
+            );
+
             if (pendingAmount > 0) {
                 emit RewardTokenHarvested(tokenAddress, pendingAmount);
                 _safeRewardsTransfer(tokenAddress, recipient, pendingAmount);
@@ -253,108 +262,14 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         }
     }
 
-    // ==================================== HOOKS ====================================== //
-
-    // Before continuing the process of updating/creating a position
-    // _updatePool() item
-    function beforePositionUpdate(
-        uint256 lastRewardTime,
-        uint256 lpSupplyMultiplied,
-        uint256 positionAmountBeforeUpdateMultiplied,
-        address recipient,
-        uint256 tokenId
-    ) external onlyPool {
-        _updateRewardShares(lastRewardTime, lpSupplyMultiplied);
-        _harvestPendingRewards(positionAmountBeforeUpdateMultiplied, recipient, tokenId);
-    }
-
-    // Position deposit amount and total deposits have been updated at this point
-    function afterPositionUpdate(uint256 positionAmountAfterUpdateMultiplied, uint256 tokenId) external onlyPool {
-        _updatePositionRewardDebts(positionAmountAfterUpdateMultiplied, tokenId);
-    }
-
-    function _updateRewardShares(uint256 lastRewardTime, uint256 lpSupplyMultiplied) internal {
-        uint256 currentRewardCount = getCurrentRewardCount();
-
-        if (currentRewardCount == 0 || lpSupplyMultiplied == 0) return;
-
-        uint256 currentDuration = block.timestamp - lastRewardTime;
-        uint256 rewardAmountForDuration;
-        uint256 accTokenPerShare;
-        address tokenAddress;
-
-        for (uint256 i = 0; i < currentRewardCount; i++) {
-            tokenAddress = _rewardTokenAddresses.at(i);
-            RewardToken storage reward = _rewardTokens[tokenAddress];
-
-            rewardAmountForDuration = currentDuration * reward.sharesPerSecond;
-            accTokenPerShare = (rewardAmountForDuration * reward.PRECISION_FACTOR) / lpSupplyMultiplied;
-
-            reward.accTokenPerShare += accTokenPerShare;
-        }
-    }
-
-    function _harvestPendingRewards(
-        uint256 positionAmountBeforeUpdateMultiplied,
-        address recipient,
-        uint256 tokenId
+    function _updateDebtForToken(
+        uint256 tokenId,
+        address tokenAddress,
+        uint256 positionsAmount,
+        uint256 accTokenPerShare,
+        uint256 precision
     ) internal {
-        uint256 currentRewardCount = getCurrentRewardCount();
-
-        if (currentRewardCount == 0) {
-            return;
-        }
-
-        require(recipient != address(0), "NFTPoolRewardManager: Zero address recipient");
-
-        RewardToken memory currentReward;
-        uint256 pendingAmount;
-        address tokenAddress;
-
-        for (uint256 i = 0; i < currentRewardCount; ) {
-            tokenAddress = _rewardTokenAddresses.at(i);
-            currentReward = _rewardTokens[tokenAddress];
-
-            pendingAmount =
-                (positionAmountBeforeUpdateMultiplied * currentReward.accTokenPerShare) /
-                currentReward.PRECISION_FACTOR -
-                positionRewardDebts[tokenId][tokenAddress];
-
-            if (pendingAmount > 0) {
-                emit RewardTokenHarvested(tokenAddress, pendingAmount);
-                _safeRewardsTransfer(tokenAddress, recipient, pendingAmount);
-            }
-
-            unchecked {
-                ++i;
-            }
-        }
-    }
-
-    function _updatePositionRewardDebts(uint256 positionAmountAfterUpdateMultiplied, uint256 tokenId) internal {
-        uint256 currentRewardCount = getCurrentRewardCount();
-
-        if (currentRewardCount == 0) {
-            return;
-        }
-
-        RewardToken memory currentReward;
-        // uint256 currentDuration = block.timestamp - lastRewardTime;
-        address tokenAddress;
-        // uint256 rewardAmountForDuration;
-        // uint256 adjustedTokenPerShare;
-
-        for (uint256 i = 0; i < currentRewardCount; ) {
-            tokenAddress = _rewardTokenAddresses.at(i);
-
-            positionRewardDebts[tokenId][tokenAddress] =
-                (positionAmountAfterUpdateMultiplied * currentReward.accTokenPerShare) /
-                currentReward.PRECISION_FACTOR;
-
-            unchecked {
-                ++i;
-            }
-        }
+        positionRewardDebts[tokenId][tokenAddress] = (positionsAmount * accTokenPerShare) / precision;
     }
 
     // ==================================== ADMIN ====================================== //

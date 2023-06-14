@@ -8,7 +8,7 @@ import { ONE_DAY_SECONDS, ONE_E_18_BN, TEN_POW_18_BN, USDC_BALANCEOF_SLOT, ZERO_
 import { USDC, WBTC, WETH } from '../scripts/token';
 import { awesomeFixture } from './fixtures/awesome.fixture';
 import { BigNumber } from 'ethers';
-import { getAccessControlRevertString, getOneToThePowerOf, giveTokenBalanceFor } from './utils';
+import { getAccessControlRevertString, giveTokenBalanceFor } from './utils';
 
 describe('Reward manager', () => {
   describe('adding rewards', () => {
