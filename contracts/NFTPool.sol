@@ -128,7 +128,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * @dev Check if caller has operator rights
      */
     function _requireOnlyOwner() internal view {
-        require(master.isAdmin(msg.sender), "FORBIDDEN");
+        require(master.isUnlockOperator(msg.sender), "FORBIDDEN");
         // onlyOwner: caller is not the owner
     }
 

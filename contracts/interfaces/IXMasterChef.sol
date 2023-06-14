@@ -12,6 +12,8 @@ interface IXMasterChef {
 
     function emergencyUnlock() external view returns (bool);
 
+    function isUnlockOperator(address) external view returns (bool);
+
     function getPoolInfo(
         address _poolAddress
     )

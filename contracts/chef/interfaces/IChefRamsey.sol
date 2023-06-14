@@ -10,6 +10,8 @@ interface IChefRamsey {
 
     function emergencyUnlock() external view returns (bool);
 
+    function isUnlockOperator(address) external view returns (bool);
+
     function getPoolInfo(
         address _poolAddress
     )
@@ -26,6 +28,4 @@ interface IChefRamsey {
         );
 
     function claimRewards() external returns (uint256 rewardAmount, uint256 amountWETH);
-
-    function isAdmin(address) external view returns (bool);
 }

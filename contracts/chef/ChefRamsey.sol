@@ -36,6 +36,7 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
     mapping(address => PoolInfo) private _poolInfo; // Pools' information
     EnumerableSetUpgradeable.AddressSet private _pools; // All existing pool addresses
     EnumerableSetUpgradeable.AddressSet private _activePools; // Only contains pool addresses w/ allocPoints > 0
+    EnumerableSetUpgradeable.AddressSet private _unlockOperators; // Addresses allowed to forcibly unlock locked spNFTs
 
     uint256 public totalAllocPoint; // Total allocation points. Must be the sum of all allocation points in all pools
     uint256 public startTime; // The time at which farming starts
@@ -62,6 +63,11 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
         _;
     }
 
+    modifier onlyOwnerOrOperator() {
+        require(_unlockOperators.contains(msg.sender) || msg.sender == owner(), "Not permitted");
+        _;
+    }
+
     /// @custom:oz-upgrades-unsafe-allow constructor
     constructor() {
         _disableInitializers();
@@ -76,9 +82,8 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
         treasury = _treasury;
         _yieldBooster = _boost;
 
-        // _grantRole(DEFAULT_ADMIN_ROLE, _treasury);
-        // _grantRole(ADMIN_ROLE, _msgSender());
-        // _grantRole(ADMIN_ROLE, _treasury);
+        _unlockOperators.add(_treasury);
+        _unlockOperators.add(msg.sender);
 
         // Sentinel value used to checked in start function
         mainChefPoolId = type(uint256).max;
@@ -123,6 +128,10 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
     /****************** PUBLIC VIEWS ******************/
     /**************************************************/
 
+    function isUnlockOperator(address account) external view override returns (bool) {
+        return account == owner() || _unlockOperators.contains(account);
+    }
+
     function mainToken() external view override returns (address) {
         return address(_mainToken);
     }
@@ -160,11 +169,6 @@ contract ChefRamsey is OwnableUpgradeable, IChefRamsey {
 
     function getMainChefPoolInfo() public view returns (ArbidexPoolInfo memory) {
         return mainChef.poolInfo(mainChefPoolId);
-    }
-
-    function isAdmin(address account) external view returns (bool) {
-        //return hasRole(ADMIN_ROLE, account);
-        return false;
     }
 
     function yieldBooster() external view override returns (address) {
