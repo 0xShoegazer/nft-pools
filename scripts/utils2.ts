@@ -1,9 +1,14 @@
 import { ethers } from 'hardhat';
 import { createPool, deployRewardManager, sleepWait } from './utils';
 
-export async function runAddPoolFlow(lpPoolAddress: string, treasury: string, poolFactory: string, chef: string) {
-  const signer = (await ethers.getSigners())[0];
-
+export async function runAddPoolFlow(
+  lpPoolAddress: string,
+  treasury: string,
+  poolFactory: string,
+  chef: string,
+  poolAllocPoints: number,
+  signer
+) {
   const factory = await ethers.getContractAt('NFTPoolFactory', poolFactory, signer);
   const chefRamsey = await ethers.getContractAt('ChefRamsey', chef, signer);
 
@@ -14,9 +19,9 @@ export async function runAddPoolFlow(lpPoolAddress: string, treasury: string, po
   const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
   await sleepWait();
   console.log('Initializing reward manager..');
-  await rewardManager.initialize(nftPoolAddress);
+  await rewardManager.initializePool(nftPoolAddress);
   await sleepWait();
   // Need rewardManager init before creating positions
   console.log('Adding pool to chef..');
-  await chefRamsey.add(nftPoolAddress, 500, true);
+  await chefRamsey.add(nftPoolAddress, poolAllocPoints, true);
 }

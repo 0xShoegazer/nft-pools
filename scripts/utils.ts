@@ -7,12 +7,7 @@ import { ERC20_ABI } from '../test/abis/erc20-abi';
 
 export async function deployRamsey(yieldBoooster: string, signer) {
   const factory = await ethers.getContractFactory('ChefRamsey', signer);
-  const instance = await upgrades.deployProxy(factory, [
-    xARX_ADDRESS,
-    ARBIDEX_CHEF_ADDRESS,
-    ARBIDEX_TREASURY,
-    yieldBoooster,
-  ]);
+  const instance = await upgrades.deployProxy(factory, [ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster]);
   await instance.deployed();
   console.log(`ChefRamsey deployed at: ${instance.address}`);
 

@@ -4,7 +4,6 @@ import {
   addRewardToken,
   createPool,
   deployPoolFactory,
-  deployPoolRewardManagerUpgradeable,
   deployRamsey,
   deployRewardManager,
   deployYieldBooster,
@@ -20,6 +19,7 @@ import {
   DUMMY_POOL_ID,
   DUMMY_TOKEN_ADDRESS,
   NFT_POOL_FACTORY,
+  OLD_CHEF_RAMSEY_ADDRESS,
   POOLS,
   xARX_ADDRESS,
 } from './constants';
@@ -38,35 +38,57 @@ import { formatEther, parseUnits } from 'ethers/lib/utils';
 // const OLD_ARX_USDC_NFTPOOL = '0xe1e99841Ea929671f403B219e9Eb75d69944A6d5';
 // const OLD_ARX_USDC_NFTPOOL_MANAGER = '0xc4E3b4690273ca3f482a4FeEc47F7d6b68aF927e';
 
-const BOOST = '0x86AC5fff31c84dC9Ba4D824A5108F2a4b6C9814F';
-const RAMSEY = '0xc82E22A6fe051b8130916bebB09178c589Dc2257';
-const FACTORY = '0x5aEABA6F05C5879dF2F90fCC6780177ac13DD747';
-const ARX_USDC_NFTPOOL = '0x9C3330AaA41B2741E80ebF6a3d00c33996A6c7b0';
-const ARX_USDC_NFTPOOL_MANAGER = '0x15fa42F318a0D123fce04B747DE6DF9B122Cc107';
+const BOOST = '0xE4245fEdF254141E00d8A4fFF42Dce306021746D';
+const RAMSEY = '0x6f3dc1DB0635a320e6ca4572273b496B9775822C';
+const FACTORY = '0xD5398976eBf2573d553229fBC5841Ff1975A9c49';
+const ARX_USDC_NFTPOOL = '0x3C2E1eD5996BFaC1104D9ef1d61EA9f7D75D48F4';
+const ARX_USDC_NFTPOOL_MANAGER = '0xafC80d286713706297f01aE5c1DeD28683df826d';
 
-const WETH_USDC_NFTPOOL = '0x35602b2C36D61A1D7Fe52ced73fe850798E5E18D';
-const WETH_USDC_REWARD_MANAGER = '0x2f726704b8dCE14e6eB198EF1a4AcdBB63B85F05';
+const WETH_USDC_NFTPOOL = '0xB98ced1fab671Ac55562F28d0E40af0BDDeE4065';
+const WETH_USDC_REWARD_MANAGER = '0xcA7ea1d7B85B984aF228D7210ba7B9e9b8cBEDcb';
 
 async function main() {
   const signer = (await ethers.getSigners())[0];
   //
-  // await runAddPoolFlow(xPools.WETH_USDC.lpPoolAddress, ARBIDEX_TREASURY, NFT_POOL_FACTORY, CHEF_RAMSEY_ADDRESS);
-  // console.log(formatEther(parseUnits('0.005').mul(ONE_DAY_SECONDS)));
-  // await addRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.005'), signer);
-  // await updateRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.0001'), signer);
-  //
-
-  // const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
-  // const chefRamsey = await deployRamsey(yieldBooster.address, signer);
-  // const chefRamsey = await ethers.getContractAt('ChefRamsey', RAMSEY);
-  // const oldRamsey = await ethers.getContractAt('ChefRamsey', CHEF_RAMSEY_ADDRESS, signer);
+  // The flow
+  // const oldRamsey = await ethers.getContractAt('ChefRamsey', OLD_CHEF_RAMSEY_ADDRESS, signer);
   // oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS);
+  // const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
+  // await sleepWait();
+  // const chefRamsey = await deployRamsey(BOOST, signer);
+  // await sleepWait();
+  // const chefRamsey = await ethers.getContractAt('ChefRamsey', RAMSEY, signer);
   // const dummyToken = getERC20WithSigner(DUMMY_TOKEN_ADDRESS, signer);
   // await dummyToken.approve(chefRamsey.address, MAX_UINT256);
+  // await sleepWait();
+  // console.log('Starting Ramsey..')
   // await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
+  // await sleepWait();
+
   // const factory = await deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS);
   // await sleepWait();
-  // const rewardManager = await deployPoolRewardManagerUpgradeable(ARBIDEX_TREASURY, signer);
+
+  // await runAddPoolFlow(
+  //   xPools.ARX_USDC.lpPoolAddress,
+  //   ARBIDEX_TREASURY,
+  //   factory.address,
+  //   chefRamsey.address,
+  //   xPools.ARX_USDC.initialChefAllocationPoints,
+  //   signer
+  // );
+
+  // await sleepWait();
+
+  // await runAddPoolFlow(
+  //   xPools.WETH_USDC.lpPoolAddress,
+  //   ARBIDEX_TREASURY,
+  //   factory.address,
+  //   chefRamsey.address,
+  //   xPools.WETH_USDC.initialChefAllocationPoints,
+  //   signer
+  // );
+
+  // const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
   // await sleepWait();
   // const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;
   // const nftPoolAddress = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
@@ -77,6 +99,10 @@ async function main() {
   // // Need rewardManager init before creating positions
   // console.log('Adding pool to chef..');
   // await chefRamsey.add(nftPoolAddress, 1000, true);
+
+  // console.log(formatEther(parseUnits('0.005').mul(ONE_DAY_SECONDS)));
+  // await addRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.005'), signer);
+  // await updateRewardToken(ARX_USDC_NFTPOOL_MANAGER, USDC, parseUnits('0.0001'), signer);
 
   // const wethUsdcRewardManager = await deployPoolRewardManagerUpgradeable(ARBIDEX_TREASURY, signer);
   // await sleepWait();
