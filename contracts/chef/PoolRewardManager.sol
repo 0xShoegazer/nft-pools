@@ -105,32 +105,33 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
         // Stack too deep
         RewardToken memory currentReward;
+        uint256 timeSinceLastReward = block.timestamp - lastRewardTime;
         uint256 positionAmount = positionAmountMultiplied;
         uint256 positionTokenId = tokenId;
-        uint256 rewardAmountForDuration;
-        uint256 adjustedTokenPerShare;
         uint256 currentRewardDebt;
         address tokenAddress;
-        uint256 timeSinceLastReward = block.timestamp - lastRewardTime;
+        uint256 accTokenPerShare;
 
         for (uint256 i = 0; i < currentRewardTokenCount; ) {
             tokenAddress = _rewardTokenAddresses.at(i);
             currentReward = _rewardTokens[tokenAddress];
+            accTokenPerShare = currentReward.accTokenPerShare;
             tokens[i] = tokenAddress;
 
             if (block.timestamp > lastRewardTime && lpSupplyWithMultiplier > 0) {
-                rewardAmountForDuration = timeSinceLastReward * currentReward.sharesPerSecond;
-
-                adjustedTokenPerShare =
-                    (rewardAmountForDuration * currentReward.PRECISION_FACTOR) /
+                accTokenPerShare +=
+                    (timeSinceLastReward * currentReward.sharesPerSecond * currentReward.PRECISION_FACTOR) /
                     lpSupplyWithMultiplier;
-                adjustedTokenPerShare = currentReward.accTokenPerShare + adjustedTokenPerShare;
 
+                // For readability
                 currentRewardDebt = positionRewardDebts[positionTokenId][tokenAddress];
+
                 rewardAmounts[i] =
-                    (positionAmount * adjustedTokenPerShare) /
+                    (positionAmount * accTokenPerShare) /
                     currentReward.PRECISION_FACTOR -
                     currentRewardDebt;
+            } else {
+                rewardAmounts[i] = 0;
             }
 
             unchecked {
@@ -159,18 +160,22 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         RewardToken memory currentReward;
         uint256 currentDuration = block.timestamp - lastRewardTime;
         address tokenAddress;
-        uint256 rewardAmountForDuration;
+        uint256 accTokenPerShare;
         uint256 adjustedTokenPerShare;
 
         for (uint256 i = 0; i < currentRewardCount; ) {
             tokenAddress = _rewardTokenAddresses.at(i);
             currentReward = _rewardTokens[tokenAddress];
+            accTokenPerShare = currentReward.accTokenPerShare;
 
-            rewardAmountForDuration = currentDuration * currentReward.sharesPerSecond;
-            adjustedTokenPerShare = (rewardAmountForDuration * currentReward.PRECISION_FACTOR) / lpSupplyMultiplied;
+            adjustedTokenPerShare =
+                (currentDuration * currentReward.sharesPerSecond * currentReward.PRECISION_FACTOR) /
+                lpSupplyMultiplied;
+
+            accTokenPerShare += adjustedTokenPerShare;
 
             positionRewardDebts[tokenId][tokenAddress] =
-                (positionAmountMultiplied * currentReward.accTokenPerShare) /
+                (positionAmountMultiplied * accTokenPerShare) /
                 currentReward.PRECISION_FACTOR;
 
             unchecked {

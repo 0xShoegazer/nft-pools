@@ -9,13 +9,14 @@ import {
   ONE_DAY_SECONDS,
   ONE_E_18_BN,
   TEN_POW_18_BN,
+  USDC_ARBITRUM_BALANCE_SLOT,
   USDC_BALANCEOF_SLOT,
   ZERO_ADDRESS,
 } from './constants';
 import { USDC, WBTC, WETH } from '../scripts/token';
 import { awesomeFixture } from './fixtures/awesome.fixture';
 import { BigNumber } from 'ethers';
-import { getAccessControlRevertString, getOneToThePowerOf, giveTokenBalanceFor } from './utils';
+import { getAccessControlRevertString, giveTokens, updateStorageSlot } from './utils';
 
 describe('Rewards', () => {
   describe('multiple positions reward debt', () => {
@@ -28,43 +29,75 @@ describe('Rewards', () => {
       // Create position for random
       // See if that nukes the other pending afterwards
 
+      const usdcToken = getERC20(USDC, signer);
+
+      // give contract reward amounts to distribute
+      await giveTokens(USDC, USDC_ARBITRUM_BALANCE_SLOT, rewardManager.address, parseUnits('1000'));
+
+      let usdcBalance = await usdcToken.balanceOf(rewardManager.address);
+      console.log('contract usdc balance: ' + formatEther(usdcBalance));
+      usdcBalance = await usdcToken.balanceOf(signer.address);
+      console.log('user 1 usdc balance: ' + formatEther(usdcBalance));
+      usdcBalance = await usdcToken.balanceOf(randomAccount.address);
+      console.log('user 2 usdc balance: ' + formatEther(usdcBalance));
+
       const rewardPerSecond = parseUnits('0.01');
-      const rewardToken = WBTC;
-      await rewardManager.addRewardToken(WBTC, rewardPerSecond);
+      const rewardToken = USDC;
+      await rewardManager.addRewardToken(USDC, rewardPerSecond);
 
       let debt = await rewardManager.positionRewardDebts(tokenId, rewardToken);
       console.log('current reward debt: ' + formatEther(debt));
 
       await time.increase(ONE_DAY_SECONDS);
-
+      console.log(`
+      `);
       console.log('ONE DAY LATER..');
-      let userOnePending = await nftPool.pendingAdditionalRewards(tokenId);
-      let amounts = userOnePending.rewardAmounts;
-      console.log('userOnePending before other deposit: ' + formatEther(amounts[0])); // 864.01
 
+      const userOneTokenId = tokenId;
+      const userTwoTokenId = 2; // we know this from test setup
+
+      let pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
+      console.log('user 1 before user 2 deposit: ' + formatEther(pendingRewards.rewardAmounts[0])); // 864.01
+
+      // do additional deposit
       await lpInstance.connect(randomAccount).approve(nftPool.address, MAX_UINT256);
       await nftPool.connect(randomAccount).createPosition(lpBalanceRandomAccount, 0);
-      const newTokenId = 2; // we know this from test setup
 
-      debt = await rewardManager.positionRewardDebts(newTokenId, rewardToken);
-      console.log('other reward debt after deposit: ' + formatEther(debt));
+      debt = await rewardManager.positionRewardDebts(userTwoTokenId, rewardToken);
+      console.log('user 2 reward debt after deposit: ' + formatEther(debt));
 
-      debt = await rewardManager.positionRewardDebts(newTokenId, rewardToken);
-      console.log('previous positions reward debt after deposit: ' + formatEther(debt));
+      debt = await rewardManager.positionRewardDebts(userOneTokenId, rewardToken);
+      console.log('user 1 reward debt after deposit: ' + formatEther(debt));
 
-      // userOnePending = await nftPool.pendingAdditionalRewards(tokenId);
-      // amounts = userOnePending.rewardAmounts;
-      // console.log('userOnePending after other deposit(immediately): ' + formatEther(amounts[0])); // 0.. fucked
+      pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
+      console.log('user 1 pending after user 2 deposit(immediately): ' + formatEther(pendingRewards.rewardAmounts[0])); // 0.. fucked
 
-      // Still fucked after changing function call order
+      pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
+      console.log('user 2 pending after their deposit(immediately): ' + formatEther(pendingRewards.rewardAmounts[0]));
 
-      // Deposit:
-      // update pool. updates reward per share and last reward time
-      // user pending are sentat that time ***
-      // reward debt is then updated after users total deposit and overall deposits are updated
+      console.log(`
+      `);
 
-      // pool claiming triggers lastRewardTime update in chef
-      // This needs to happen before any new user actions
+      usdcBalance = await usdcToken.balanceOf(rewardManager.address);
+      console.log('contract usdc balance: ' + formatEther(usdcBalance));
+      usdcBalance = await usdcToken.balanceOf(signer.address);
+      console.log('user 1 usdc balance: ' + formatEther(usdcBalance));
+      usdcBalance = await usdcToken.balanceOf(randomAccount.address);
+      console.log('user 2 usdc balance: ' + formatEther(usdcBalance));
+
+      await time.increase(ONE_DAY_SECONDS);
+      console.log(`
+      `);
+      console.log('ONE DAY LATER..');
+
+      pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
+      console.log('user 1 pending: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
+      console.log('user 2 pending: ' + formatEther(pendingRewards.rewardAmounts[0]));
+
+      // TODO: Need to fix order of events. update pool (accPers), harvest and position pending, then update debt
+
+      // test user alone in pool, withdraw, do they receive their tokens?
     });
   });
 });

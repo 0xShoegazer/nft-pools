@@ -1,6 +1,7 @@
 import { BigNumber, Contract, ethers } from 'ethers';
 import { parseEther } from 'ethers/lib/utils';
 import * as poolABI from '../artifacts/contracts/NFTPool.sol/NFTPool.json';
+import * as helpers from '@nomicfoundation/hardhat-network-helpers';
 
 export const keccak256 = ethers.utils.solidityKeccak256;
 
@@ -8,8 +9,11 @@ export function getNFTPool(address: string, signer) {
   return new Contract(address, poolABI.abi, signer);
 }
 
-export const prepStorageSlotWrite = (receiverAddress: string, storageSlot: number) => {
-  return ethers.utils.solidityKeccak256(
+/**
+ * mappings in solidity are laid out in storage are made up the lookup key hashed with the value at each key
+ */
+export const prepBalanceStorageSlotWrite = (receiverAddress: string, storageSlot: number) => {
+  return keccak256(
     ['uint256', 'uint256'],
     [receiverAddress, storageSlot] // key, slot - solidity mappings storage = keccak256(mapping key value, value at that key)
   );
@@ -19,6 +23,22 @@ export const toBytes32 = (bn: BigNumber) => {
   return ethers.utils.hexlify(ethers.utils.zeroPad(bn.toHexString(), 32));
 };
 
+export const updateStorageSlot = async (contractAddress: string, storageSlot, value) => {
+  await helpers.setStorageAt(contractAddress, storageSlot, value);
+  await helpers.mine(1);
+};
+
+export const giveTokens = async (
+  tokenAddress: string,
+  tokenBalanceOfStorageSlot: number,
+  receiverAddress: string,
+  amount: BigNumber
+) => {
+  const indexHash = prepBalanceStorageSlotWrite(receiverAddress, tokenBalanceOfStorageSlot);
+  await helpers.setStorageAt(tokenAddress, indexHash, toBytes32(amount).toString());
+  await helpers.mine(1);
+};
+
 export const setStorageAt = async (
   provider: ethers.providers.JsonRpcProvider,
   contractAddress: string,
@@ -26,7 +46,8 @@ export const setStorageAt = async (
   value: BigNumber
 ) => {
   await provider.send('hardhat_setStorageAt', [contractAddress, index, toBytes32(value).toString()]);
-  await provider.send('evm_mine', []); // Just mines to the next block
+  // await provider.send('evm_mine', []); // Just mines to the next block
+  await helpers.mine(1);
 };
 
 export const giveTokenBalanceFor = async (
@@ -36,7 +57,7 @@ export const giveTokenBalanceFor = async (
   storageSlot: number,
   amount: BigNumber
 ) => {
-  const index = prepStorageSlotWrite(addressToSet, storageSlot);
+  const index = prepBalanceStorageSlotWrite(addressToSet, storageSlot);
   await setStorageAt(provider, contractAddress, index, amount);
 };
 
@@ -45,18 +66,6 @@ export function getRandomBytes32() {
   const rand = Math.round(Math.random() * (values.length - 1));
 
   return ethers.utils.hexZeroPad(parseEther(values[rand]).toHexString(), 32);
-}
-
-export function getOneToThePowerOf(decimals: number) {
-  let one = '1';
-
-  let places = 0;
-  while (places <= decimals) {
-    one += '0';
-    places++;
-  }
-
-  return one;
 }
 
 /**

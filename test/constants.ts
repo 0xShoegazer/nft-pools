@@ -19,6 +19,7 @@ export const ZERO_BYTES_32 = toBytes32(parseEther('0'));
 // Removes need for a whole dex and swap setup just for test tokens
 export const BUSD_BALANCEOF_SLOT = 1;
 export const USDC_BALANCEOF_SLOT = 1;
+export const USDC_ARBITRUM_BALANCE_SLOT = 51;
 export const WBNB_BALANCEOF_SLOT = 3;
 
 export const UNIV2_POOL_BALANCEOF_SLOT = 1;
@@ -26,3 +27,5 @@ export const BAL_POOL_BALANCEOFSLOT = 0; // WeightedPool instance slot
 
 // Used in most of the contracts for AccessContol
 export const ADMIN_ROLE_HASH = keccak256(['string'], ['ADMIN_ROLE']);
+
+export const USDC_ARBITRUM_WHALE = '0x62383739d68dd0f844103db8dfb05a7eded5bbe6';

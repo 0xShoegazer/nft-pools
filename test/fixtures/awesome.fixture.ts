@@ -7,24 +7,18 @@ import {
 } from '../../scripts/constants';
 import { ethers } from 'hardhat';
 import {
-  addRewardToken,
-  approveTokens,
   createPool,
-  createPosition,
   deployPoolFactory,
   deployPoolRewardManagerUpgradeable,
-  deployRewardManager,
   getERC20WithSigner,
-  getTokenAllowance,
-  getTokenBalance,
 } from '../../scripts/utils';
 import { xPools } from '../../scripts/xPools';
 import { RAMSEY_ABI } from '../abis/chef-ramsey-abi';
 import { Contract } from 'ethers';
-import { WBTC } from '../../scripts/token';
+import { USDC, WBTC } from '../../scripts/token';
 import { parseUnits } from 'ethers/lib/utils';
 import { getNFTPool, giveTokenBalanceFor } from '../utils';
-import { MAX_UINT256, ONE_DAY_SECONDS, UNIV2_POOL_BALANCEOF_SLOT } from '../constants';
+import { MAX_UINT256, UNIV2_POOL_BALANCEOF_SLOT, USDC_ARBITRUM_BALANCE_SLOT } from '../constants';
 import { impersonateAccount, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { OLD_CHEF_ABI } from '../abis/arbidex-chef-abi';
 
@@ -47,14 +41,6 @@ export async function awesomeFixture() {
   );
 
   const randomAccount = (await ethers.getSigners())[2];
-
-  // await giveTokenBalanceFor(
-  //   ethers.provider,
-  //   lpPoolAddress,
-  //   randomAccount.address,
-  //   UNIV2_POOL_BALANCEOF_SLOT,
-  //   lpBalanceRandomAccount
-  // );
 
   // Pool creation setup
   // const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
