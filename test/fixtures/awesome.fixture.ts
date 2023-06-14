@@ -3,6 +3,7 @@ import {
   ARBIDEX_TREASURY,
   ARX_ADDRESS,
   CHEF_RAMSEY_ADDRESS,
+  DEV_ACCOUNT,
   xARX_ADDRESS,
 } from '../../scripts/constants';
 import { ethers } from 'hardhat';
@@ -17,10 +18,9 @@ import { impersonateAccount, setBalance } from '@nomicfoundation/hardhat-network
 import { OLD_CHEF_ABI } from '../abis/arbidex-chef-abi';
 
 export async function awesomeFixture() {
-  // Impersonate treasury for simplicity
-  await impersonateAccount(ARBIDEX_TREASURY);
-  const signer = await ethers.getSigner(ARBIDEX_TREASURY);
-  await setBalance(ARBIDEX_TREASURY, parseUnits('10000'));
+  await impersonateAccount(DEV_ACCOUNT);
+  const signer = await ethers.getSigner(DEV_ACCOUNT);
+  await setBalance(DEV_ACCOUNT, parseUnits('10000'));
 
   // Test LP pool
   const lpPoolAddress = xPools.ARX_USDC.lpPoolAddress;

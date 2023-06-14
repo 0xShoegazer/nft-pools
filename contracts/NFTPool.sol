@@ -641,8 +641,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _requireOnlyApprovedOrOwnerOf(tokenId);
 
         _updatePool();
-        // _harvestPosition(tokenId, ERC721.ownerOf(tokenId));
-        // _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId], tokenId);
+        _harvestPosition(tokenId, ERC721.ownerOf(tokenId));
+        _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId], tokenId);
     }
 
     /**
