@@ -182,6 +182,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
         if (currentRewardCount == 0 || lpSupplyMultiplied == 0) return;
 
+        RewardToken storage reward;
         uint256 currentDuration = block.timestamp - lastRewardTime;
         uint256 rewardAmountForDuration;
         uint256 accTokenPerShare;
@@ -189,7 +190,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
         for (uint256 i = 0; i < currentRewardCount; i++) {
             tokenAddress = _rewardTokenAddresses.at(i);
-            RewardToken storage reward = _rewardTokens[tokenAddress];
+            reward = _rewardTokens[tokenAddress];
 
             rewardAmountForDuration = currentDuration * reward.sharesPerSecond;
             accTokenPerShare = (rewardAmountForDuration * reward.PRECISION_FACTOR) / lpSupplyMultiplied;
@@ -229,13 +230,9 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
                 positionRewardDebts[tokenId][tokenAddress];
 
             // update debt for current position amount and accPer
-            _updateDebtForToken(
-                tokenId,
-                tokenAddress,
-                positionAmountMultiplied,
-                currentReward.accTokenPerShare,
-                currentReward.PRECISION_FACTOR
-            );
+            positionRewardDebts[tokenId][tokenAddress] =
+                (positionAmountMultiplied * currentReward.accTokenPerShare) /
+                currentReward.PRECISION_FACTOR;
 
             if (pendingAmount > 0) {
                 emit RewardTokenHarvested(tokenAddress, pendingAmount, tokenId);
@@ -246,16 +243,6 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
                 ++i;
             }
         }
-    }
-
-    function _updateDebtForToken(
-        uint256 tokenId,
-        address tokenAddress,
-        uint256 positionsAmount,
-        uint256 accTokenPerShare,
-        uint256 precision
-    ) internal {
-        positionRewardDebts[tokenId][tokenAddress] = (positionsAmount * accTokenPerShare) / precision;
     }
 
     // ==================================== ADMIN ====================================== //
