@@ -110,17 +110,20 @@ describe('Rewards', () => {
       await nftPool.connect(signer).harvestPosition(tokenId);
       await time.increase(1);
 
-      // check balances
-      const usdcToken = getERC20(USDC, signer);
-      let balance = await usdcToken.balanceOf(signer.address);
-      console.log('user 1 usdc after claim: ' + formatEther(balance));
-      balance = await usdcToken.balanceOf(rewardManager.address);
-      console.log('contract usdc after claim: ' + formatEther(balance));
+      debt = await rewardManager.positionRewardDebts(userOneTokenId, rewardToken);
+      console.log('user 1 reward debt after claim: ' + formatEther(debt));
 
-      pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
-      console.log('user 1 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
-      pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
-      console.log('user 2 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      // check balances
+      // const usdcToken = getERC20(USDC, signer);
+      // let balance = await usdcToken.balanceOf(signer.address);
+      // console.log('user 1 usdc after claim: ' + formatEther(balance));
+      // balance = await usdcToken.balanceOf(rewardManager.address);
+      // console.log('contract usdc after claim: ' + formatEther(balance));
+
+      // pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
+      // console.log('user 1 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      // pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
+      // console.log('user 2 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
 
       console.log(`
       `);
@@ -128,15 +131,18 @@ describe('Rewards', () => {
       await nftPool.connect(randomAccount).harvestPosition(userTwoTokenId);
       await time.increase(1);
 
-      pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
-      console.log('user 1 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
-      pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
-      console.log('user 2 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      debt = await rewardManager.positionRewardDebts(userTwoTokenId, rewardToken);
+      console.log('user 2 reward debt after claim: ' + formatEther(debt));
 
-      balance = await usdcToken.balanceOf(randomAccount.address);
-      console.log('user 2 usdc after claim: ' + formatEther(balance));
-      balance = await usdcToken.balanceOf(rewardManager.address);
-      console.log('contract usdc after claim: ' + formatEther(balance));
+      // pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
+      // console.log('user 1 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      // pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
+      // console.log('user 2 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
+
+      // balance = await usdcToken.balanceOf(randomAccount.address);
+      // console.log('user 2 usdc after claim: ' + formatEther(balance));
+      // balance = await usdcToken.balanceOf(rewardManager.address);
+      // console.log('contract usdc after claim: ' + formatEther(balance));
 
       // check reward debt
     });
