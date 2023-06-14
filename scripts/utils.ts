@@ -23,6 +23,15 @@ export async function deployRewardManager(treasury: string, signer) {
   return instance;
 }
 
+export async function deployGolbalRewardManager(treasury: string, signer) {
+  const factory = await ethers.getContractFactory('RewardManager', signer);
+  const instance = await upgrades.deployProxy(factory, [treasury]);
+  await instance.deployed();
+  console.log(`RewardManager deployed at: ${instance.address}`);
+
+  return instance;
+}
+
 export async function deployPoolFactory(master: string, mainToken: string, xToken: string) {
   const factory = await ethers.getContractFactory('NFTPoolFactory');
   const instance = await factory.deploy(master, mainToken, xToken);
