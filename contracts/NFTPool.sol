@@ -553,13 +553,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _lpSupply = _lpSupply.add(amount);
         _lpSupplyWithMultiplier = _lpSupplyWithMultiplier.add(amountWithMultiplier);
 
-        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
-        rewardManager.updatePositionRewardDebts(
-            _lpSupplyWithMultiplier,
-            amountWithMultiplier,
-            lastRewardTime,
-            currentTokenId
-        );
+        rewardManager.updatePositionRewardDebts(amountWithMultiplier, currentTokenId);
 
         emit CreatePosition(currentTokenId, amount, lockDuration);
     }
@@ -880,8 +874,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         position.rewardDebt = amountWithMultiplier.mul(_accRewardsPerShare).div(1e18);
         position.rewardDebtWETH = amountWithMultiplier.mul(_accRewardsPerShareWETH).div(1e18);
 
-        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
-        rewardManager.updatePositionRewardDebts(lpSupplyMultiplied, lastRewardTime, amountWithMultiplier, tokenId);
+        rewardManager.updatePositionRewardDebts(amountWithMultiplier, tokenId);
     }
 
     /**

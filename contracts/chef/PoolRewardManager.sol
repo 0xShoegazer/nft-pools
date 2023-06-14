@@ -143,16 +143,11 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     }
 
     /**
-     * @dev Update reward debt for any/all additional reward tokens
+     * @dev Update reward debt for any/all additional reward tokens.
+     * Pool calls this each time _updateBoostMultiplierInfoAndRewardDebt() is called.
      * Only callable by pool
-     * Pool calls this each time _updateBoostMultiplierInfoAndRewardDebt() is called
      */
-    function updatePositionRewardDebts(
-        uint256 lpSupplyMultiplied,
-        uint256 positionAmountMultiplied,
-        uint256 lastRewardTime,
-        uint256 tokenId
-    ) external onlyPool {
+    function updatePositionRewardDebts(uint256 positionAmountMultiplied, uint256 tokenId) external onlyPool {
         uint256 currentRewardCount = getCurrentRewardCount();
 
         if (currentRewardCount == 0) {
@@ -160,24 +155,15 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         }
 
         RewardToken memory currentReward;
-        uint256 currentDuration = block.timestamp - lastRewardTime;
         address tokenAddress;
-        uint256 accTokenPerShare;
-        uint256 adjustedTokenPerShare;
 
         for (uint256 i = 0; i < currentRewardCount; ) {
             tokenAddress = _rewardTokenAddresses.at(i);
             currentReward = _rewardTokens[tokenAddress];
-            accTokenPerShare = currentReward.accTokenPerShare;
 
-            adjustedTokenPerShare =
-                (currentDuration * currentReward.sharesPerSecond * currentReward.PRECISION_FACTOR) /
-                lpSupplyMultiplied;
-
-            accTokenPerShare += adjustedTokenPerShare;
-
+            // accTokenPerShare should have already been updated as needed for this is run
             positionRewardDebts[tokenId][tokenAddress] =
-                (positionAmountMultiplied * accTokenPerShare) /
+                (positionAmountMultiplied * currentReward.accTokenPerShare) /
                 currentReward.PRECISION_FACTOR;
 
             unchecked {
@@ -214,9 +200,9 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
     /**
      * @dev Harvests any additional rewards for the position
-     * Only callable by pool
      * Pools calls each time _harvestPosition() is called
      * All harvest function variants in pool contract result in call to _harvestPosition()
+     * Only callable by pool
      */
     function harvestAdditionalRewards(
         uint256 positionAmountMultiplied,
