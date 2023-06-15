@@ -8,7 +8,7 @@ import "@openzeppelin/contracts/utils/Counters.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 
 import "./interfaces/INFTHandler.sol";
-import "./interfaces/IXMasterChef.sol";
+import "./interfaces/IMasterChef.sol";
 import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
 import "./interfaces/tokens/IXToken.sol";
@@ -46,7 +46,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     Counters.Counter private _tokenIds;
 
     address public operator; // Used to delegate multiplier settings to project's owners
-    IXMasterChef public master; // Address of the master
+    IMasterChef public master; // Address of the master
     address public immutable factory; // NFTPoolFactory contract's address
     bool public initialized;
 
@@ -103,7 +103,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     }
 
     function initialize(
-        IXMasterChef master_,
+        IMasterChef master_,
         IERC20Metadata arxToken,
         IXToken xToken,
         IERC20Metadata lpToken,
@@ -745,7 +745,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         StakingPosition storage position = _stakingPositions[tokenId];
 
         require(
-            master.isAdmin(msg.sender) ||
+            master.isUnlockOperator(msg.sender) ||
                 position.startLockTime.add(position.lockDuration) <= _currentBlockTimestamp() ||
                 isUnlocked(),
             "locked"
@@ -837,7 +837,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
         StakingPosition storage position = _stakingPositions[tokenId];
         require(
-            master.isAdmin(nftOwner) ||
+            master.isUnlockOperator(nftOwner) ||
                 position.startLockTime.add(position.lockDuration) <= _currentBlockTimestamp() ||
                 isUnlocked(),
             "locked"
