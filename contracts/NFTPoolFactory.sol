@@ -4,23 +4,23 @@ pragma solidity =0.7.6;
 import "./interfaces/tokens/IERC20Metadata.sol";
 
 import "./interfaces/IMasterChef.sol";
-import "./interfaces/tokens/IXToken.sol";
+import "./interfaces/tokens/IxARXToken.sol";
 import "./interfaces/INFTPoolRewardManager.sol";
 import "./NFTPool.sol";
 
 contract NFTPoolFactory {
     IMasterChef public immutable master; // Address of the master
     IERC20Metadata public immutable arxToken;
-    IXToken public immutable xToken;
+    IxARXToken public immutable xArxToken;
 
     // lp token => pool
     mapping(address => address) public getPool;
     address[] public pools;
 
-    constructor(IMasterChef _master, IERC20Metadata _arxToken, IXToken _xToken) {
+    constructor(IMasterChef _master, IERC20Metadata _arxToken, IxARXToken _xArxToken) {
         master = _master;
         arxToken = _arxToken;
-        xToken = _xToken;
+        xArxToken = _xArxToken;
     }
 
     event PoolCreated(address indexed lpToken, address pool);
@@ -41,7 +41,7 @@ contract NFTPoolFactory {
         }
         require(pool != address(0), "failed");
 
-        NFTPool(pool).initialize(master, arxToken, xToken, IERC20Metadata(lpToken), rewardManager);
+        NFTPool(pool).initialize(master, arxToken, xArxToken, IERC20Metadata(lpToken), rewardManager);
         getPool[lpToken] = pool;
         pools.push(pool);
 

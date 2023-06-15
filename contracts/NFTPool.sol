@@ -11,7 +11,7 @@ import "./interfaces/INFTHandler.sol";
 import "./interfaces/IMasterChef.sol";
 import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
-import "./interfaces/tokens/IXToken.sol";
+import "./interfaces/tokens/IxARXToken.sol";
 import "./interfaces/tokens/IERC20Metadata.sol";
 import "./interfaces/INFTPoolRewardManager.sol";
 
@@ -52,7 +52,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
     IERC20Metadata private _lpToken; // Deposit token contract's address
     IERC20Metadata private _arxToken; // ARXToken contract's address
-    IXToken private _xToken; // xToken contract's address
+    IxARXToken private _xToken; // xToken contract's address
     INFTPoolRewardManager public rewardManager;
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
     uint256 private _lpSupplyWithMultiplier; // Sum of deposit token on this pool including the user's total multiplier (lockMultiplier + boostPoints)
@@ -105,7 +105,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     function initialize(
         IMasterChef master_,
         IERC20Metadata arxToken,
-        IXToken xToken,
+        IxARXToken xToken,
         IERC20Metadata lpToken,
         INFTPoolRewardManager manager
     ) external {

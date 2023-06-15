@@ -58,15 +58,15 @@ export async function managerFixture() {
   // const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
   // await lpInstance.approve(nftPool.address, MAX_UINT256);
 
-  // const userOneLpBalance = parseUnits('100');
-  // // Setup account funds
-  // await giveTokenBalanceFor(
-  //   ethers.provider,
-  //   lpPoolAddress,
-  //   signer.address,
-  //   UNIV2_POOL_BALANCEOF_SLOT,
-  //   userOneLpBalance
-  // );
+  const userOneLpBalance = parseUnits('100');
+  // Setup account funds
+  await giveTokenBalanceFor(
+    ethers.provider,
+    lpPoolAddress,
+    signer.address,
+    UNIV2_POOL_BALANCEOF_SLOT,
+    userOneLpBalance
+  );
 
   // await nftPool.createPosition(userOneLpBalance.div(2), 0);
 
@@ -82,7 +82,7 @@ export async function managerFixture() {
     // lpInstance,
     signer,
     // nftPool,
-    // userOneLpBalance,
+    userOneLpBalance,
     lpPoolAddress,
     factory,
     globalRewardManager,

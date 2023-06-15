@@ -11,6 +11,7 @@ import {
   deployGlobalRewardManager,
   deployPoolFactory,
   deployRamsey,
+  deployRewardManager,
   deployYieldBooster,
   getERC20WithSigner,
 } from '../../scripts/utils';
@@ -44,11 +45,11 @@ export async function awesomeFixture() {
   const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster.address, signer);
 
   // Pool creation setup
-  const rewardManager = await deployGlobalRewardManager(ARBIDEX_TREASURY, signer);
+  const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
   const factory = await deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS, signer);
   const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
 
-  await rewardManager.addPool(nftPoolAddress);
+  // await rewardManager.addPool(nftPoolAddress);
   // Add new pool to chef
   await chefRamsey.add(nftPoolAddress, 1, true);
 

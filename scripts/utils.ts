@@ -3,6 +3,7 @@ import { BigNumber, Contract } from 'ethers';
 import { MAX_UINT256 } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
+import { getNFTPool } from '../test/utils';
 
 export async function deployMasterChefy(oldChef: string, treasury: string, yieldBoooster: string, signer) {
   const factory = await ethers.getContractFactory('MasterChef', signer);
@@ -66,6 +67,34 @@ export async function createPool(
   return poolAddress;
 }
 
+/**
+ * Util that creates a pool and then approves the new instance for lp token
+ * @param factoryAddress
+ * @param lpToken
+ * @param rewardManager
+ * @param signer
+ * @returns
+ */
+export async function createPoolWithInstance(
+  factoryAddress: string,
+  lpToken: string,
+  rewardManager: string,
+  signer
+): Promise<{
+  lpInstance: Contract;
+  nftPool: Contract;
+}> {
+  const nftPoolAddress = await createPool(factoryAddress, lpToken, rewardManager, signer);
+
+  const lpInstance = await getERC20WithSigner(lpToken, signer);
+  await lpInstance.approve(nftPoolAddress, MAX_UINT256);
+
+  return {
+    lpInstance,
+    nftPool: getNFTPool(nftPoolAddress, signer),
+  };
+}
+
 export async function addPoolToChef(ramsey: string, nftPoolAddress: string, allocationPoints: number, signer) {
   const chef = await ethers.getContractAt('ChefRamsey', ramsey, signer);
   await chef.add(nftPoolAddress, allocationPoints, true);
@@ -98,7 +127,7 @@ export async function createPosition(
   signer,
   lockDuration = 0
 ) {
-  const pool = await ethers.getContractAt('NFTPool', poolAddress);
+  const pool = await ethers.getContractAt('NFTPool', poolAddress, signer);
   await approveTokens([lpPoolAddress], poolAddress, signer);
   const tx = await pool.createPosition(amount, lockDuration);
   const receipt = await tx.wait();
@@ -107,7 +136,7 @@ export async function createPosition(
   const tokenId = evt.args.tokenId;
   console.log('New token ID: ' + tokenId);
 
-  return tokenId;
+  return tokenId.toNumber();
 }
 
 export async function approveTokens(tokens: string[], spender: string, signer) {
