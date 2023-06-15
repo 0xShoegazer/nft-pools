@@ -8,7 +8,7 @@ import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeab
 
 import "./interfaces/INFTPoolRewardManager.sol";
 
-contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
+contract RewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     using SafeERC20Upgradeable for IERC20MetadataUpgradeable;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
@@ -19,6 +19,9 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     }
 
     bytes32 public constant ADMIN_ROLE = keccak256("ADMIN_ROLE");
+
+    // To allow outside entities like the pool factory to add pools
+    bytes32 public constant OPERATOR_ROLE = keccak256("OPERATOR_ROLE");
 
     address public treasury;
 
@@ -34,11 +37,17 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     // pool => tokenId => token => debt
     mapping(address => mapping(uint256 => mapping(address => uint256))) public positionRewardDebts;
 
+    // accounts approved to add tokens to particular pools (Eg. other projects owner/operators)
+    mapping(address => EnumerableSetUpgradeable.AddressSet) private _approvedForPool;
+
     event PoolAdded(address nftPoolAddress);
     event RewardTokenAdded(address indexed nftPoolAddress, address token, uint256 sharesPerSecond);
     event RewardTokenUpdated(address indexed nftPoolAddress, address token, uint256 sharesPerSecond);
     event RewardTokenRemoved(address indexed nftPoolAddress, address token);
     event RewardTokenHarvested(address indexed nftPoolAddress, address token, uint256 amount, uint256 tokenId);
+
+    event ApprovedForPool(address nftPoolAddress, address account);
+    event UnapprovedForPool(address nftPoolAddress, address account);
 
     modifier onlyAdmin() {
         require(hasRole(ADMIN_ROLE, msg.sender), "Not an admin");
@@ -69,7 +78,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         treasury = _treasury;
 
         _grantRole(DEFAULT_ADMIN_ROLE, _treasury);
-        _grantRole(ADMIN_ROLE, msg.sender);
+        _grantRole(OPERATOR_ROLE, _treasury);
         _grantRole(ADMIN_ROLE, _treasury);
     }
 
@@ -79,8 +88,15 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         return _pools.length();
     }
 
-    function getPoolAddresses() public view returns (address[] memory) {
+    /// @dev This has potential to become too large for calls. Have to use indexed based version then
+    function getPoolAddresses() external view returns (address[] memory) {
         return _pools.values();
+    }
+
+    function getPoolAddressByIndex(uint256 index) external view returns (address) {
+        if (index >= _pools.length()) return address(0);
+
+        return _pools.at(index);
     }
 
     function getPoolRewardCount(address nftPoolAddress) public view returns (uint256) {
@@ -229,24 +245,51 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
     // ==================================== ADMIN ====================================== //
 
-    function addPool(address nftPoolAddress) external onlyAdmin {
+    function addPool(address nftPoolAddress) external {
+        require(hasRole(OPERATOR_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender), "Not an operator");
         require(!_pools.contains(nftPoolAddress), "Pool already added");
 
         _pools.add(nftPoolAddress);
         emit PoolAdded(nftPoolAddress);
     }
 
+    /**
+     * @dev To allow other projects owner/operators the ability to add tokens for pool.
+     * Factory pool creation is permissionless, and all pools are added here at creation time.
+     * However we do not want just anyone to be able to add any random token to any pool.
+     * So this way projects can be allowed to manage their pool(s) rewards after we approve once.
+     */
+    function addApprovedForPool(
+        address nftPoolAddress,
+        address account
+    ) external validatePool(nftPoolAddress) onlyAdmin {
+        require(account != address(0), "Account not provided");
+        require(!_approvedForPool[nftPoolAddress].contains(account), "Account already added");
+
+        _approvedForPool[nftPoolAddress].add(account);
+        emit ApprovedForPool(nftPoolAddress, account);
+    }
+
+    function unapproveForPool(address nftPoolAddress, address account) external validatePool(nftPoolAddress) onlyAdmin {
+        require(account != address(0), "Account not provided");
+        require(_approvedForPool[nftPoolAddress].contains(account), "Account not added");
+
+        _approvedForPool[nftPoolAddress].remove(account);
+        emit UnapprovedForPool(nftPoolAddress, account);
+    }
+
     function addRewardToken(
         address nftPoolAddress,
         address tokenAddress,
         uint256 sharesPerSecond
-    ) external validatePool(nftPoolAddress) onlyAdmin {
+    ) external validatePool(nftPoolAddress) {
+        _checkIsPoolTokenOperator(nftPoolAddress);
         require(tokenAddress != address(0), "Token not provided");
         require(!_poolRewardAddresses[nftPoolAddress].contains(tokenAddress), "Token already added for pool");
 
         IERC20MetadataUpgradeable token = IERC20MetadataUpgradeable(tokenAddress);
         uint256 decimalsRewardToken = uint256(token.decimals());
-        require(decimalsRewardToken < 30, "Must be less than 30");
+        require(decimalsRewardToken < 30, "Decimals must be less than 30");
 
         _poolRewardAddresses[nftPoolAddress].add(tokenAddress);
         _poolRewardTokens[nftPoolAddress][tokenAddress] = RewardToken({
@@ -262,7 +305,8 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         address nftPoolAddress,
         address tokenAddress,
         uint256 sharesPerSecond
-    ) external validatePool(nftPoolAddress) onlyAdmin {
+    ) external validatePool(nftPoolAddress) {
+        _checkIsPoolTokenOperator(nftPoolAddress);
         _validatePoolRewardToken(nftPoolAddress, tokenAddress);
 
         _poolRewardTokens[nftPoolAddress][tokenAddress].sharesPerSecond = sharesPerSecond;
@@ -271,7 +315,7 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     }
 
     function removeRewardToken(address nftPoolAddress, address tokenAddress) external {
-        require(msg.sender == treasury, "Only treasury");
+        _checkIsPoolTokenOperator(nftPoolAddress);
         _validatePoolRewardToken(nftPoolAddress, tokenAddress);
 
         _poolRewardAddresses[nftPoolAddress].remove(tokenAddress);
@@ -280,13 +324,21 @@ contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         IERC20MetadataUpgradeable rewardToken = IERC20MetadataUpgradeable(tokenAddress);
         uint256 balance = rewardToken.balanceOf(address(this));
         if (balance > 0) {
-            rewardToken.safeTransfer(treasury, balance);
+            rewardToken.safeTransfer(msg.sender, balance);
         }
 
         emit RewardTokenRemoved(nftPoolAddress, tokenAddress);
     }
 
     // ==================================== INTERNAL FUNCTIONS ====================================== //
+
+    // pool should be validated before calling here
+    function _checkIsPoolTokenOperator(address nftPoolAddress) internal view {
+        require(
+            _approvedForPool[nftPoolAddress].contains(msg.sender) || hasRole(ADMIN_ROLE, msg.sender),
+            "Not a token operator"
+        );
+    }
 
     function _validatePoolRewardToken(address nftPoolAddress, address tokenAddress) internal view {
         require(tokenAddress != address(0), "Token not provided");

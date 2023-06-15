@@ -27,5 +27,6 @@ export const BAL_POOL_BALANCEOFSLOT = 0; // WeightedPool instance slot
 
 // Used in most of the contracts for AccessContol
 export const ADMIN_ROLE_HASH = keccak256(['string'], ['ADMIN_ROLE']);
+export const OPERATOR_ROLE_HASH = keccak256(['string'], ['OPERATOR_ROLE']);
 
 export const USDC_ARBITRUM_WHALE = '0x62383739d68dd0f844103db8dfb05a7eded5bbe6';

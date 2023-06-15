@@ -51,10 +51,13 @@ const WETH_USDC_REWARD_MANAGER = '0xcA7ea1d7B85B984aF228D7210ba7B9e9b8cBEDcb';
  * FINAL SHOW
  */
 
-const BOOST_DEEZ = '';
-const MASTER_CHEF = '0xe925B12Bdf074B0A17E42F2C3d60BBfC40063C5a'; // other repo
-const FACTORY_DEEZ = '0x3847e292d04814c119bF88e2a86bCdc6d7e03878';
-const REWARD_MANAGER = '';
+export const FACTORY_DEEZ = '0xD116fbfF78Eb7109B7C4eC93f76520aB67Da3Ea2';
+
+// other repo
+export const BOOST_DEEZ = '0xE4245fEdF254141E00d8A4fFF42Dce306021746D';
+export const MASTER_CHEF = '0xe925B12Bdf074B0A17E42F2C3d60BBfC40063C5a';
+
+export const REWARD_MANAGER = '';
 
 async function main() {
   const signer = (await ethers.getSigners())[0];
