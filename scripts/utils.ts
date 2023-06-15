@@ -1,9 +1,17 @@
 import { ethers, upgrades } from 'hardhat';
-import { CHEF_RAMSEY_ADDRESS } from './constants';
 import { BigNumber, Contract } from 'ethers';
 import { MAX_UINT256 } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
+
+export async function deployMasterChefy(oldChef: string, treasury: string, yieldBoooster: string, signer) {
+  const factory = await ethers.getContractFactory('MasterChef', signer);
+  const instance = await factory.deploy(oldChef, treasury, yieldBoooster);
+  await instance.deployed();
+  console.log(`MasterChef deployed at: ${instance.address}`);
+
+  return instance;
+}
 
 export async function deployRamsey(oldChef: string, treasury: string, yieldBoooster: string, signer) {
   const factory = await ethers.getContractFactory('ChefRamsey', signer);
@@ -32,8 +40,8 @@ export async function deployGlobalRewardManager(treasury: string, signer) {
   return instance;
 }
 
-export async function deployPoolFactory(master: string, mainToken: string, xToken: string) {
-  const factory = await ethers.getContractFactory('NFTPoolFactory');
+export async function deployPoolFactory(master: string, mainToken: string, xToken: string, signer) {
+  const factory = await ethers.getContractFactory('NFTPoolFactory', signer);
   const instance = await factory.deploy(master, mainToken, xToken);
   await instance.deployed();
   console.log(`NFTPoolFactory deployed at: ${instance.address}`);

@@ -12,7 +12,6 @@ import {
   deployGlobalRewardManager,
   deployPoolFactory,
   deployRamsey,
-  deployRewardManager,
   deployYieldBooster,
   getERC20WithSigner,
 } from '../../scripts/utils';
@@ -24,7 +23,7 @@ import { MAX_UINT256, UNIV2_POOL_BALANCEOF_SLOT } from '../constants';
 import { impersonateAccount, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { OLD_CHEF_ABI } from '../abis/arbidex-chef-abi';
 
-export async function awesomeFixture() {
+export async function managerFixture() {
   await impersonateAccount(DEV_ACCOUNT);
   const signer = await ethers.getSigner(DEV_ACCOUNT);
   await setBalance(DEV_ACCOUNT, parseUnits('10000'));
@@ -46,17 +45,14 @@ export async function awesomeFixture() {
   const yieldBoooster = await deployYieldBooster(xARX_ADDRESS);
   const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster.address, signer);
   // Pool creation setup
-  const rewardManager = await deployGlobalRewardManager(ARBIDEX_TREASURY, signer);
-  const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS);
-  const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
-  // Needs pool address for init
-  // await rewardManager.initialize(nftPoolAddress);
-  await rewardManager.addPool(nftPoolAddress);
-  // await rewardManager.initializePool(nftPoolAddress);
+
+  const factory = await deployPoolFactory(CHEF_RAMSEY_ADDRESS, ARX_ADDRESS, xARX_ADDRESS, signer);
+
+  const globalRewardManager = await deployGlobalRewardManager(ARBIDEX_TREASURY, signer);
+  const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, globalRewardManager.address, signer);
 
   // Add new pool to chef
-  // const chefRamsey = new Contract(CHEF_RAMSEY_ADDRESS, RAMSEY_ABI, signer);
-  await chefRamsey.add(nftPoolAddress, 1, true);
+  await chefRamsey.add(nftPoolAddress, 100, true);
 
   const nftPool = getNFTPool(nftPoolAddress, signer);
   const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
@@ -78,7 +74,7 @@ export async function awesomeFixture() {
     ARXToken: await getERC20WithSigner(ARX_ADDRESS, signer),
     xARXToken: await getERC20WithSigner(xARX_ADDRESS, signer),
     oldChef: new Contract(ARBIDEX_CHEF_ADDRESS, OLD_CHEF_ABI, signer),
-    rewardManager,
+    globalRewardManager,
     randomAccount,
     lpBalanceRandomAccount,
     lpInstance,

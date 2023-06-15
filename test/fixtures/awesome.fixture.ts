@@ -45,7 +45,7 @@ export async function awesomeFixture() {
 
   // Pool creation setup
   const rewardManager = await deployGlobalRewardManager(ARBIDEX_TREASURY, signer);
-  const factory = await deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS);
+  const factory = await deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS, signer);
   const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
 
   await rewardManager.addPool(nftPoolAddress);

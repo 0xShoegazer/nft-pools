@@ -56,7 +56,7 @@ export async function freshFixture() {
   const [, , factory, rewardManager] = await Promise.all([
     oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS as any),
     dummyToken.approve(chefRamsey.address, MAX_UINT256),
-    deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS),
+    deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS, signer),
     deployRewardManager(ARBIDEX_TREASURY, signer),
   ]);
 

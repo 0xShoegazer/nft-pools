@@ -36,9 +36,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         uint256 lockMultiplier; // Active lock multiplier (times 1e2)
         uint256 rewardDebt; // Reward debt
         uint256 rewardDebtWETH;
-        uint256 boostPoints; // Allocated xGRAIL from yieldboost contract (optional)
-        uint256 totalMultiplier; // lockMultiplier + allocated xGRAIL boostPoints multiplier
-        uint256 pendingXGrailRewards; // Not harvested xGrail rewards
+        uint256 boostPoints; // Allocated xToken from yieldboost contract (optional)
+        uint256 totalMultiplier; // lockMultiplier + allocated xToken boostPoints multiplier
+        uint256 pendingXTokenRewards; // Not harvested xToken rewards
         uint256 pendingGrailRewards; // Not harvested Grail rewards
         uint256 pendingWETHRewards; // Not harvested Grail rewards
     }
@@ -52,7 +52,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
     IERC20Metadata private _lpToken; // Deposit token contract's address
     IERC20Metadata private _grailToken; // GrailToken contract's address
-    IXToken private _xGrailToken; // XGrailToken contract's address
+    IXToken private _xToken; // xToken contract's address
     INFTPoolRewardManager public rewardManager;
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
     uint256 private _lpSupplyWithMultiplier; // Sum of deposit token on this pool including the user's total multiplier (lockMultiplier + boostPoints)
@@ -66,10 +66,10 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     uint256 private _maxGlobalMultiplier = 20000; // 200%
     uint256 private _maxLockDuration = 183 days; // 6 months, Capped lock duration to have the maximum bonus lockMultiplier
     uint256 private _maxLockMultiplier = 10000; // 100%, Max available lockMultiplier (100 = 1%)
-    uint256 private _maxBoostMultiplier = 10000; // 100%, Max boost that can be earned from xGrail yieldBooster
+    uint256 private _maxBoostMultiplier = 10000; // 100%, Max boost that can be earned from xToken yieldBooster
 
-    uint256 private constant _TOTAL_REWARDS_SHARES = 10000; // 100%, high limit for xGrailRewardsShare
-    uint256 public xGrailRewardsShare = 8000; // 80%, directly defines grailShare with the remaining value to 100%
+    uint256 private constant _TOTAL_REWARDS_SHARES = 10000; // 100%, high limit for xTokenRewardsShare
+    uint256 public xTokenRewardsShare = 8000; // 80%, directly defines grailShare with the remaining value to 100%
 
     bool public emergencyUnlock; // Release all locks in case of emergency
 
@@ -92,10 +92,11 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
     event SetLockMultiplierSettings(uint256 maxLockDuration, uint256 maxLockMultiplier);
     event SetBoostMultiplierSettings(uint256 maxGlobalMultiplier, uint256 maxBoostMultiplier);
-    event SetXGrailRewardsShare(uint256 xGrailRewardsShare);
+    event SetXTokenRewardsShare(uint256 xTokenRewardsShare);
     event SetUnlockOperator(address operator, bool isAdded);
     event SetEmergencyUnlock(bool emergencyUnlock);
     event SetOperator(address operator);
+    event SetRewardManager(address manager);
 
     constructor() {
         factory = msg.sender;
@@ -104,7 +105,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     function initialize(
         IXMasterChef master_,
         IERC20Metadata grailToken,
-        IXToken xGrailToken,
+        IXToken xToken,
         IERC20Metadata lpToken,
         address manager
     ) external {
@@ -112,12 +113,12 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _lpToken = lpToken;
         master = master_;
         _grailToken = grailToken;
-        _xGrailToken = xGrailToken;
+        _xToken = xToken;
         rewardManager = INFTPoolRewardManager(manager);
         initialized = true;
 
         // to convert main token to xToken
-        _grailToken.approve(address(_xGrailToken), type(uint256).max);
+        _grailToken.approve(address(_xToken), type(uint256).max);
     }
 
     /***********************************************/
@@ -221,7 +222,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         returns (
             address lpToken,
             address grailToken,
-            address xGrailToken,
+            address xToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
             uint256 accRewardsPerShareWETH,
@@ -234,7 +235,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         return (
             address(_lpToken),
             address(_grailToken),
-            address(_xGrailToken),
+            address(_xToken),
             lastRewardTime,
             _accRewardsPerShare,
             _accRewardsPerShareWETH,
@@ -367,7 +368,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             .mul(accRewardsPerShare)
             .div(1e18)
             .sub(position.rewardDebt)
-            .add(position.pendingXGrailRewards)
+            .add(position.pendingXTokenRewards)
             .add(position.pendingGrailRewards);
 
         wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebtWETH).add(
@@ -444,17 +445,17 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     }
 
     /**
-     * @dev Set the share of xGRAIL for the distributed rewards
-     * The share of GRAIL will incidently be 100% - xGrailRewardsShare
+     * @dev Set the share of xToken for the distributed rewards
+     * The share of GRAIL will incidently be 100% - xTokenRewardsShare
      *
      * Must only be called by the owner
      */
-    function setXGrailRewardsShare(uint256 xGrailRewardsShare_) external {
+    function setXTokenRewardsShare(uint256 xTokenRewardsShare_) external {
         _requireOnlyOwner();
-        require(xGrailRewardsShare_ <= _TOTAL_REWARDS_SHARES, "too high");
+        require(xTokenRewardsShare_ <= _TOTAL_REWARDS_SHARES, "too high");
 
-        xGrailRewardsShare = xGrailRewardsShare_;
-        emit SetXGrailRewardsShare(xGrailRewardsShare_);
+        xTokenRewardsShare = xTokenRewardsShare_;
+        emit SetXTokenRewardsShare(xTokenRewardsShare_);
     }
 
     /**
@@ -479,6 +480,18 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
         operator = operator_;
         emit SetOperator(operator_);
+    }
+
+    /**
+     * @dev Set operator (usually deposit token's project's owner) to adjust contract's settings
+     *
+     * Must only be called by the owner
+     */
+    function setRewardManager(address manager) external {
+        _requireOnlyOwner();
+
+        rewardManager = INFTPoolRewardManager(manager);
+        emit SetRewardManager(manager);
     }
 
     /****************************************************************/
@@ -545,7 +558,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             boostPoints: 0,
             totalMultiplier: lockMultiplier,
             pendingGrailRewards: 0,
-            pendingXGrailRewards: 0,
+            pendingXTokenRewards: 0,
             pendingWETHRewards: 0
         });
 
@@ -791,7 +804,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * @dev Destroys spNFT
      *
      * "boostPointsToDeallocate" is set to 0 to ignore boost points handling if called during an emergencyWithdraw
-     * Users should still be able to deallocate xGRAIL from the YieldBooster contract
+     * Users should still be able to deallocate xToken from the YieldBooster contract
      */
     function _destroyPosition(uint256 tokenId, uint256 boostPoints) internal {
         // calls yieldBooster contract to deallocate the spNFT's owner boost points if any
@@ -901,57 +914,39 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         if (
             pending > 0 ||
             pendingWETH > 0 ||
-            position.pendingXGrailRewards > 0 ||
+            position.pendingXTokenRewards > 0 ||
             position.pendingGrailRewards > 0 ||
             position.pendingWETHRewards > 0
         ) {
-            uint256 xGrailRewards = pending.mul(xGrailRewardsShare).div(_TOTAL_REWARDS_SHARES);
-            uint256 grailAmount = pending.add(position.pendingGrailRewards).sub(xGrailRewards);
+            uint256 xTokenRewards = pending.mul(xTokenRewardsShare).div(_TOTAL_REWARDS_SHARES);
+            uint256 grailAmount = pending.add(position.pendingGrailRewards).sub(xTokenRewards);
 
-            xGrailRewards = xGrailRewards.add(position.pendingXGrailRewards);
+            xTokenRewards = xTokenRewards.add(position.pendingXTokenRewards);
 
             // Stack rewards in a buffer if to is equal to address(0)
             if (address(0) == to) {
-                position.pendingXGrailRewards = xGrailRewards;
+                position.pendingXTokenRewards = xTokenRewards;
                 position.pendingGrailRewards = grailAmount;
                 position.pendingWETHRewards = pendingWETH;
             } else {
                 // convert and send xToken + main token rewards
-                position.pendingXGrailRewards = 0;
+                position.pendingXTokenRewards = 0;
                 position.pendingGrailRewards = 0;
                 position.pendingWETHRewards = 0;
 
-                if (xGrailRewards > 0) xGrailRewards = _safeConvertTo(to, xGrailRewards);
+                if (xTokenRewards > 0) xTokenRewards = _safeConvertTo(to, xTokenRewards);
 
                 grailAmount = _safeRewardsTransfer(address(_grailToken), to, grailAmount);
                 pendingWETH = _safeRewardsTransfer(master.wethToken(), to, pendingWETH);
 
                 // forbidden to harvest if contract has not explicitly confirmed it handle it
-                _checkOnNFTHarvest(to, tokenId, grailAmount, xGrailRewards);
+                _checkOnNFTHarvest(to, tokenId, grailAmount, xTokenRewards);
 
                 rewardManager.harvestAdditionalRewards(positionAmountMultiplied, to, tokenId);
             }
         }
 
         emit HarvestPosition(tokenId, to, pending, pendingWETH);
-    }
-
-    /**
-     * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
-     */
-    function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
-        IERC20Metadata token = IERC20Metadata(tokenAddress);
-        uint256 balance = token.balanceOf(address(this));
-        // cap to available balance
-        if (amount > balance) {
-            amount = balance;
-        }
-
-        if (amount > 0) {
-            token.safeTransfer(to, amount);
-        }
-
-        return amount;
     }
 
     /**
@@ -993,22 +988,26 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         return token.balanceOf(address(this)).sub(previousBalance);
     }
 
-    // /**
-    //  * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
-    //  */
-    // function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
-    //     IERC20Metadata token = IERC20Metadata(tokenAddress);
-    //     uint256 balance = token.balanceOf(address(this));
-    //     // cap to available balance
-    //     if (amount > balance) {
-    //         amount = balance;
-    //     }
-    //     token.safeTransfer(to, amount);
-    //     return amount;
-    // }
+    /**
+     * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
+     */
+    function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
+        IERC20Metadata token = IERC20Metadata(tokenAddress);
+        uint256 balance = token.balanceOf(address(this));
+        // cap to available balance
+        if (amount > balance) {
+            amount = balance;
+        }
+
+        if (amount > 0) {
+            token.safeTransfer(to, amount);
+        }
+
+        return amount;
+    }
 
     /**
-     * @dev Safe convert GRAIL to xGRAIL function, in case rounding error causes pool to not have enough tokens
+     * @dev Safe convert GRAIL to xToken function, in case rounding error causes pool to not have enough tokens
      */
     function _safeConvertTo(address to, uint256 amount) internal returns (uint256) {
         uint256 balance = _grailToken.balanceOf(address(this));
@@ -1016,14 +1015,14 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         if (amount > balance) {
             amount = balance;
         }
-        if (amount > 0) _xGrailToken.convertTo(amount, to);
+        if (amount > 0) _xToken.convertTo(amount, to);
         return amount;
     }
 
     /**
      * @dev If NFT's owner is a contract, confirm whether it's able to handle rewards harvesting
      */
-    function _checkOnNFTHarvest(address to, uint256 tokenId, uint256 grailAmount, uint256 xGrailAmount) internal {
+    function _checkOnNFTHarvest(address to, uint256 tokenId, uint256 grailAmount, uint256 xTokenAmount) internal {
         address nftOwner = ERC721.ownerOf(tokenId);
         if (nftOwner.isContract()) {
             bytes memory returndata = nftOwner.functionCall(
@@ -1033,7 +1032,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
                     to,
                     tokenId,
                     grailAmount,
-                    xGrailAmount
+                    xTokenAmount
                 ),
                 "non implemented"
             );

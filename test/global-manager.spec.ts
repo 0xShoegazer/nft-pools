@@ -1,9 +1,16 @@
+import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
+import { managerFixture } from './fixtures/manager.fixture';
+
 describe('RewardManager', () => {
-  describe('adding pools', () => {});
+  describe('adding pools', async () => {
+    const { globalRewardManager, nftPool } = await loadFixture(managerFixture);
 
-  describe('pending rewards', () => {});
+    await globalRewardManager.addPool(nftPool.address);
+  });
 
-  describe('claiming rewards', () => {});
+  describe('pending rewards', async () => {});
 
-  describe('reward debts', () => {});
+  describe('claiming rewards', async () => {});
+
+  describe('reward debts', async () => {});
 });

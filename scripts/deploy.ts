@@ -54,15 +54,17 @@ const WETH_USDC_REWARD_MANAGER = '0xcA7ea1d7B85B984aF228D7210ba7B9e9b8cBEDcb';
 const BOOST_DEEZ = '';
 const RAMSEY_DEEZ = '';
 
+const MASTER_CHEF = '0xe925B12Bdf074B0A17E42F2C3d60BBfC40063C5a'; // other repo
+
 async function main() {
   const signer = (await ethers.getSigners())[0];
   //
   // The flow
   // const oldRamsey = await ethers.getContractAt('ChefRamsey', OLD_CHEF_RAMSEY_ADDRESS, signer);
   // oldRamsey.withdrawFromPool(DUMMY_TOKEN_ADDRESS);
-  const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
-  await sleepWait();
-  const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, BOOST, signer);
+  // const yieldBooster = await deployYieldBooster(xARX_ADDRESS);
+  // await sleepWait();
+  // const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, BOOST, signer);
   // await sleepWait();
   // const chefRamsey = await ethers.getContractAt('ChefRamsey', RAMSEY, signer);
   // const dummyToken = getERC20WithSigner(DUMMY_TOKEN_ADDRESS, signer);
@@ -72,7 +74,7 @@ async function main() {
   // await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
   // await sleepWait();
 
-  // const factory = await deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS);
+  const factory = await deployPoolFactory(MASTER_CHEF, ARX_ADDRESS, xARX_ADDRESS, signer);
   // await sleepWait();
 
   // await runAddPoolFlow(
