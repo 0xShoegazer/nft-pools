@@ -1,0 +1,170 @@
+[
+  {
+    "pool": "ARX-USDCe",
+    "lpAddress": "0xA6efAE0C9293B4eE340De31022900bA747eaA92D",
+    "rewardManager": "0x06b573412E1AF642DEA5931b724F3058A98469E9",
+    "nftPoolAddress": "0xEFF788ABDd7877e20dc48D28B3F09c9AF2672531",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "WETH-USDCe-WIDE",
+    "lpAddress": "0xcf8ea96ecfdb7800e1eb413bde4af6ce984ab079",
+    "rewardManager": "0x28e44b60c9CAd1b8fA52cA518B9D73869c88E4aa",
+    "nftPoolAddress": "0xdA982DD1D35680e24d522c757E31956842698000",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "ARX-ETH",
+    "lpAddress": "0x62FdDfC2D4b35aDec79c6082CA2894eAb01aC0db",
+    "rewardManager": "0xebae8348d860A52296488B9c08272103aE4EeCcE",
+    "nftPoolAddress": "0x8544890AABc7ef4A1a2CD427529A65E6b111112C",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "WETH-USDCe-NARROW",
+    "lpAddress": "0xa1c443f7ae3cec5a61a163b98461af6dc4a98a90",
+    "rewardManager": "0x75457820B182351852ee43B838A913698Ea931E3",
+    "nftPoolAddress": "0xfAf21795a2598DC7B40d57BE74429C52c5F02699",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "BTC-ETH",
+    "lpAddress": "0x8a8d968c9534727118aa02965f16f6d398c14b1d",
+    "rewardManager": "0x238CC5BB68D9946a082641e29cAfF2e6C3DA4281",
+    "nftPoolAddress": "0xcEe1a6bb6dEd000F6AaA5223FaeB1DF62108Fa5C",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "WBTC-USDCe",
+    "lpAddress": "0x02ebfb3aac7934cdc6877d5ee8cf5e17e449a9a3",
+    "rewardManager": "0xa0b25507b26DEF91D872413E354083242Cb3B49B",
+    "nftPoolAddress": "0x049175038dca452EaB12904fB20d843409309DA4",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "USDT-USDCe",
+    "lpAddress": "0x3fb86a978530d9881627907b428e9ac9c02f9406",
+    "rewardManager": "0xFB1E0986a2920b1bcc4F55816acF627F956372DC",
+    "nftPoolAddress": "0x1A1E2321DF5e717a7717E86790CB956Bc60Ad1C7",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "DAI-USDCe",
+    "lpAddress": "0xc4602d1415f32ae23a72ad8cf4371272e25e2f22",
+    "rewardManager": "0x6f1482b41dB6b86df3170fC5B7FbC47E94C40DE3",
+    "nftPoolAddress": "0x58bF11D82e23f691658426dEcA2839D1714852E7",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "ARB-USDCe",
+    "lpAddress": "0xc1e2eda42ae3b3da68b622f03cd04ff3412467f7",
+    "rewardManager": "0x8bd718650e1d0668Ed97C872e32E4477b4Bf8e43",
+    "nftPoolAddress": "0xF1Cba8849E0b9A6B5223aEc6E453f38cE55310f5",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "ARB-ETH",
+    "lpAddress": "0x3369839e15d31b884dbd4e8e101fda0125fb08e8",
+    "rewardManager": "0x0984B3c8CeDDF9E13449F66c348013f3A165832b",
+    "nftPoolAddress": "0x0c198C30552e2c8D3A4A51f3d55E3522CB923874",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "RDNT-WETH",
+    "lpAddress": "0xaca4edeee3a98a4311ec4c2a85c92163881f1644",
+    "rewardManager": "0xb59935fdBc63cc32a641eD67B3F52225880921d5",
+    "nftPoolAddress": "0x4Fb1Ad8EB2F980B8F5616094595634AF835EFE30",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "FRAX-USDCe",
+    "lpAddress": "0x2d3d9D377C046C218e0F3B5A6bD17C9E673F1d8C",
+    "rewardManager": "0xFD86bD42713a47a45969d1b2d0CFABE4Cc761326",
+    "nftPoolAddress": "0x11205af33F2F7006bB932953b10Ab5EeD78105Ca",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "GNS-WETH",
+    "lpAddress": "0xf2d53b528b30f46d08feb20f1524d04d97b614c4",
+    "rewardManager": "0x0e07ffeBF2594ccA3C389a48e13Bd99833363324",
+    "nftPoolAddress": "0x34546FC330c1E1Fdf5B8797CE929C9861C3E3925",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "USD+-DAI+",
+    "lpAddress": "0xE8C060d40D7Bc96fCd5b758Bd1437C8653400b0e",
+    "rewardManager": "0xc64c342C26371e2BB3ef315688dc59ad6679AECF",
+    "nftPoolAddress": "0xCab09D7F4b84aDa0972c2b7947Caeb36e8f64EcB",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "USD+-USDCe",
+    "lpAddress": "0xECe52B1fc32D2B4f22eb45238210b470a64bfDd5",
+    "rewardManager": "0x493Dcb15aE73D7384Cab7f322AbeAf1A6C72a24D",
+    "nftPoolAddress": "0x17233Dbb3af1925E320a05645aE3c727fa7a3905",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "DAI-DAI+",
+    "lpAddress": "0xeE5e74Dc56594d070E0827ec270F974A68EBAF22",
+    "rewardManager": "0x77aF0eEd0e0B71eD86a724454c95F091c3bB822d",
+    "nftPoolAddress": "0x77aF0eEd0e0B71eD86a724454c95F091c3bB822d",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "USD+-ETH",
+    "lpAddress": "0xEa5f97aab76E397E4089137345c38b5c4e7939B3",
+    "rewardManager": "0x04aB26fc20E72B55A33c0a61bB8C5CeBc6e3258B",
+    "nftPoolAddress": "0x0f2B79896B1f01B82fAFfbF047687A8b7727a57c",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "FRAX-USD+",
+    "lpAddress": "0xb0Fb1787238879171Edc30b9730968600D55762A",
+    "rewardManager": "0x3da225242b80592B7af4D64C5831C48B377F6A40",
+    "nftPoolAddress": "0xe876230251cc14Ec0027b2a4aFc46B4c262d13D0",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "FRAX-DAI+",
+    "lpAddress": "0x306132b6147751B85E608B4C1EC452E111531eA2",
+    "rewardManager": "0x09583b373771F3cF31a7dA97CfCF6a3Eee464954",
+    "nftPoolAddress": "0x56328f7138C3A4ebD2Bb1D126d28f62FcD5bac5d",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "USDC-USDCe",
+    "lpAddress": "0x81e8be7795ed3d8619f037b8db8c80292332aa72",
+    "rewardManager": "0x1133A69026242bf04a34D95E5b3C14f44Bb2DfD0",
+    "nftPoolAddress": "0xB9Bbe2fEf9587c7D868e27d4AE18b2EA5ee9ec1a",
+    "created": true,
+    "addedToChef": true
+  },
+  {
+    "pool": "USDC-WETH",
+    "lpAddress": "0x1bde4a91d0ff7a353b511186768f4cc070874556",
+    "rewardManager": "0x98223755Cb48345555bdE54840aBf8ADB8AD28d2",
+    "nftPoolAddress": "0x1Fa4f7e568671EbA175fDcc1f157D17877A6BeE7",
+    "created": true,
+    "addedToChef": true
+  }
+]

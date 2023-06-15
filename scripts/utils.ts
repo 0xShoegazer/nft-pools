@@ -111,8 +111,10 @@ export async function deployYieldBooster(xToken: string) {
 }
 
 export async function addRewardToken(rewardManager: string, token: string, sharesPerSecond: BigNumber, signer) {
+  console.log('addRewardToken: Adding reward token');
   const manager = await ethers.getContractAt('PoolRewardManager', rewardManager, signer);
   await manager.addRewardToken(token, sharesPerSecond);
+  console.log('Reward token added');
 }
 
 export async function updateRewardToken(rewardManager: string, token: string, sharesPerSecond: BigNumber, signer) {

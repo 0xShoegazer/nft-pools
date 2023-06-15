@@ -16,6 +16,21 @@ export const MASTER_CHEF_ABI = [
         name: '_boost',
         type: 'address',
       },
+      {
+        internalType: 'contract IERC20',
+        name: '_dummyToken',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_poolId',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_startTime',
+        type: 'uint256',
+      },
     ],
     stateMutability: 'nonpayable',
     type: 'constructor',
@@ -95,7 +110,13 @@ export const MASTER_CHEF_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPointsARX',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
     ],
@@ -114,7 +135,13 @@ export const MASTER_CHEF_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPointsARX',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
     ],
@@ -185,6 +212,38 @@ export const MASTER_CHEF_ABI = [
     type: 'event',
   },
   {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'contract IERC20',
+        name: 'token',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
+      },
+    ],
+    name: 'TokenWithdraw',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'treasury',
+        type: 'address',
+      },
+    ],
+    name: 'TreasuryUpdated',
+    type: 'event',
+  },
+  {
     inputs: [],
     name: 'WETH',
     outputs: [
@@ -219,7 +278,12 @@ export const MASTER_CHEF_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPointsARX',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
       {
@@ -261,6 +325,13 @@ export const MASTER_CHEF_ABI = [
         type: 'uint256',
       },
     ],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'depositToPool',
+    outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
@@ -379,11 +450,41 @@ export const MASTER_CHEF_ABI = [
   },
   {
     inputs: [],
-    name: 'getPendingRewards',
+    name: 'getOldChefUserInfo',
+    outputs: [
+      {
+        components: [
+          {
+            internalType: 'uint256',
+            name: 'amount',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'arxRewardDebt',
+            type: 'uint256',
+          },
+          {
+            internalType: 'uint256',
+            name: 'WETHRewardDebt',
+            type: 'uint256',
+          },
+        ],
+        internalType: 'struct ArbidexPoolUserInfo',
+        name: 'poolInfo',
+        type: 'tuple',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getPendingRewardsFromOldChef',
     outputs: [
       {
         internalType: 'uint256',
-        name: 'pendingArx',
+        name: 'pendingARX',
         type: 'uint256',
       },
       {
@@ -431,7 +532,12 @@ export const MASTER_CHEF_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPointsARX',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
       {
@@ -465,11 +571,11 @@ export const MASTER_CHEF_ABI = [
   },
   {
     inputs: [],
-    name: 'getRewardBalances',
+    name: 'getRewardTokenBalances',
     outputs: [
       {
         internalType: 'uint256',
-        name: 'mainAmount',
+        name: 'amountARX',
         type: 'uint256',
       },
       {
@@ -608,7 +714,12 @@ export const MASTER_CHEF_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPointsARX',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
       {
@@ -649,18 +760,7 @@ export const MASTER_CHEF_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'contract IERC20',
-        name: '_dummyToken',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '_poolId',
-        type: 'uint256',
-      },
-    ],
+    inputs: [],
     name: 'start',
     outputs: [],
     stateMutability: 'nonpayable',
@@ -681,7 +781,20 @@ export const MASTER_CHEF_ABI = [
   },
   {
     inputs: [],
-    name: 'totalAllocPoint',
+    name: 'totalAllocPointsARX',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'totalAllocPointsWETH',
     outputs: [
       {
         internalType: 'uint256',
@@ -732,6 +845,19 @@ export const MASTER_CHEF_ABI = [
     type: 'function',
   },
   {
+    inputs: [
+      {
+        internalType: 'address',
+        name: '_treasury',
+        type: 'address',
+      },
+    ],
+    name: 'updateTreasury',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [],
     name: 'wethToken',
     outputs: [
@@ -745,14 +871,21 @@ export const MASTER_CHEF_ABI = [
     type: 'function',
   },
   {
+    inputs: [],
+    name: 'withdrawFromPool',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
     inputs: [
       {
         internalType: 'contract IERC20',
-        name: '_dummyToken',
+        name: 'token',
         type: 'address',
       },
     ],
-    name: 'withdrawFromPool',
+    name: 'withdrawToken',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',

@@ -39,6 +39,13 @@ const config: HardhatUserConfig = {
       },
       // loggingEnabled: true,
     },
+    localhost: {
+      forking: {
+        url: process.env.ARBITRUM_RPC || '',
+        blockNumber: 101262876,
+      },
+      // loggingEnabled: true,
+    },
     arbitrum: {
       url: process.env.ARBITRUM_RPC || '',
       accounts,
