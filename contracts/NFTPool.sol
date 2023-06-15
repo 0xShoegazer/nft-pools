@@ -39,8 +39,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         uint256 boostPoints; // Allocated xToken from yieldboost contract (optional)
         uint256 totalMultiplier; // lockMultiplier + allocated xToken boostPoints multiplier
         uint256 pendingXTokenRewards; // Not harvested xToken rewards
-        uint256 pendingGrailRewards; // Not harvested Grail rewards
-        uint256 pendingWETHRewards; // Not harvested Grail rewards
+        uint256 pendingArxRewards; // Not harvested ARX rewards
+        uint256 pendingWETHRewards; // Not harvested ARX rewards
     }
 
     Counters.Counter private _tokenIds;
@@ -51,7 +51,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     bool public initialized;
 
     IERC20Metadata private _lpToken; // Deposit token contract's address
-    IERC20Metadata private _grailToken; // GrailToken contract's address
+    IERC20Metadata private _arxToken; // ARXToken contract's address
     IXToken private _xToken; // xToken contract's address
     INFTPoolRewardManager public rewardManager;
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
@@ -69,7 +69,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     uint256 private _maxBoostMultiplier = 10000; // 100%, Max boost that can be earned from xToken yieldBooster
 
     uint256 private constant _TOTAL_REWARDS_SHARES = 10000; // 100%, high limit for xTokenRewardsShare
-    uint256 public xTokenRewardsShare = 8000; // 80%, directly defines grailShare with the remaining value to 100%
+    uint256 public xTokenRewardsShare = 8000; // 80%, directly defines arxShare with the remaining value to 100%
 
     bool public emergencyUnlock; // Release all locks in case of emergency
 
@@ -104,7 +104,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
     function initialize(
         IXMasterChef master_,
-        IERC20Metadata grailToken,
+        IERC20Metadata arxToken,
         IXToken xToken,
         IERC20Metadata lpToken,
         address manager
@@ -112,13 +112,13 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         require(msg.sender == factory && !initialized, "FORBIDDEN");
         _lpToken = lpToken;
         master = master_;
-        _grailToken = grailToken;
+        _arxToken = arxToken;
         _xToken = xToken;
         rewardManager = INFTPoolRewardManager(manager);
         initialized = true;
 
         // to convert main token to xToken
-        _grailToken.approve(address(_xToken), type(uint256).max);
+        _arxToken.approve(address(_xToken), type(uint256).max);
     }
 
     /***********************************************/
@@ -221,7 +221,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         override
         returns (
             address lpToken,
-            address grailToken,
+            address arxoken,
             address xToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
@@ -234,7 +234,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         (, allocPoint, lastRewardTime, , , , ) = master.getPoolInfo(address(this));
         return (
             address(_lpToken),
-            address(_grailToken),
+            address(_arxToken),
             address(_xToken),
             lastRewardTime,
             _accRewardsPerShare,
@@ -369,7 +369,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             .div(1e18)
             .sub(position.rewardDebt)
             .add(position.pendingXTokenRewards)
-            .add(position.pendingGrailRewards);
+            .add(position.pendingArxRewards);
 
         wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebtWETH).add(
             position.pendingWETHRewards
@@ -446,7 +446,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
     /**
      * @dev Set the share of xToken for the distributed rewards
-     * The share of GRAIL will incidently be 100% - xTokenRewardsShare
+     * The share of ARX will incidently be 100% - xTokenRewardsShare
      *
      * Must only be called by the owner
      */
@@ -557,7 +557,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             amountWithMultiplier: amountWithMultiplier,
             boostPoints: 0,
             totalMultiplier: lockMultiplier,
-            pendingGrailRewards: 0,
+            pendingArxRewards: 0,
             pendingXTokenRewards: 0,
             pendingWETHRewards: 0
         });
@@ -915,32 +915,32 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             pending > 0 ||
             pendingWETH > 0 ||
             position.pendingXTokenRewards > 0 ||
-            position.pendingGrailRewards > 0 ||
+            position.pendingArxRewards > 0 ||
             position.pendingWETHRewards > 0
         ) {
             uint256 xTokenRewards = pending.mul(xTokenRewardsShare).div(_TOTAL_REWARDS_SHARES);
-            uint256 grailAmount = pending.add(position.pendingGrailRewards).sub(xTokenRewards);
+            uint256 arxAmount = pending.add(position.pendingArxRewards).sub(xTokenRewards);
 
             xTokenRewards = xTokenRewards.add(position.pendingXTokenRewards);
 
             // Stack rewards in a buffer if to is equal to address(0)
             if (address(0) == to) {
                 position.pendingXTokenRewards = xTokenRewards;
-                position.pendingGrailRewards = grailAmount;
+                position.pendingArxRewards = arxAmount;
                 position.pendingWETHRewards = pendingWETH;
             } else {
                 // convert and send xToken + main token rewards
                 position.pendingXTokenRewards = 0;
-                position.pendingGrailRewards = 0;
+                position.pendingArxRewards = 0;
                 position.pendingWETHRewards = 0;
 
                 if (xTokenRewards > 0) xTokenRewards = _safeConvertTo(to, xTokenRewards);
 
-                grailAmount = _safeRewardsTransfer(address(_grailToken), to, grailAmount);
+                arxAmount = _safeRewardsTransfer(address(_arxToken), to, arxAmount);
                 pendingWETH = _safeRewardsTransfer(master.wethToken(), to, pendingWETH);
 
                 // forbidden to harvest if contract has not explicitly confirmed it handle it
-                _checkOnNFTHarvest(to, tokenId, grailAmount, xTokenRewards);
+                _checkOnNFTHarvest(to, tokenId, arxAmount, xTokenRewards);
 
                 rewardManager.harvestAdditionalRewards(positionAmountMultiplied, to, tokenId);
             }
@@ -1007,10 +1007,10 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     }
 
     /**
-     * @dev Safe convert GRAIL to xToken function, in case rounding error causes pool to not have enough tokens
+     * @dev Safe convert ARX to xToken function, in case rounding error causes pool to not have enough tokens
      */
     function _safeConvertTo(address to, uint256 amount) internal returns (uint256) {
-        uint256 balance = _grailToken.balanceOf(address(this));
+        uint256 balance = _arxToken.balanceOf(address(this));
         // cap to available balance
         if (amount > balance) {
             amount = balance;
@@ -1022,7 +1022,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     /**
      * @dev If NFT's owner is a contract, confirm whether it's able to handle rewards harvesting
      */
-    function _checkOnNFTHarvest(address to, uint256 tokenId, uint256 grailAmount, uint256 xTokenAmount) internal {
+    function _checkOnNFTHarvest(address to, uint256 tokenId, uint256 arxAmount, uint256 xTokenAmount) internal {
         address nftOwner = ERC721.ownerOf(tokenId);
         if (nftOwner.isContract()) {
             bytes memory returndata = nftOwner.functionCall(
@@ -1031,7 +1031,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
                     msg.sender,
                     to,
                     tokenId,
-                    grailAmount,
+                    arxAmount,
                     xTokenAmount
                 ),
                 "non implemented"
