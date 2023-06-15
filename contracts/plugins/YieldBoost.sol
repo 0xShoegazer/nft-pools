@@ -8,10 +8,10 @@ import "@openzeppelin/contracts/math/Math.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
-import "./interfaces/INFTPool.sol";
-import "./interfaces/IXArxTokenUsage.sol";
-import "./interfaces/IYieldBooster.sol";
-import "./interfaces/tokens/IxARXToken.sol";
+import "../interfaces/INFTPool.sol";
+import "../interfaces/IXArxTokenUsage.sol";
+import "../interfaces/IYieldBooster.sol";
+import "../interfaces/tokens/IxARXToken.sol";
 
 /*
  * This contract is a xARX Usage (plugin) that can boost spNFTs' yield (staking positions on NFTPools) when it
