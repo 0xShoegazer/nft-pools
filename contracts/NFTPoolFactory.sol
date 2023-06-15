@@ -5,6 +5,7 @@ import "./interfaces/tokens/IERC20Metadata.sol";
 
 import "./interfaces/IMasterChef.sol";
 import "./interfaces/tokens/IXToken.sol";
+import "./interfaces/INFTPoolRewardManager.sol";
 import "./NFTPool.sol";
 
 contract NFTPoolFactory {
@@ -28,8 +29,9 @@ contract NFTPoolFactory {
         return pools.length;
     }
 
-    function createPool(address lpToken, address rewardManager) external returns (address pool) {
+    function createPool(address lpToken, INFTPoolRewardManager rewardManager) external returns (address pool) {
         require(getPool[lpToken] == address(0), "pool exists");
+        require(address(rewardManager) != address(0), "manager not provided");
 
         bytes memory bytecode_ = type(NFTPool).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(lpToken));

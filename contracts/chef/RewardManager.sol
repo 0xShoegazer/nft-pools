@@ -6,7 +6,9 @@ import "@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20Metadat
 import "@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol";
 
-contract PoolRewardManager is AccessControlUpgradeable {
+import "./interfaces/INFTPoolRewardManager.sol";
+
+contract PoolRewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     using SafeERC20Upgradeable for IERC20MetadataUpgradeable;
     using EnumerableSetUpgradeable for EnumerableSetUpgradeable.AddressSet;
 
