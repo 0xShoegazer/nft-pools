@@ -8,7 +8,9 @@ import "./interfaces/IChefRamsey.sol";
 
 contract ChefRamsey is OwnableUpgradeable {
     struct PoolInfo {
-        address lpToken;
+        address nftPoolAddress;
+        uint256 allocPointsARX;
+        uint256 allocPointsWETH;
     }
 
     IChefRamsey private _ramsey;

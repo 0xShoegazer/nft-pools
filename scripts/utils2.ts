@@ -1,16 +1,18 @@
 import { ethers } from 'hardhat';
 import { createPool, deployRewardManager, sleepWait } from './utils';
+import { MASTER_CHEF_ABI } from './abis/master-chef';
 
 export async function runAddPoolFlow(
   lpPoolAddress: string,
   treasury: string,
   poolFactory: string,
   chef: string,
-  poolAllocPoints: number,
+  allocPointsARX: number,
+  allocPointsWETH: number,
   signer
 ) {
   const factory = await ethers.getContractAt('NFTPoolFactory', poolFactory, signer);
-  const chefRamsey = await ethers.getContractAt('ChefRamsey', chef, signer);
+  const chefRamsey: any = await ethers.getContractAt(MASTER_CHEF_ABI, chef, signer);
 
   console.log('Deploying pool reward manager..');
   const rewardManager = await deployRewardManager(treasury, signer);
@@ -23,5 +25,5 @@ export async function runAddPoolFlow(
   await sleepWait();
   // Need rewardManager init before creating positions
   console.log('Adding pool to chef..');
-  await chefRamsey.add(nftPoolAddress, poolAllocPoints, true);
+  await chefRamsey.add(nftPoolAddress, allocPointsARX, allocPointsWETH, true);
 }

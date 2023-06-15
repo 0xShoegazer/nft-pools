@@ -222,17 +222,18 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         override
         returns (
             address lpToken,
-            address arxoken,
+            address arxToken,
             address xToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
             uint256 accRewardsPerShareWETH,
             uint256 lpSupply,
             uint256 lpSupplyWithMultiplier,
-            uint256 allocPoint
+            uint256 allocPointsARX,
+            uint256 allocPointsWETH
         )
     {
-        (, allocPoint, lastRewardTime, , , , ) = master.getPoolInfo(address(this));
+        (, allocPointsARX, allocPointsWETH, lastRewardTime, , , , ) = master.getPoolInfo(address(this));
         return (
             address(_lpToken),
             address(_arxToken),
@@ -242,7 +243,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             _accRewardsPerShareWETH,
             _lpSupply,
             _lpSupplyWithMultiplier,
-            allocPoint
+            allocPointsARX,
+            allocPointsWETH
         );
     }
 
@@ -339,6 +341,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         (
             ,
             ,
+            ,
             uint256 lastRewardTime,
             uint256 reserve,
             uint256 reserveWETH,
@@ -383,7 +386,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         uint256 tokenId
     ) external view returns (address[] memory tokens, uint256[] memory rewardAmounts) {
         StakingPosition storage position = _stakingPositions[tokenId];
-        (, , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
+        (, , , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
         (tokens, rewardAmounts) = rewardManager.pendingAdditionalRewards(
             tokenId,
             position.amountWithMultiplier,
@@ -784,7 +787,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier; // stash
 
         // User current reward time before pool claims and updates it
-        (, , uint256 currentLastRewardTime, , , , ) = master.getPoolInfo(address(this));
+        (, , , uint256 currentLastRewardTime, , , , ) = master.getPoolInfo(address(this));
         rewardManager.updateRewardsPerShare(lpSupplyMultiplied, currentLastRewardTime);
 
         // Returns the amount of main token and WETH. Both amounts are transfered to this contract at this time

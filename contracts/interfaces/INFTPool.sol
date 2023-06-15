@@ -20,7 +20,8 @@ interface INFTPool is IERC721 {
             uint256 accRewardsPerShareWETH,
             uint256 lpSupply,
             uint256 lpSupplyWithMultiplier,
-            uint256 allocPoint
+            uint256 allocPointsARX,
+            uint256 allocPointsWETH
         );
 
     function getStakingPosition(
