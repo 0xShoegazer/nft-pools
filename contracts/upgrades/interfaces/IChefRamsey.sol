@@ -28,4 +28,6 @@ interface IChefRamsey {
         );
 
     function claimRewards() external returns (uint256 rewardAmount, uint256 amountWETH);
+
+    function add(address nftPoolAddress, uint256 poolAllocPoints, bool withUpdate) external;
 }

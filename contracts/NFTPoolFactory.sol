@@ -46,7 +46,7 @@ contract NFTPoolFactory {
         pools.push(pool);
 
         // Factory needs to have been given access to call this
-        rewardManager.addPool(pool);
+        // rewardManager.addPool(pool);
 
         emit PoolCreated(lpToken, pool);
     }

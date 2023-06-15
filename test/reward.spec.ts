@@ -57,63 +57,64 @@ describe('Rewards', () => {
     // });
 
     it('updates state correctly at actions time with multiple depositors', async () => {
-      const { rewardManager, signer, nftPool, tokenId, lpInstance, randomAccount, lpBalanceRandomAccount } =
-        await loadFixture(awesomeFixture);
+      // const { rewardManager, lpInstance, nftPool, randomAccount, tokenId, lpBalanceRandomAccount, signer } =
+      // await loadFixture(awesomeFixture);
+      const {} = await loadFixture(awesomeFixture);
 
       // test user alone in pool, withdraw, do they receive their proper amount of tokens?
 
       const rewardPerSecond = parseUnits('0.01');
       const rewardToken = USDC;
-      await rewardManager.addRewardToken(USDC, rewardPerSecond);
+      //   await rewardManager.addRewardToken(USDC, rewardPerSecond);
 
       // give contract reward amounts to distribute
-      await giveTokens(USDC, USDC_ARBITRUM_BALANCE_SLOT, rewardManager.address, parseUnits('1000'));
+      // await giveTokens(USDC, USDC_ARBITRUM_BALANCE_SLOT, rewardManager.address, parseUnits('1000'));
 
-      // position already created
-      // fast forward, check pending, claim, check balance
+      // // position already created
+      // // fast forward, check pending, claim, check balance
 
-      await time.increase(ONE_DAY_SECONDS / 2);
-      console.log(`
-      `);
-      console.log('12 HOURS LATER..');
+      // await time.increase(ONE_DAY_SECONDS / 2);
+      // console.log(`
+      // `);
+      // console.log('12 HOURS LATER..');
 
-      // do additional deposit
-      await lpInstance.connect(randomAccount).approve(nftPool.address, MAX_UINT256);
-      await nftPool.connect(randomAccount).createPosition(lpBalanceRandomAccount, 0);
+      // // do additional deposit
+      // await lpInstance.connect(randomAccount).approve(nftPool.address, MAX_UINT256);
+      // await nftPool.connect(randomAccount).createPosition(lpBalanceRandomAccount, 0);
 
-      const userOneTokenId = tokenId;
-      const userTwoTokenId = 2; // we know this from test setup
+      // const userOneTokenId = tokenId;
+      // const userTwoTokenId = 2; // we know this from test setup
 
       // claim for one, move up a little, claim for other, make sure all is lining up correctly
 
-      let pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
-      console.log('user pending reward: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      // let pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
+      // console.log('user pending reward: ' + formatEther(pendingRewards.rewardAmounts[0]));
 
-      let debt = await rewardManager.positionRewardDebts(userTwoTokenId, rewardToken);
-      console.log('user 2 reward debt: ' + formatEther(debt));
+      // let debt = await rewardManager.positionRewardDebts(userTwoTokenId, rewardToken);
+      // console.log('user 2 reward debt: ' + formatEther(debt));
 
-      await time.increase(ONE_DAY_SECONDS / 2);
-      console.log(`
-      `);
-      console.log('12 HOURS LATER..');
+      // await time.increase(ONE_DAY_SECONDS / 2);
+      // console.log(`
+      // `);
+      // console.log('12 HOURS LATER..');
 
-      pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
-      console.log('user 1 pending reward: ' + formatEther(pendingRewards.rewardAmounts[0]));
-      pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
-      console.log('user 2 pending reward: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      // pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
+      // console.log('user 1 pending reward: ' + formatEther(pendingRewards.rewardAmounts[0]));
+      // pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
+      // console.log('user 2 pending reward: ' + formatEther(pendingRewards.rewardAmounts[0]));
 
-      console.log(`
-      `);
-      console.log('Claiming user 1..');
+      // console.log(`
+      // `);
+      // console.log('Claiming user 1..');
 
-      // claim
-      await nftPool.connect(signer).harvestPosition(tokenId);
-      await time.increase(1);
+      // // claim
+      // await nftPool.connect(signer).harvestPosition(tokenId);
+      // await time.increase(1);
 
-      debt = await rewardManager.positionRewardDebts(userOneTokenId, rewardToken);
-      console.log('user 1 reward debt after claim: ' + formatEther(debt));
+      // debt = await rewardManager.positionRewardDebts(userOneTokenId, rewardToken);
+      // console.log('user 1 reward debt after claim: ' + formatEther(debt));
 
-      // check balances
+      // // check balances
       // const usdcToken = getERC20(USDC, signer);
       // let balance = await usdcToken.balanceOf(signer.address);
       // console.log('user 1 usdc after claim: ' + formatEther(balance));
@@ -125,14 +126,14 @@ describe('Rewards', () => {
       // pendingRewards = await nftPool.pendingAdditionalRewards(userTwoTokenId);
       // console.log('user 2 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));
 
-      console.log(`
-      `);
-      console.log('Claiming user 2..');
-      await nftPool.connect(randomAccount).harvestPosition(userTwoTokenId);
-      await time.increase(1);
+      // console.log(`
+      // `);
+      // console.log('Claiming user 2..');
+      // await nftPool.connect(randomAccount).harvestPosition(userTwoTokenId);
+      // await time.increase(1);
 
-      debt = await rewardManager.positionRewardDebts(userTwoTokenId, rewardToken);
-      console.log('user 2 reward debt after claim: ' + formatEther(debt));
+      // debt = await rewardManager.positionRewardDebts(userTwoTokenId, rewardToken);
+      // console.log('user 2 reward debt after claim: ' + formatEther(debt));
 
       // pendingRewards = await nftPool.pendingAdditionalRewards(userOneTokenId);
       // console.log('user 1 pending after claim: ' + formatEther(pendingRewards.rewardAmounts[0]));

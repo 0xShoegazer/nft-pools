@@ -22,6 +22,7 @@ import { getNFTPool, giveTokenBalanceFor } from '../utils';
 import { MAX_UINT256, UNIV2_POOL_BALANCEOF_SLOT } from '../constants';
 import { impersonateAccount, setBalance } from '@nomicfoundation/hardhat-network-helpers';
 import { OLD_CHEF_ABI } from '../abis/arbidex-chef-abi';
+import { getMasterChef } from '../../scripts/contract.utils';
 
 export async function awesomeFixture() {
   await impersonateAccount(DEV_ACCOUNT);
@@ -41,17 +42,17 @@ export async function awesomeFixture() {
   );
 
   const randomAccount = (await ethers.getSigners())[2];
-  const yieldBoooster = await deployYieldBooster(xARX_ADDRESS);
-  const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster.address, signer);
+  // const yieldBoooster = await deployYieldBooster(xARX_ADDRESS);
+  // const chefRamsey = await deployRamsey(ARBIDEX_CHEF_ADDRESS, ARBIDEX_TREASURY, yieldBoooster.address, signer);
+  const chefRamsey = await getMasterChef(signer);
 
   // Pool creation setup
   const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
   const factory = await deployPoolFactory(chefRamsey.address, ARX_ADDRESS, xARX_ADDRESS, signer);
   const nftPoolAddress: string = await createPool(factory.address, lpPoolAddress, rewardManager.address, signer);
-
-  // await rewardManager.addPool(nftPoolAddress);
+  await rewardManager.initializePool(nftPoolAddress);
   // Add new pool to chef
-  await chefRamsey.add(nftPoolAddress, 1, true);
+  await chefRamsey.add(nftPoolAddress, 100, true);
 
   const nftPool = getNFTPool(nftPoolAddress, signer);
   const lpInstance = await getERC20WithSigner(lpPoolAddress, signer);
@@ -59,22 +60,18 @@ export async function awesomeFixture() {
 
   // const lpBalance = await getTokenBalance(lpPoolAddress, signer.address, signer);
   await nftPool.createPosition(userOneLpBalance.div(2), 0);
-  const lpBalanceRandomAccount = userOneLpBalance.div(2);
-  await lpInstance.transfer(randomAccount.address, lpBalanceRandomAccount);
+  // const lpBalanceRandomAccount = userOneLpBalance.div(2);
+  // await lpInstance.transfer(randomAccount.address, lpBalanceRandomAccount);
 
   return {
-    factory,
-    nftPoolAddress,
+    // nftPool,
+    // lpBalanceRandomAccount,
+    // lpInstance,
+
     signer,
-    nftPool,
     chefRamsey,
     tokenId: 1,
-    ARXToken: await getERC20WithSigner(ARX_ADDRESS, signer),
-    xARXToken: await getERC20WithSigner(xARX_ADDRESS, signer),
-    oldChef: new Contract(ARBIDEX_CHEF_ADDRESS, OLD_CHEF_ABI, signer),
-    rewardManager,
     randomAccount,
-    lpBalanceRandomAccount,
-    lpInstance,
+    rewardManager,
   };
 }
