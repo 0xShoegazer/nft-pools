@@ -2,7 +2,6 @@ import { loadFixture, time } from '@nomicfoundation/hardhat-network-helpers';
 import { expect } from 'chai';
 import { ethers } from 'hardhat';
 import { formatEther, parseUnits } from 'ethers/lib/utils';
-import { freshFixture } from './fixtures/fresh.fixture';
 import { ARX_ADDRESS, DUMMY_POOL_ID, DUMMY_TOKEN_ADDRESS } from '../scripts/constants';
 import { addRewardToken, getTokenBalance } from '../scripts/utils';
 import { ONE_DAY_SECONDS } from './constants';

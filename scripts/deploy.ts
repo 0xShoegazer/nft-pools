@@ -52,9 +52,9 @@ const WETH_USDC_REWARD_MANAGER = '0xcA7ea1d7B85B984aF228D7210ba7B9e9b8cBEDcb';
  */
 
 const BOOST_DEEZ = '';
-const RAMSEY_DEEZ = '';
-
 const MASTER_CHEF = '0xe925B12Bdf074B0A17E42F2C3d60BBfC40063C5a'; // other repo
+const FACTORY_DEEZ = '0x3847e292d04814c119bF88e2a86bCdc6d7e03878';
+const REWARD_MANAGER = '';
 
 async function main() {
   const signer = (await ethers.getSigners())[0];
@@ -74,7 +74,7 @@ async function main() {
   // await chefRamsey.start(DUMMY_TOKEN_ADDRESS, DUMMY_POOL_ID);
   // await sleepWait();
 
-  const factory = await deployPoolFactory(MASTER_CHEF, ARX_ADDRESS, xARX_ADDRESS, signer);
+  // const factory = await deployPoolFactory(MASTER_CHEF, ARX_ADDRESS, xARX_ADDRESS, signer);
   // await sleepWait();
 
   // await runAddPoolFlow(

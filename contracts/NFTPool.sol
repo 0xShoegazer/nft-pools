@@ -129,7 +129,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * @dev Check if caller has operator rights
      */
     function _requireOnlyOwner() internal view {
-        require(master.isUnlockOperator(msg.sender), "FORBIDDEN");
+        // require(master.isUnlockOperator(msg.sender), "FORBIDDEN");
+        require(msg.sender == owner(), "FORBIDDEN");
         // onlyOwner: caller is not the owner
     }
 
@@ -404,7 +405,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * Must only be called by the owner
      */
     function setLockMultiplierSettings(uint256 maxLockDuration, uint256 maxLockMultiplier) external {
-        require(msg.sender == operator, "FORBIDDEN");
+        require(msg.sender == owner() || msg.sender == operator, "FORBIDDEN");
         // onlyOperatorOrOwner: caller has no operator rights
         require(
             maxLockMultiplier <= MAX_LOCK_MULTIPLIER_LIMIT &&
