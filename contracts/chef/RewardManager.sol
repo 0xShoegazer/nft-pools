@@ -103,6 +103,14 @@ contract RewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         return _poolRewardAddresses[nftPoolAddress].length();
     }
 
+    function getPoolRewardTokenInfo(address nftPoolAddress, address token) external view returns (RewardToken memory) {
+        return _poolRewardTokens[nftPoolAddress][token];
+    }
+
+    function getPoolTokenOperators(address nftPoolAddress) external view returns (address[] memory) {
+        return _approvedForPool[nftPoolAddress].values();
+    }
+
     // ==================================== ONLY POOL ====================================== //
 
     /**
@@ -212,7 +220,7 @@ contract RewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
 
         if (currentRewardCount == 0) return;
 
-        require(recipient != address(0), "PoolRewardManager: Zero address recipient");
+        require(recipient != address(0), "RewardManager: Zero address recipient");
 
         RewardToken memory currentReward;
         uint256 pendingAmount;
@@ -246,8 +254,11 @@ contract RewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
     // ==================================== ADMIN ====================================== //
 
     function addPool(address nftPoolAddress) external {
-        require(hasRole(OPERATOR_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender), "Not an operator");
-        require(!_pools.contains(nftPoolAddress), "Pool already added");
+        require(
+            hasRole(OPERATOR_ROLE, msg.sender) || hasRole(ADMIN_ROLE, msg.sender),
+            "RewardManager: Not an operator"
+        );
+        require(!_pools.contains(nftPoolAddress), "RewardManager: Pool already added");
 
         _pools.add(nftPoolAddress);
         emit PoolAdded(nftPoolAddress);
@@ -263,16 +274,16 @@ contract RewardManager is AccessControlUpgradeable, INFTPoolRewardManager {
         address nftPoolAddress,
         address account
     ) external validatePool(nftPoolAddress) onlyAdmin {
-        require(account != address(0), "Account not provided");
-        require(!_approvedForPool[nftPoolAddress].contains(account), "Account already added");
+        require(account != address(0), "RewardManager: Account not provided");
+        require(!_approvedForPool[nftPoolAddress].contains(account), "RewardManager: Account already added");
 
         _approvedForPool[nftPoolAddress].add(account);
         emit ApprovedForPool(nftPoolAddress, account);
     }
 
     function unapproveForPool(address nftPoolAddress, address account) external validatePool(nftPoolAddress) onlyAdmin {
-        require(account != address(0), "Account not provided");
-        require(_approvedForPool[nftPoolAddress].contains(account), "Account not added");
+        require(account != address(0), "RewardManager: Account not provided");
+        require(_approvedForPool[nftPoolAddress].contains(account), "RewardManager: Account not added");
 
         _approvedForPool[nftPoolAddress].remove(account);
         emit UnapprovedForPool(nftPoolAddress, account);
