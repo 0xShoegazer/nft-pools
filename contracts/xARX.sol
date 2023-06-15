@@ -38,7 +38,7 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     }
 
     IARXToken public immutable arxToken; // ARX token to convert to/from
-    IXArxTokenUsage public dividendsAddress; // Camelot dividends contract
+    IXArxTokenUsage public dividendsAddress; // Arbidex dividends contract
 
     EnumerableSet.AddressSet private _transferWhitelist; // addresses allowed to send/receive xArx
 

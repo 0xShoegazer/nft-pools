@@ -13,7 +13,7 @@ interface INFTPool is IERC721 {
         view
         returns (
             address lpToken,
-            address grailToken,
+            address arxToken,
             address xToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,

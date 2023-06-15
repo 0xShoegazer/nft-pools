@@ -8,8 +8,8 @@ interface INFTHandler is IERC721Receiver {
         address operator,
         address to,
         uint256 tokenId,
-        uint256 grailAmount,
-        uint256 xGrailAmount
+        uint256 arxAmount,
+        uint256 xArxAmount
     ) external returns (bool);
 
     function onNFTAddToPosition(address operator, uint256 tokenId, uint256 lpAmount) external returns (bool);
