@@ -5,7 +5,7 @@ import { addPoolToChef, addRewardToken, createPool, createPosition,
 } from './utils';
 import {
   ARBIDEX_TREASURY, ARX_ADDRESS, CHEF_RAMSEY_ADDRESS,
-  DEV_ACCOUNT, DUMMY_POOL_ID, DUMMY_TOKEN_ADDRESS, NFT_POOL_FACTORY,
+  DEV_ACCOUNT, NFT_POOL_FACTORY,
   OLD_CHEF_RAMSEY_ADDRESS, POOLS, xARX_ADDRESS,
 } from './constants';
 import { Contract } from 'ethers';
