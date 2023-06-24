@@ -29,17 +29,16 @@ const FRAX_USD_PLUS = '0xb0Fb1787238879171Edc30b9730968600D55762A'; // pid 34
 const FRAX_DAI_PLUS = '0x306132b6147751B85E608B4C1EC452E111531eA2'; // pid 35
 const USDC_USDCE = '0x81e8be7795ed3d8619f037b8db8c80292332aa72'; // PID 36
 const WETH_USDC = '0x1bde4a91d0ff7a353b511186768f4cc070874556'; // PID 37
+const FRAX_WETH = '0x4f3867358a4C16Fa8f71c9c4D5C87bc7B8837cd2'; // PID 38 
+const FRXETH_FRAX = '0x1BcF25125343D68B1b938fACA4B993E82549612D'; // PID 39 
+const FRXETH_WETH = '0x76678C984b56371767aDa0f5261D5a4b6B6536EE'; // PID 40  
 
 async function main() {
   const signer = (await ethers.getSigners())[0];
-
   // const factory = await deployPoolFactory(NEW_CHEF, ARX_ADDRESS, xARX_ADDRESS, signer);
   // await sleepWait();
-
-  const LP_ADDRESS = WETH_USDC;
-  const allocARX = 200;
-  const allocWETH = 10;
-  await runAddPoolFlow(LP_ADDRESS, ARBIDEX_TREASURY, NEW_FACTORY, NEW_CHEF, allocARX, allocWETH, signer);
+  const LP_ADDRESS = FRAX_WETH;
+  await runAddPoolFlow(LP_ADDRESS, ARBIDEX_TREASURY, NEW_FACTORY, signer);
 }
 
 // We recommend this pattern to be able to use async/await everywhere
