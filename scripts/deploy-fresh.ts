@@ -29,15 +29,15 @@ const FRAX_USD_PLUS = '0xb0Fb1787238879171Edc30b9730968600D55762A'; // pid 34
 const FRAX_DAI_PLUS = '0x306132b6147751B85E608B4C1EC452E111531eA2'; // pid 35
 const USDC_USDCE = '0x81e8be7795ed3d8619f037b8db8c80292332aa72'; // PID 36
 const WETH_USDC = '0x1bde4a91d0ff7a353b511186768f4cc070874556'; // PID 37
-const FRAX_WETH = '0xde553150ef951800d2c85b06ee3012113d7a262f'; // PID 40 
-const FRXETH_FRAX = ''; // PID 39 
-const FRXETH_WETH = ''; // PID 40  
+const FRAX_WETH = '0xde553150ef951800d2c85b06ee3012113d7a262f'; // PID 41 
+const FRXETH_WETH = '0xd3b90a1780b58c59a4333a879c7df488876565f6'; // PID 42
+const FRXETH_FRAX = '0x1379Fa99279129476A54108259Da487294D53b97'; // PID 43 
 
 async function main() {
   const signer = (await ethers.getSigners())[0];
   // const factory = await deployPoolFactory(NEW_CHEF, ARX_ADDRESS, xARX_ADDRESS, signer);
   // await sleepWait();
-  const LP_ADDRESS = FRAX_WETH;
+  const LP_ADDRESS = FRXETH_FRAX;
   await runAddPoolFlow(LP_ADDRESS, ARBIDEX_TREASURY, NEW_FACTORY, signer);
 }
 

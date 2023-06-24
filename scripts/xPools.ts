@@ -6,7 +6,7 @@ export const xPools = {
   },
   FRAX_WETH: {
     nftPoolAddress: '',
-    lpPoolAddress: '0x4f3867358a4C16Fa8f71c9c4D5C87bc7B8837cd2',
+    lpPoolAddress: '0xde553150ef951800d2c85b06ee3012113d7a262f',
     initialChefAllocationPoints: 50,
   },
   WETH_USDC: {

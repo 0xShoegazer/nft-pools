@@ -17,9 +17,9 @@ import { runAddPoolFlow } from './utils2';
 export const FACTORY = '0x3157e5aD383C36f2A27Fbc0aC2dB09Ef723ff80E';
 export const TREASURY = '0xE8FFE751deA181025a9ACf3D6Bde8cdA5380F53F'; 
 export const REWARD_MANAGER = '';
-const FRAX_WETH = '0x4f3867358a4C16Fa8f71c9c4D5C87bc7B8837cd2'; // PID 38 
-const FRXETH_FRAX = '0x1BcF25125343D68B1b938fACA4B993E82549612D'; // PID 39 
-const FRXETH_WETH = '0x76678C984b56371767aDa0f5261D5a4b6B6536EE'; // PID 40 
+const FRAX_WETH = '0xde553150ef951800d2c85b06ee3012113d7a262f'; // PID 41
+const FRXETH_FRAX = ''; // PID 42
+const FRXETH_WETH = ''; // PID 43
 
 async function main() {
   const signer = (await ethers.getSigners())[0];
