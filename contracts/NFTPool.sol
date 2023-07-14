@@ -127,9 +127,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Staking position NFT", "s
         _protocolToken.approve(address(_xToken), type(uint256).max);
     }
 
-    /********************************************/
-    /****************** EVENTS ******************/
-    /********************************************/
+    // ========================================= //
+    // ================ EVENTS ================= //
+    // ========================================= //
 
     event AddToPosition(uint256 indexed tokenId, address user, uint256 amount);
     event CreatePosition(uint256 indexed tokenId, uint256 amount, uint256 lockDuration);
@@ -150,9 +150,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Staking position NFT", "s
     event SetEmergencyUnlock(bool emergencyUnlock);
     event SetOperator(address operator);
 
-    /***********************************************/
-    /****************** MODIFIERS ******************/
-    /***********************************************/
+    // ========================================= //
+    // ================ MODIFIERS ============== //
+    // ========================================= //
 
     /**
      * @dev Check if caller has operator rights
@@ -193,9 +193,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Staking position NFT", "s
         require(_isOwnerOf(msg.sender, tokenId), "not owner");
     }
 
-    /**************************************************/
-    /****************** PUBLIC VIEWS ******************/
-    /**************************************************/
+    // ========================================= //
+    // ============== PUBLIC VIEW ============== //
+    // ========================================= //
 
     /**
      * @dev Returns this contract's owner (= master contract's owner)
@@ -381,9 +381,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Staking position NFT", "s
                 .add(position.pendingProtocolTokenRewards);
     }
 
-    /*******************************************************/
-    /****************** OWNABLE FUNCTIONS ******************/
-    /*******************************************************/
+    // ========================================= //
+    // ================ OWNABLE ================ //
+    // ========================================= //
 
     /**
      * @dev Set lock multiplier settings
@@ -488,9 +488,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Staking position NFT", "s
         emit SetEmergencyUnlock(emergencyUnlock);
     }
 
-    /****************************************************************/
-    /****************** EXTERNAL PUBLIC FUNCTIONS  ******************/
-    /****************************************************************/
+    // ========================================= //
+    // ============ EXTERNAL PUBLIC ============ //
+    // ========================================= //
 
     /**
      * @dev Add nonReentrant to ERC721.transferFrom
@@ -810,9 +810,9 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Staking position NFT", "s
         _lpToken.safeTransfer(msg.sender, amount);
     }
 
-    /********************************************************/
-    /****************** INTERNAL FUNCTIONS ******************/
-    /********************************************************/
+    // ========================================= //
+    // =============== INTERNAL ================ //
+    // ========================================= //
 
     /**
      * @dev Returns whether "userAddress" is the owner of "tokenId" spNFT
