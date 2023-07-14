@@ -38,9 +38,6 @@ const config: HardhatUserConfig = {
       },
     ],
   },
-  gasReporter: {
-    enabled: true,
-  },
   networks: {
     hardhat: {
       forking: {
