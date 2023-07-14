@@ -12,7 +12,7 @@ import "./interfaces/tokens/IProtocolToken.sol";
  * ProtocolToken is a native ERC20 token.
  * It has an hard cap and manages its own emissions and allocations.
  */
-contract ProtocolToken is Ownable, ERC20, IProtocolToken {
+contract PAWGToken is Ownable, ERC20, IProtocolToken {
     using SafeMath for uint256;
 
     uint256 public constant MAX_EMISSION_RATE = 0.01 ether;
@@ -32,9 +32,9 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
 
     address public constant BURN_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
-    // ========================================= //
-    // ================ EVENTS ================= //
-    // ========================================= //
+    /********************************************/
+    /****************** EVENTS ******************/
+    /********************************************/
 
     event ClaimMasterRewards(uint256 amount);
     event AllocationsDistributed(uint256 masterShare, uint256 treasuryShare);
@@ -45,9 +45,9 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
     event UpdateMaxSupply(uint256 previousMaxSupply, uint256 newMaxSupply);
     event UpdateTreasuryAddress(address previousTreasuryAddress, address newTreasuryAddress);
 
-    // ========================================= //
-    // ================ MODIFIER =============== //
-    // ========================================= //
+    /***********************************************/
+    /****************** MODIFIERS ******************/
+    /***********************************************/
 
     /*
      * @dev Throws error if called by any account other than the master
@@ -58,13 +58,11 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
     }
 
     constructor(
-        string memory _name,
-        string memory _symbol,
         uint256 maxSupply,
         uint256 initialSupply,
         uint256 initialEmissionRate,
         address treasury
-    ) ERC20(_name, _symbol) {
+    ) ERC20("PAWG Nation Token", "PAWG") {
         require(initialEmissionRate <= MAX_EMISSION_RATE, "invalid emission rate");
         require(maxSupply <= MAX_SUPPLY_LIMIT, "invalid initial maxSupply");
         require(initialSupply < maxSupply, "invalid initial supply");
@@ -77,9 +75,9 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
         _mint(msg.sender, initialSupply);
     }
 
-    // ========================================== //
-    // =============== PUBLIC VIEW ============== //
-    // ========================================== //
+    /**************************************************/
+    /****************** PUBLIC VIEWS ******************/
+    /**************************************************/
 
     /**
      * @dev Returns total master allocation
@@ -102,9 +100,9 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
         return uint256(ALLOCATION_PRECISION).sub(masterAllocation());
     }
 
-    // ================================================== //
-    // ================ EXTERNAL PUBLIC ================= //
-    // ================================================== //
+    /*****************************************************************/
+    /******************  EXTERNAL PUBLIC FUNCTIONS  ******************/
+    /*****************************************************************/
 
     /**
      * @dev Mint rewards and distribute it between master and treasury
@@ -183,9 +181,9 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
         _transfer(msg.sender, BURN_ADDRESS, amount);
     }
 
-    // ========================================== //
-    // ================ OWNABLE ================= //
-    // ========================================== //
+    /*****************************************************************/
+    /****************** EXTERNAL OWNABLE FUNCTIONS  ******************/
+    /*****************************************************************/
 
     /**
      * @dev Setup Master contract address
@@ -216,7 +214,7 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
     }
 
     /**
-     * @dev Updates emission allocations between farming incentives, legacy holders and treasury (remaining share)
+     * @dev Updates emission allocations between farming incentives and treasury (remaining share)
      *
      * Must only be called by the owner
      */
@@ -274,9 +272,9 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
         treasuryAddress = treasury;
     }
 
-    // =========================================== //
-    // ================ INTERNAL ================= //
-    // =========================================== //
+    /********************************************************/
+    /****************** INTERNAL FUNCTIONS ******************/
+    /********************************************************/
 
     /**
      * @dev Utility function to get the current block timestamp

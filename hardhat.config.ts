@@ -16,7 +16,7 @@ const config: HardhatUserConfig = {
         settings: {
           optimizer: {
             enabled: true,
-            runs: 200,
+            runs: 5000,
           },
         },
       },
@@ -26,7 +26,9 @@ const config: HardhatUserConfig = {
     // override defaults as needed: https://www.npmjs.com/package/hardhat-contract-sizer
   },
   etherscan: {
-    apiKey: process.env.ETHERSCAN_API_KEY,
+    apiKey: {
+      base: 'PLACEHOLDER_KEY', // Chain doesn't require but hardhat needs a string regardless
+    },
     customChains: [
       {
         network: 'base',
@@ -56,7 +58,9 @@ const config: HardhatUserConfig = {
     base: {
       url: `https://developer-access-mainnet.base.org/`,
       accounts,
-      gasPrice: 2500000000,
+      chainId: 8453,
+      gas: 500000,
+      gasPrice: 100,
     },
     bsc: {
       url: process.env.BSC_RPC || '',
