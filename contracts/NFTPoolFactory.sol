@@ -8,21 +8,22 @@ import "./interfaces/tokens/IXToken.sol";
 import "./NFTPool.sol";
 
 contract NFTPoolFactory {
-    IMasterChef public immutable master; // Address of the master
+    IMasterChef public immutable master;
     IERC20Metadata public immutable protocolToken;
     IXToken public immutable xToken;
 
+    address[] public pools;
+
     // lp token => pool
     mapping(address => address) public getPool;
-    address[] public pools;
+
+    event PoolCreated(address indexed lpToken, address pool);
 
     constructor(IMasterChef _master, IERC20Metadata _protocolToken, IXToken _xToken) {
         master = _master;
         protocolToken = _protocolToken;
         xToken = _xToken;
     }
-
-    event PoolCreated(address indexed lpToken, address pool);
 
     function poolLength() external view returns (uint256) {
         return pools.length;

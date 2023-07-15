@@ -7,8 +7,8 @@ import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
-import "./interfaces/IDividends.sol";
-import "./interfaces/IXTokenUsage.sol";
+import "../interfaces/IDividends.sol";
+import "../interfaces/IXTokenUsage.sol";
 
 /*
  * This contract is used to distribute dividends to users that allocated xToken here

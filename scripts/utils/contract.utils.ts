@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat';
-import { DEV_ACCOUNT } from '../constants';
+import { BASE_MASTER_CHEF, DEV_ACCOUNT, PAWG_TOKEN } from '../constants';
 import { parseUnits } from 'ethers/lib/utils';
 
 export async function deployTestProtocolToken() {
@@ -30,8 +30,20 @@ export async function deployTestXToken(mainToken: string) {
   console.log(`xPAWG deployed to: ${instance.address}`);
 }
 
-export async function deployFactory() {
-  //
+export async function deployFactory(chef: string, protoToko: string, xToken: string) {
+  const NFTPoolFactory = await ethers.getContractFactory('NFTPoolFactory');
+  const instance = await NFTPoolFactory.deploy(chef, protoToko, xToken);
+  await instance.deployed();
+
+  console.log(`NFTPoolFactory deployed to: ${instance.address}`);
+}
+
+export async function deployYieldBooster(xToken: string) {
+  const factory = await ethers.getContractFactory('YieldBooster');
+  const instance = await factory.deploy(xToken);
+  await instance.deployed();
+
+  console.log(`YieldBooster deployed to: ${instance.address}`);
 }
 
 export async function runProtcolSetup() {
@@ -53,4 +65,8 @@ export async function runProtcolSetup() {
    * - Start emissions
    *
    */
+
+  const mainToken = await ethers.getContractAt('PAWGToken', PAWG_TOKEN);
+  await mainToken.initializeMasterAddress(BASE_MASTER_CHEF);
+  console.log('MasterChef successfully set on protocol token.');
 }
