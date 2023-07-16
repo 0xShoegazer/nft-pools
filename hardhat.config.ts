@@ -62,9 +62,10 @@ const config: HardhatUserConfig = {
       gas: 500000,
       gasPrice: 100,
     },
-    bsc: {
-      url: process.env.BSC_RPC || '',
+    base_testnet: {
+      url: `https://goerli.base.org`,
       accounts,
+      chainId: 84531,
     },
   },
 };

@@ -6,13 +6,20 @@ import {
   deployYieldBooster,
   runProtcolSetup,
 } from './utils/contract.utils';
-import { BASE_MASTER_CHEF, PAWG_TOKEN, XPAWG_TOKEN } from './constants';
+import {
+  BASE_MASTER_CHEF,
+  BASE_MASTER_CHEF_TESTNET,
+  PAWG_TOKEN,
+  PAWG_TOKEN_TESTNET,
+  XPAWG_TOKEN,
+  XPAWG_TOKEN_TESTNET,
+} from './constants';
 
 async function main() {
   // await deployTestProtocolToken();
-  // await deployTestXToken(PAWG_TOKEN);
-  // await deployYieldBooster(XPAWG_TOKEN);
-  // await deployFactory(BASE_MASTER_CHEF, PAWG_TOKEN, XPAWG_TOKEN);
+  // await deployTestXToken(PAWG_TOKEN_TESTNET);
+  // await deployYieldBooster(XPAWG_TOKEN_TESTNET);
+  await deployFactory(BASE_MASTER_CHEF_TESTNET, PAWG_TOKEN_TESTNET, XPAWG_TOKEN_TESTNET);
   // await runProtcolSetup();
 }
 
