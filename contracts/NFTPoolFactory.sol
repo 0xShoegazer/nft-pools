@@ -29,9 +29,8 @@ contract NFTPoolFactory {
         return pools.length;
     }
 
-    function createPool(address lpToken, INFTPoolRewardManager rewardManager) external returns (address pool) {
+    function createPool(address lpToken) external returns (address pool) {
         require(getPool[lpToken] == address(0), "pool exists");
-        require(address(rewardManager) != address(0), "Manager not provided");
 
         bytes memory bytecode_ = type(NFTPool).creationCode;
         bytes32 salt = keccak256(abi.encodePacked(lpToken));
@@ -41,12 +40,9 @@ contract NFTPoolFactory {
         }
         require(pool != address(0), "failed");
 
-        NFTPool(pool).initialize(master, arxToken, xArxToken, IERC20Metadata(lpToken), rewardManager);
+        NFTPool(pool).initialize(master, arxToken, xArxToken, IERC20Metadata(lpToken));
         getPool[lpToken] = pool;
         pools.push(pool);
-
-        // Factory needs to have been given access to call this
-        // rewardManager.addPool(pool);
 
         emit PoolCreated(lpToken, pool);
     }

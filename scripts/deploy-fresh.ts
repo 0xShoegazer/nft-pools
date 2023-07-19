@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat';
-import { deployPoolFactory } from './utils';
+import { createPool, deployPoolFactory } from './utils';
 import { ARBIDEX_TREASURY, ARX_ADDRESS, xARX_ADDRESS } from './constants';
 import { runAddPoolFlow } from './utils2';
 
@@ -36,9 +36,18 @@ async function main() {
   // const factory = await deployPoolFactory(NEW_CHEF, ARX_ADDRESS, xARX_ADDRESS, signer);
   // await sleepWait();
 
-  const LP_ADDRESS = WETH_USDC;
+  const LP_ADDRESS = '0xc4f5e98beb552ced70f5d51eb1da599432ca65db'; // DUES pool strat address
   const allocARX = 200;
   const allocWETH = 10;
+
+  // const rewardManager = await deployRewardManager(treasury, signer);
+  // await sleepWait();
+  // const nftPoolAddress = await createPool(
+  //   NEW_FACTORY,
+  //   '0xc4f5e98beb552ced70f5d51eb1da599432ca65db',
+  //   rewardManager.address,
+  //   signer
+  // );
   await runAddPoolFlow(LP_ADDRESS, ARBIDEX_TREASURY, NEW_FACTORY, NEW_CHEF, allocARX, allocWETH, signer);
 }
 
