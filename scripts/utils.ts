@@ -50,14 +50,9 @@ export async function deployPoolFactory(master: string, mainToken: string, xToke
   return instance;
 }
 
-export async function createPool(
-  factoryAddress: string,
-  lpToken: string,
-  rewardManager: string,
-  signer
-): Promise<string> {
+export async function createPool(factoryAddress: string, lpToken: string, signer): Promise<string> {
   const factory = await ethers.getContractAt('NFTPoolFactory', factoryAddress, signer);
-  const tx = await factory.createPool(lpToken, rewardManager);
+  const tx = await factory.createPool(lpToken);
   const receipt = await tx.wait();
 
   const poolEvent = receipt.events.find((evt) => evt.event === 'PoolCreated');
@@ -78,13 +73,12 @@ export async function createPool(
 export async function createPoolWithInstance(
   factoryAddress: string,
   lpToken: string,
-  rewardManager: string,
   signer
 ): Promise<{
   lpInstance: Contract;
   nftPool: Contract;
 }> {
-  const nftPoolAddress = await createPool(factoryAddress, lpToken, rewardManager, signer);
+  const nftPoolAddress = await createPool(factoryAddress, lpToken, signer);
 
   const lpInstance = await getERC20WithSigner(lpToken, signer);
   await lpInstance.approve(nftPoolAddress, MAX_UINT256);
@@ -96,9 +90,9 @@ export async function createPoolWithInstance(
 }
 
 export async function addPoolToChef(ramsey: string, nftPoolAddress: string, allocationPoints: number, signer) {
-  const chef = await ethers.getContractAt('ChefRamsey', ramsey, signer);
-  await chef.add(nftPoolAddress, allocationPoints, true);
-  console.log(`New pool added to chef`);
+  // const chef = await ethers.getContractAt('ChefRamsey', ramsey, signer);
+  // await chef.add(nftPoolAddress, allocationPoints, true);
+  // console.log(`New pool added to chef`);
 }
 
 export async function deployYieldBooster(xToken: string) {
