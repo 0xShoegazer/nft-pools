@@ -13,7 +13,6 @@ import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
 import "./interfaces/tokens/IxARXToken.sol";
 import "./interfaces/tokens/IERC20Metadata.sol";
-import "./interfaces/INFTPoolRewardManager.sol";
 
 /*
  * This contract wraps ERC20 assets into non-fungible staking positions called spNFTs
@@ -53,7 +52,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     IERC20Metadata private _lpToken; // Deposit token contract's address
     IERC20Metadata private _arxToken; // ARXToken contract's address
     IxARXToken private _xToken; // xToken contract's address
-    INFTPoolRewardManager public rewardManager;
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
     uint256 private _lpSupplyWithMultiplier; // Sum of deposit token on this pool including the user's total multiplier (lockMultiplier + boostPoints)
     uint256 private _accRewardsPerShare; // Accumulated Rewards (staked token) per share, times 1e18. See below
@@ -96,7 +94,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     event SetUnlockOperator(address operator, bool isAdded);
     event SetEmergencyUnlock(bool emergencyUnlock);
     event SetOperator(address operator);
-    event SetRewardManager(address manager);
 
     constructor() {
         factory = msg.sender;
@@ -106,15 +103,13 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         IMasterChef master_,
         IERC20Metadata arxToken,
         IxARXToken xToken,
-        IERC20Metadata lpToken,
-        INFTPoolRewardManager manager
+        IERC20Metadata lpToken
     ) external {
         require(msg.sender == factory && !initialized, "FORBIDDEN");
         _lpToken = lpToken;
         master = master_;
         _arxToken = arxToken;
         _xToken = xToken;
-        rewardManager = manager;
         initialized = true;
 
         // to convert main token to xToken
@@ -382,19 +377,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         return (mainAmount, wethAmount);
     }
 
-    function pendingAdditionalRewards(
-        uint256 tokenId
-    ) external view returns (address[] memory tokens, uint256[] memory rewardAmounts) {
-        StakingPosition storage position = _stakingPositions[tokenId];
-        (, , , uint256 lastRewardTime, , , , ) = master.getPoolInfo(address(this));
-        (tokens, rewardAmounts) = rewardManager.pendingAdditionalRewards(
-            tokenId,
-            position.amountWithMultiplier,
-            _lpSupplyWithMultiplier,
-            lastRewardTime
-        );
-    }
-
     /*******************************************************/
     /****************** OWNABLE FUNCTIONS ******************/
     /*******************************************************/
@@ -486,18 +468,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         emit SetOperator(operator_);
     }
 
-    /**
-     * @dev Set operator (usually deposit token's project's owner) to adjust contract's settings
-     *
-     * Must only be called by the owner
-     */
-    function setRewardManager(address manager) external {
-        _requireOnlyOwner();
-
-        rewardManager = INFTPoolRewardManager(manager);
-        emit SetRewardManager(manager);
-    }
-
     /****************************************************************/
     /****************** EXTERNAL PUBLIC FUNCTIONS  ******************/
     /****************************************************************/
@@ -570,8 +540,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         _lpSupply = _lpSupply.add(amount);
         _lpSupplyWithMultiplier = _lpSupplyWithMultiplier.add(amountWithMultiplier);
 
-        rewardManager.updatePositionRewardDebts(amountWithMultiplier, currentTokenId);
-
         emit CreatePosition(currentTokenId, amount, lockDuration);
     }
 
@@ -602,7 +570,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         // update position
         position.amount = position.amount.add(amountToAdd);
         _lpSupply = _lpSupply.add(amountToAdd);
-        _updateBoostMultiplierInfoAndRewardDebt(position, tokenId);
+        _updateBoostMultiplierInfoAndRewardDebt(position);
 
         _checkOnAddToPosition(nftOwner, tokenId, amountToAdd);
         emit AddToPosition(tokenId, msg.sender, amountToAdd);
@@ -625,7 +593,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         // update position
         uint256 boostPoints = position.boostPoints.add(amount);
         position.boostPoints = boostPoints;
-        _updateBoostMultiplierInfoAndRewardDebt(position, tokenId);
+        _updateBoostMultiplierInfoAndRewardDebt(position);
         emit SetBoost(tokenId, boostPoints);
     }
 
@@ -645,7 +613,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         // update position
         uint256 boostPoints = position.boostPoints.sub(amount);
         position.boostPoints = boostPoints;
-        _updateBoostMultiplierInfoAndRewardDebt(position, tokenId);
+        _updateBoostMultiplierInfoAndRewardDebt(position);
         emit SetBoost(tokenId, boostPoints);
     }
 
@@ -659,7 +627,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
         _updatePool();
         _harvestPosition(tokenId, ERC721.ownerOf(tokenId));
-        _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId], tokenId);
+        _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId]);
     }
 
     /**
@@ -674,7 +642,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
         _updatePool();
         _harvestPosition(tokenId, to);
-        _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId], tokenId);
+        _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId]);
     }
 
     /**
@@ -696,7 +664,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             require((msg.sender == tokenOwner && msg.sender == to) || tokenOwner.isContract(), "FORBIDDEN");
 
             _harvestPosition(tokenId, to);
-            _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId], tokenId);
+            _updateBoostMultiplierInfoAndRewardDebt(_stakingPositions[tokenId]);
         }
     }
 
@@ -786,10 +754,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     function _updatePool() internal {
         uint256 lpSupplyMultiplied = _lpSupplyWithMultiplier; // stash
 
-        // User current reward time before pool claims and updates it
-        (, , , uint256 currentLastRewardTime, , , , ) = master.getPoolInfo(address(this));
-        rewardManager.updateRewardsPerShare(lpSupplyMultiplied, currentLastRewardTime);
-
         // Returns the amount of main token and WETH. Both amounts are transfered to this contract at this time
         (uint256 rewardAmount, uint256 amountWETH) = master.claimRewards();
 
@@ -862,7 +826,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             _lpSupplyWithMultiplier = _lpSupplyWithMultiplier.sub(position.amountWithMultiplier);
             _destroyPosition(tokenId, position.boostPoints);
         } else {
-            _updateBoostMultiplierInfoAndRewardDebt(position, tokenId);
+            _updateBoostMultiplierInfoAndRewardDebt(position);
         }
 
         emit WithdrawFromPosition(tokenId, amountToWithdraw);
@@ -873,7 +837,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
      * @dev updates position's boost multiplier, totalMultiplier, amountWithMultiplier (_lpSupplyWithMultiplier)
      * and rewardDebt without updating lockMultiplier
      */
-    function _updateBoostMultiplierInfoAndRewardDebt(StakingPosition storage position, uint256 tokenId) internal {
+    function _updateBoostMultiplierInfoAndRewardDebt(StakingPosition storage position) internal {
         // keep the original lock multiplier and recompute current boostPoints multiplier
         uint256 newTotalMultiplier = getMultiplierByBoostPoints(position.amount, position.boostPoints).add(
             position.lockMultiplier
@@ -890,8 +854,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
         position.rewardDebt = amountWithMultiplier.mul(_accRewardsPerShare).div(1e18);
         position.rewardDebtWETH = amountWithMultiplier.mul(_accRewardsPerShareWETH).div(1e18);
-
-        rewardManager.updatePositionRewardDebts(amountWithMultiplier, tokenId);
     }
 
     /**
@@ -945,8 +907,6 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
                 // forbidden to harvest if contract has not explicitly confirmed it handle it
                 _checkOnNFTHarvest(to, tokenId, arxAmount, xTokenRewards);
-
-                rewardManager.harvestAdditionalRewards(positionAmountMultiplied, to, tokenId);
             }
         }
 
@@ -974,7 +934,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         position.lockDuration = lockDuration;
         position.lockMultiplier = getMultiplierByLockDuration(lockDuration);
         position.startLockTime = currentBlockTimestamp;
-        _updateBoostMultiplierInfoAndRewardDebt(position, tokenId);
+        _updateBoostMultiplierInfoAndRewardDebt(position);
 
         emit LockPosition(tokenId, lockDuration);
     }
