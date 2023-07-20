@@ -895,7 +895,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
                 position.pendingArxRewards = arxAmount;
                 position.pendingWETHRewards = pendingWETH;
             } else {
-                // convert and send xToken + main token rewards
+                // Convert and send xToken + main token rewards
                 position.pendingXTokenRewards = 0;
                 position.pendingArxRewards = 0;
                 position.pendingWETHRewards = 0;
@@ -905,8 +905,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
                 arxAmount = _safeRewardsTransfer(address(_arxToken), to, arxAmount);
                 pendingWETH = _safeRewardsTransfer(master.wethToken(), to, pendingWETH);
 
-                // forbidden to harvest if contract has not explicitly confirmed it handle it
-                _checkOnNFTHarvest(to, tokenId, arxAmount, xTokenRewards);
+                // Forbidden to harvest if contract has not explicitly confirmed it can handle it
+                _checkOnNFTHarvest(to, tokenId, arxAmount, xTokenRewards, pendingWETH);
             }
         }
 
@@ -986,7 +986,13 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     /**
      * @dev If NFT's owner is a contract, confirm whether it's able to handle rewards harvesting
      */
-    function _checkOnNFTHarvest(address to, uint256 tokenId, uint256 arxAmount, uint256 xTokenAmount) internal {
+    function _checkOnNFTHarvest(
+        address to,
+        uint256 tokenId,
+        uint256 arxAmount,
+        uint256 xTokenAmount,
+        uint256 wethAmount
+    ) internal {
         address nftOwner = ERC721.ownerOf(tokenId);
         if (nftOwner.isContract()) {
             bytes memory returndata = nftOwner.functionCall(
@@ -996,7 +1002,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
                     to,
                     tokenId,
                     arxAmount,
-                    xTokenAmount
+                    xTokenAmount,
+                    wethAmount
                 ),
                 "non implemented"
             );

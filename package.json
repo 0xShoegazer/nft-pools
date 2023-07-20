@@ -1,7 +1,7 @@
 {
   "name": "nft-pools",
   "scripts": {
-    "build": "npx hardhat compile",
+    "build": "forge build",
     "start": "yarn hardhat node",
     "test": "npx hardhat test --network hardhat",
     "test:local": "npx hardhat test --network localhost",

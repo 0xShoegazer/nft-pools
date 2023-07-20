@@ -1,0 +1,808 @@
+{
+  "abi": [
+    {
+      "inputs": [],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": false,
+          "internalType": "uint8",
+          "name": "version",
+          "type": "uint8"
+        }
+      ],
+      "name": "Initialized",
+      "type": "event"
+    },
+    {
+      "anonymous": false,
+      "inputs": [
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "previousOwner",
+          "type": "address"
+        },
+        {
+          "indexed": true,
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "OwnershipTransferred",
+      "type": "event"
+    },
+    {
+      "inputs": [],
+      "name": "addPools",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "contract IChefRamsey",
+          "name": "ramsey",
+          "type": "address"
+        }
+      ],
+      "name": "intialize",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "owner",
+      "outputs": [
+        {
+          "internalType": "address",
+          "name": "",
+          "type": "address"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "renounceOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [
+        {
+          "internalType": "address",
+          "name": "newOwner",
+          "type": "address"
+        }
+      ],
+      "name": "transferOwnership",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    }
+  ],
+  "bytecode": {
+    "object": "0x608060405234801561001057600080fd5b5061001961001e565b6100dd565b600054610100900460ff161561008a5760405162461bcd60e51b815260206004820152602760248201527f496e697469616c697a61626c653a20636f6e747261637420697320696e697469604482015266616c697a696e6760c81b606482015260840160405180910390fd5b60005460ff908116146100db576000805460ff191660ff9081179091556040519081527f7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb38474024989060200160405180910390a15b565b61038d806100ec6000396000f3fe608060405234801561001057600080fd5b50600436106100575760003560e01c8063715018a61461005c57806374248364146100665780638da5cb5b1461006e578063982f0d361461008d578063f2fde38b146100a0575b600080fd5b6100646100b3565b005b6100646100c7565b603354604080516001600160a01b039092168252519081900360200190f35b61006461009b366004610333565b6100cf565b6100646100ae366004610333565b6101f9565b6100bb610272565b6100c560006102cc565b565b6100c5610272565b600054610100900460ff16158080156100ef5750600054600160ff909116105b806101095750303b158015610109575060005460ff166001145b6101715760405162461bcd60e51b815260206004820152602e60248201527f496e697469616c697a61626c653a20636f6e747261637420697320616c72656160448201526d191e481a5b9a5d1a585b1a5e995960921b60648201526084015b60405180910390fd5b6000805460ff191660011790558015610194576000805461ff0019166101001790555b606580546001600160a01b0319166001600160a01b03841617905580156101f5576000805461ff0019169055604051600181527f7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb38474024989060200160405180910390a15b5050565b610201610272565b6001600160a01b0381166102665760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610168565b61026f816102cc565b50565b6033546001600160a01b031633146100c55760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610168565b603380546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a35050565b6001600160a01b038116811461026f57600080fd5b60006020828403121561034557600080fd5b81356103508161031e565b939250505056fea2646970667358221220e79ba877c647dee56e04d03c0feb0a7ef07d70c3ca04e967f6a4310e4b15b2ea64736f6c634300080f0033",
+    "sourceMap": "228:501:0:-:0;;;445:113;;;;;;;;;-1:-1:-1;528:22:0;:20;:22::i;:::-;228:501;;5939:280:13;6007:13;;;;;;;6006:14;5998:66;;;;-1:-1:-1;;;5998:66:13;;216:2:26;5998:66:13;;;198:21:26;255:2;235:18;;;228:30;294:34;274:18;;;267:62;-1:-1:-1;;;345:18:26;;;338:37;392:19;;5998:66:13;;;;;;;;6078:12;;6094:15;6078:12;;;:31;6074:139;;6125:12;:30;;-1:-1:-1;;6125:30:13;6140:15;6125:30;;;;;;6174:28;;564:36:26;;;6174:28:13;;552:2:26;537:18;6174:28:13;;;;;;;6074:139;5939:280::o;422:184:26:-;228:501:0;;;;;;",
+    "linkReferences": {}
+  },
+  "deployedBytecode": {
+    "object": "0x608060405234801561001057600080fd5b50600436106100575760003560e01c8063715018a61461005c57806374248364146100665780638da5cb5b1461006e578063982f0d361461008d578063f2fde38b146100a0575b600080fd5b6100646100b3565b005b6100646100c7565b603354604080516001600160a01b039092168252519081900360200190f35b61006461009b366004610333565b6100cf565b6100646100ae366004610333565b6101f9565b6100bb610272565b6100c560006102cc565b565b6100c5610272565b600054610100900460ff16158080156100ef5750600054600160ff909116105b806101095750303b158015610109575060005460ff166001145b6101715760405162461bcd60e51b815260206004820152602e60248201527f496e697469616c697a61626c653a20636f6e747261637420697320616c72656160448201526d191e481a5b9a5d1a585b1a5e995960921b60648201526084015b60405180910390fd5b6000805460ff191660011790558015610194576000805461ff0019166101001790555b606580546001600160a01b0319166001600160a01b03841617905580156101f5576000805461ff0019169055604051600181527f7f26b83ff96e1f2b6a682f133852f6798a09c465da95921460cefb38474024989060200160405180910390a15b5050565b610201610272565b6001600160a01b0381166102665760405162461bcd60e51b815260206004820152602660248201527f4f776e61626c653a206e6577206f776e657220697320746865207a65726f206160448201526564647265737360d01b6064820152608401610168565b61026f816102cc565b50565b6033546001600160a01b031633146100c55760405162461bcd60e51b815260206004820181905260248201527f4f776e61626c653a2063616c6c6572206973206e6f7420746865206f776e65726044820152606401610168565b603380546001600160a01b038381166001600160a01b0319831681179093556040519116919082907f8be0079c531659141344cd1fd0a4f28419497f9722a3daafe3b4186f6b6457e090600090a35050565b6001600160a01b038116811461026f57600080fd5b60006020828403121561034557600080fd5b81356103508161031e565b939250505056fea2646970667358221220e79ba877c647dee56e04d03c0feb0a7ef07d70c3ca04e967f6a4310e4b15b2ea64736f6c634300080f0033",
+    "sourceMap": "228:501:0:-:0;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;2064:101:12;;;:::i;:::-;;667:59:0;;;:::i;1441:85:12:-;1513:6;;1441:85;;;-1:-1:-1;;;;;1513:6:12;;;160:51:26;;1441:85:12;;;;;148:2:26;1441:85:12;;;566:93:0;;;;;;:::i;:::-;;:::i;2314:198:12:-;;;;;;:::i;:::-;;:::i;2064:101::-;1334:13;:11;:13::i;:::-;2128:30:::1;2155:1;2128:18;:30::i;:::-;2064:101::o:0;667:59:0:-;1334:13:12;:11;:13::i;566:93:0:-;3279:19:13;3302:13;;;;;;3301:14;;3347:34;;;;-1:-1:-1;3365:12:13;;3380:1;3365:12;;;;:16;3347:34;3346:108;;;-1:-1:-1;3426:4:13;1713:19:18;:23;;;3387:66:13;;-1:-1:-1;3436:12:13;;;;;:17;3387:66;3325:201;;;;-1:-1:-1;;;3325:201:13;;1123:2:26;3325:201:13;;;1105:21:26;1162:2;1142:18;;;1135:30;1201:34;1181:18;;;1174:62;-1:-1:-1;;;1252:18:26;;;1245:44;1306:19;;3325:201:13;;;;;;;;;3536:12;:16;;-1:-1:-1;;3536:16:13;3551:1;3536:16;;;3562:65;;;;3596:13;:20;;-1:-1:-1;;3596:20:13;;;;;3562:65;635:7:0::1;:16:::0;;-1:-1:-1;;;;;;635:16:0::1;-1:-1:-1::0;;;;;635:16:0;::::1;;::::0;;3647:99:13;;;;3697:5;3681:21;;-1:-1:-1;;3681:21:13;;;3721:14;;-1:-1:-1;1488:36:26;;3721:14:13;;1476:2:26;1461:18;3721:14:13;;;;;;;3647:99;3269:483;566:93:0;:::o;2314:198:12:-;1334:13;:11;:13::i;:::-;-1:-1:-1;;;;;2402:22:12;::::1;2394:73;;;::::0;-1:-1:-1;;;2394:73:12;;1737:2:26;2394:73:12::1;::::0;::::1;1719:21:26::0;1776:2;1756:18;;;1749:30;1815:34;1795:18;;;1788:62;-1:-1:-1;;;1866:18:26;;;1859:36;1912:19;;2394:73:12::1;1535:402:26::0;2394:73:12::1;2477:28;2496:8;2477:18;:28::i;:::-;2314:198:::0;:::o;1599:130::-;1513:6;;-1:-1:-1;;;;;1513:6:12;929:10:19;1662:23:12;1654:68;;;;-1:-1:-1;;;1654:68:12;;2144:2:26;1654:68:12;;;2126:21:26;;;2163:18;;;2156:30;2222:34;2202:18;;;2195:62;2274:18;;1654:68:12;1942:356:26;2666:187:12;2758:6;;;-1:-1:-1;;;;;2774:17:12;;;-1:-1:-1;;;;;;2774:17:12;;;;;;;2806:40;;2758:6;;;2774:17;2758:6;;2806:40;;2739:16;;2806:40;2729:124;2666:187;:::o;222:144:26:-;-1:-1:-1;;;;;310:31:26;;300:42;;290:70;;356:1;353;346:12;371:280;450:6;503:2;491:9;482:7;478:23;474:32;471:52;;;519:1;516;509:12;471:52;558:9;545:23;577:44;615:5;577:44;:::i;:::-;640:5;371:280;-1:-1:-1;;;371:280:26:o",
+    "linkReferences": {}
+  },
+  "methodIdentifiers": {
+    "addPools()": "74248364",
+    "intialize(address)": "982f0d36",
+    "owner()": "8da5cb5b",
+    "renounceOwnership()": "715018a6",
+    "transferOwnership(address)": "f2fde38b"
+  },
+  "rawMetadata": "{\"compiler\":{\"version\":\"0.8.15+commit.e14f2714\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":false,\"internalType\":\"uint8\",\"name\":\"version\",\"type\":\"uint8\"}],\"name\":\"Initialized\",\"type\":\"event\"},{\"anonymous\":false,\"inputs\":[{\"indexed\":true,\"internalType\":\"address\",\"name\":\"previousOwner\",\"type\":\"address\"},{\"indexed\":true,\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"OwnershipTransferred\",\"type\":\"event\"},{\"inputs\":[],\"name\":\"addPools\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"contract IChefRamsey\",\"name\":\"ramsey\",\"type\":\"address\"}],\"name\":\"intialize\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"owner\",\"outputs\":[{\"internalType\":\"address\",\"name\":\"\",\"type\":\"address\"}],\"stateMutability\":\"view\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"renounceOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[{\"internalType\":\"address\",\"name\":\"newOwner\",\"type\":\"address\"}],\"name\":\"transferOwnership\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{\"owner()\":{\"details\":\"Returns the address of the current owner.\"},\"renounceOwnership()\":{\"details\":\"Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner.\"},\"transferOwnership(address)\":{\"details\":\"Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner.\"}},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{},\"version\":1}},\"settings\":{\"compilationTarget\":{\"contracts/upgrades/PoolCreator.sol\":\"ChefRamsey\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":true,\"runs\":200},\"remappings\":[\":@openzeppelin/=node_modules/@openzeppelin/\",\":eth-gas-reporter/=node_modules/eth-gas-reporter/\",\":hardhat/=node_modules/hardhat/\"]},\"sources\":{\"contracts/upgrades/PoolCreator.sol\":{\"keccak256\":\"0x49251e76485a9ccfc065e84402e49c8cacb6c12ac97dda8686fe42de53942c0e\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://a0171b2d542ae87e24450467c34c3de80e1e6ebd26c5f5e51b4e6ad51586e2dd\",\"dweb:/ipfs/QmbfZuokpoAviUDx3uxhw4Xb3JxKQvjUQc74wma8KULkYp\"]},\"contracts/upgrades/interfaces/IArbidexMasterChef.sol\":{\"keccak256\":\"0x768d5ed89621f354ef674d5500831ef7f23f6ccfaa5cfffb7bad6cfd6b7e5ffb\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://ccdf97e99fa10b88d2accfdca45dae756bcd7619bfa3d12dcfc181f9a6dbd7aa\",\"dweb:/ipfs/Qmdqq6vmAw9AorgWgkxbXYGX7C5SYqEzSu7beMnhnekJoM\"]},\"contracts/upgrades/interfaces/IChefRamsey.sol\":{\"keccak256\":\"0x02632242e7ef3627dfd521b078b7551b710e9327fe5c0bd9d6eb2454135d7d26\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://5f7fe50437be2903b65fdf7317c97417c81e3567be24d17e90d946457fb1a2be\",\"dweb:/ipfs/QmS5W53eZHAquLPq6nWmc9aSzaav5LhHfURJ7uUsXpjHCo\"]},\"node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol\":{\"keccak256\":\"0x4075622496acc77fd6d4de4cc30a8577a744d5c75afad33fdeacf1704d6eda98\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://99c8cb3cd19a44bbfb6612605affb7d8b06cee1f6aa9362a37a8672b4f7eeaf8\",\"dweb:/ipfs/QmasyxFDBUp7k5KFgfDWEzM8PYSKEq7GVznzMJ1VxVRF4B\"]},\"node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol\":{\"keccak256\":\"0x89be10e757d242e9b18d5a32c9fbe2019f6d63052bbe46397a430a1d60d7f794\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://f103ee2e4aecd37aac6ceefe670709cdd7613dee25fa2d4d9feaf7fc0aaa155e\",\"dweb:/ipfs/QmRiNZLoJk5k3HPMYGPGjZFd2ke1ZxjhJZkM45Ec9GH9hv\"]},\"node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol\":{\"keccak256\":\"0x9c80f545915582e63fe206c6ce27cbe85a86fc10b9cd2a0e8c9488fb7c2ee422\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://310136ad60820af4177a11a61d77a3686faf5fca4942b600e08fc940db38396b\",\"dweb:/ipfs/QmbCzMNSTL7Zi7M4UCSqBrkHtp4jjxUnGbkneCZKdR1qeq\"]},\"node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol\":{\"keccak256\":\"0x963ea7f0b48b032eef72fe3a7582edf78408d6f834115b9feadd673a4d5bd149\",\"license\":\"MIT\",\"urls\":[\"bzz-raw://d6520943ea55fdf5f0bafb39ed909f64de17051bc954ff3e88c9e5621412c79c\",\"dweb:/ipfs/QmWZ4rAKTQbNG2HxGs46AcTXShsVytKeLs7CUCdCSv5N7a\"]}},\"version\":1}",
+  "metadata": {
+    "compiler": {
+      "version": "0.8.15+commit.e14f2714"
+    },
+    "language": "Solidity",
+    "output": {
+      "abi": [
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "constructor"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "uint8",
+              "name": "version",
+              "type": "uint8",
+              "indexed": false
+            }
+          ],
+          "type": "event",
+          "name": "Initialized",
+          "anonymous": false
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "previousOwner",
+              "type": "address",
+              "indexed": true
+            },
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address",
+              "indexed": true
+            }
+          ],
+          "type": "event",
+          "name": "OwnershipTransferred",
+          "anonymous": false
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "addPools"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "contract IChefRamsey",
+              "name": "ramsey",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "intialize"
+        },
+        {
+          "inputs": [],
+          "stateMutability": "view",
+          "type": "function",
+          "name": "owner",
+          "outputs": [
+            {
+              "internalType": "address",
+              "name": "",
+              "type": "address"
+            }
+          ]
+        },
+        {
+          "inputs": [],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "renounceOwnership"
+        },
+        {
+          "inputs": [
+            {
+              "internalType": "address",
+              "name": "newOwner",
+              "type": "address"
+            }
+          ],
+          "stateMutability": "nonpayable",
+          "type": "function",
+          "name": "transferOwnership"
+        }
+      ],
+      "devdoc": {
+        "kind": "dev",
+        "methods": {
+          "owner()": {
+            "details": "Returns the address of the current owner."
+          },
+          "renounceOwnership()": {
+            "details": "Leaves the contract without owner. It will not be possible to call `onlyOwner` functions. Can only be called by the current owner. NOTE: Renouncing ownership will leave the contract without an owner, thereby disabling any functionality that is only available to the owner."
+          },
+          "transferOwnership(address)": {
+            "details": "Transfers ownership of the contract to a new account (`newOwner`). Can only be called by the current owner."
+          }
+        },
+        "version": 1
+      },
+      "userdoc": {
+        "kind": "user",
+        "methods": {},
+        "version": 1
+      }
+    },
+    "settings": {
+      "remappings": [
+        ":@openzeppelin/=node_modules/@openzeppelin/",
+        ":eth-gas-reporter/=node_modules/eth-gas-reporter/",
+        ":hardhat/=node_modules/hardhat/"
+      ],
+      "optimizer": {
+        "enabled": true,
+        "runs": 200
+      },
+      "metadata": {
+        "bytecodeHash": "ipfs"
+      },
+      "compilationTarget": {
+        "contracts/upgrades/PoolCreator.sol": "ChefRamsey"
+      },
+      "libraries": {}
+    },
+    "sources": {
+      "contracts/upgrades/PoolCreator.sol": {
+        "keccak256": "0x49251e76485a9ccfc065e84402e49c8cacb6c12ac97dda8686fe42de53942c0e",
+        "urls": [
+          "bzz-raw://a0171b2d542ae87e24450467c34c3de80e1e6ebd26c5f5e51b4e6ad51586e2dd",
+          "dweb:/ipfs/QmbfZuokpoAviUDx3uxhw4Xb3JxKQvjUQc74wma8KULkYp"
+        ],
+        "license": "MIT"
+      },
+      "contracts/upgrades/interfaces/IArbidexMasterChef.sol": {
+        "keccak256": "0x768d5ed89621f354ef674d5500831ef7f23f6ccfaa5cfffb7bad6cfd6b7e5ffb",
+        "urls": [
+          "bzz-raw://ccdf97e99fa10b88d2accfdca45dae756bcd7619bfa3d12dcfc181f9a6dbd7aa",
+          "dweb:/ipfs/Qmdqq6vmAw9AorgWgkxbXYGX7C5SYqEzSu7beMnhnekJoM"
+        ],
+        "license": "MIT"
+      },
+      "contracts/upgrades/interfaces/IChefRamsey.sol": {
+        "keccak256": "0x02632242e7ef3627dfd521b078b7551b710e9327fe5c0bd9d6eb2454135d7d26",
+        "urls": [
+          "bzz-raw://5f7fe50437be2903b65fdf7317c97417c81e3567be24d17e90d946457fb1a2be",
+          "dweb:/ipfs/QmS5W53eZHAquLPq6nWmc9aSzaav5LhHfURJ7uUsXpjHCo"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol": {
+        "keccak256": "0x4075622496acc77fd6d4de4cc30a8577a744d5c75afad33fdeacf1704d6eda98",
+        "urls": [
+          "bzz-raw://99c8cb3cd19a44bbfb6612605affb7d8b06cee1f6aa9362a37a8672b4f7eeaf8",
+          "dweb:/ipfs/QmasyxFDBUp7k5KFgfDWEzM8PYSKEq7GVznzMJ1VxVRF4B"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
+        "keccak256": "0x89be10e757d242e9b18d5a32c9fbe2019f6d63052bbe46397a430a1d60d7f794",
+        "urls": [
+          "bzz-raw://f103ee2e4aecd37aac6ceefe670709cdd7613dee25fa2d4d9feaf7fc0aaa155e",
+          "dweb:/ipfs/QmRiNZLoJk5k3HPMYGPGjZFd2ke1ZxjhJZkM45Ec9GH9hv"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
+        "keccak256": "0x9c80f545915582e63fe206c6ce27cbe85a86fc10b9cd2a0e8c9488fb7c2ee422",
+        "urls": [
+          "bzz-raw://310136ad60820af4177a11a61d77a3686faf5fca4942b600e08fc940db38396b",
+          "dweb:/ipfs/QmbCzMNSTL7Zi7M4UCSqBrkHtp4jjxUnGbkneCZKdR1qeq"
+        ],
+        "license": "MIT"
+      },
+      "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol": {
+        "keccak256": "0x963ea7f0b48b032eef72fe3a7582edf78408d6f834115b9feadd673a4d5bd149",
+        "urls": [
+          "bzz-raw://d6520943ea55fdf5f0bafb39ed909f64de17051bc954ff3e88c9e5621412c79c",
+          "dweb:/ipfs/QmWZ4rAKTQbNG2HxGs46AcTXShsVytKeLs7CUCdCSv5N7a"
+        ],
+        "license": "MIT"
+      }
+    },
+    "version": 1
+  },
+  "ast": {
+    "absolutePath": "contracts/upgrades/PoolCreator.sol",
+    "id": 44,
+    "exportedSymbols": {
+      "AddressUpgradeable": [
+        4183
+      ],
+      "ArbidexPoolInfo": [
+        2233
+      ],
+      "ArbidexPoolUserInfo": [
+        2218
+      ],
+      "ChefRamsey": [
+        43
+      ],
+      "ContextUpgradeable": [
+        4225
+      ],
+      "IArbidexMasterChef": [
+        2319
+      ],
+      "IChefRamsey": [
+        2384
+      ],
+      "Initializable": [
+        3338
+      ],
+      "OwnableUpgradeable": [
+        3169
+      ]
+    },
+    "nodeType": "SourceUnit",
+    "src": "33:698:0",
+    "nodes": [
+      {
+        "id": 1,
+        "nodeType": "PragmaDirective",
+        "src": "33:23:0",
+        "nodes": [],
+        "literals": [
+          "solidity",
+          "0.8",
+          ".15"
+        ]
+      },
+      {
+        "id": 2,
+        "nodeType": "ImportDirective",
+        "src": "60:75:0",
+        "nodes": [],
+        "absolutePath": "node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "file": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 44,
+        "sourceUnit": 3170,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 3,
+        "nodeType": "ImportDirective",
+        "src": "139:45:0",
+        "nodes": [],
+        "absolutePath": "contracts/upgrades/interfaces/IArbidexMasterChef.sol",
+        "file": "./interfaces/IArbidexMasterChef.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 44,
+        "sourceUnit": 2320,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 4,
+        "nodeType": "ImportDirective",
+        "src": "186:38:0",
+        "nodes": [],
+        "absolutePath": "contracts/upgrades/interfaces/IChefRamsey.sol",
+        "file": "./interfaces/IChefRamsey.sol",
+        "nameLocation": "-1:-1:-1",
+        "scope": 44,
+        "sourceUnit": 2385,
+        "symbolAliases": [],
+        "unitAlias": ""
+      },
+      {
+        "id": 43,
+        "nodeType": "ContractDefinition",
+        "src": "228:501:0",
+        "nodes": [
+          {
+            "id": 13,
+            "nodeType": "StructDefinition",
+            "src": "277:124:0",
+            "nodes": [],
+            "canonicalName": "ChefRamsey.PoolInfo",
+            "members": [
+              {
+                "constant": false,
+                "id": 8,
+                "mutability": "mutable",
+                "name": "nftPoolAddress",
+                "nameLocation": "312:14:0",
+                "nodeType": "VariableDeclaration",
+                "scope": 13,
+                "src": "304:22:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_address",
+                  "typeString": "address"
+                },
+                "typeName": {
+                  "id": 7,
+                  "name": "address",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "304:7:0",
+                  "stateMutability": "nonpayable",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_address",
+                    "typeString": "address"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 10,
+                "mutability": "mutable",
+                "name": "allocPointsARX",
+                "nameLocation": "345:14:0",
+                "nodeType": "VariableDeclaration",
+                "scope": 13,
+                "src": "337:22:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 9,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "337:7:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              },
+              {
+                "constant": false,
+                "id": 12,
+                "mutability": "mutable",
+                "name": "allocPointsWETH",
+                "nameLocation": "378:15:0",
+                "nodeType": "VariableDeclaration",
+                "scope": 13,
+                "src": "370:23:0",
+                "stateVariable": false,
+                "storageLocation": "default",
+                "typeDescriptions": {
+                  "typeIdentifier": "t_uint256",
+                  "typeString": "uint256"
+                },
+                "typeName": {
+                  "id": 11,
+                  "name": "uint256",
+                  "nodeType": "ElementaryTypeName",
+                  "src": "370:7:0",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_uint256",
+                    "typeString": "uint256"
+                  }
+                },
+                "visibility": "internal"
+              }
+            ],
+            "name": "PoolInfo",
+            "nameLocation": "284:8:0",
+            "scope": 43,
+            "visibility": "public"
+          },
+          {
+            "id": 16,
+            "nodeType": "VariableDeclaration",
+            "src": "409:27:0",
+            "nodes": [],
+            "constant": false,
+            "mutability": "mutable",
+            "name": "_ramsey",
+            "nameLocation": "429:7:0",
+            "scope": 43,
+            "stateVariable": true,
+            "storageLocation": "default",
+            "typeDescriptions": {
+              "typeIdentifier": "t_contract$_IChefRamsey_$2384",
+              "typeString": "contract IChefRamsey"
+            },
+            "typeName": {
+              "id": 15,
+              "nodeType": "UserDefinedTypeName",
+              "pathNode": {
+                "id": 14,
+                "name": "IChefRamsey",
+                "nodeType": "IdentifierPath",
+                "referencedDeclaration": 2384,
+                "src": "409:11:0"
+              },
+              "referencedDeclaration": 2384,
+              "src": "409:11:0",
+              "typeDescriptions": {
+                "typeIdentifier": "t_contract$_IChefRamsey_$2384",
+                "typeString": "contract IChefRamsey"
+              }
+            },
+            "visibility": "private"
+          },
+          {
+            "id": 23,
+            "nodeType": "FunctionDefinition",
+            "src": "445:113:0",
+            "nodes": [],
+            "body": {
+              "id": 22,
+              "nodeType": "Block",
+              "src": "459:99:0",
+              "nodes": [],
+              "statements": [
+                {
+                  "documentation": "@custom:oz-upgrades-unsafe-allow constructor",
+                  "expression": {
+                    "arguments": [],
+                    "expression": {
+                      "argumentTypes": [],
+                      "id": 19,
+                      "name": "_disableInitializers",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 3319,
+                      "src": "528:20:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_function_internal_nonpayable$__$returns$__$",
+                        "typeString": "function ()"
+                      }
+                    },
+                    "id": 20,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "kind": "functionCall",
+                    "lValueRequested": false,
+                    "names": [],
+                    "nodeType": "FunctionCall",
+                    "src": "528:22:0",
+                    "tryCall": false,
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_tuple$__$",
+                      "typeString": "tuple()"
+                    }
+                  },
+                  "id": 21,
+                  "nodeType": "ExpressionStatement",
+                  "src": "528:22:0"
+                }
+              ]
+            },
+            "implemented": true,
+            "kind": "constructor",
+            "modifiers": [],
+            "name": "",
+            "nameLocation": "-1:-1:-1",
+            "parameters": {
+              "id": 17,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "456:2:0"
+            },
+            "returnParameters": {
+              "id": 18,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "459:0:0"
+            },
+            "scope": 43,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 36,
+            "nodeType": "FunctionDefinition",
+            "src": "566:93:0",
+            "nodes": [],
+            "body": {
+              "id": 35,
+              "nodeType": "Block",
+              "src": "624:35:0",
+              "nodes": [],
+              "statements": [
+                {
+                  "expression": {
+                    "id": 33,
+                    "isConstant": false,
+                    "isLValue": false,
+                    "isPure": false,
+                    "lValueRequested": false,
+                    "leftHandSide": {
+                      "id": 31,
+                      "name": "_ramsey",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 16,
+                      "src": "635:7:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IChefRamsey_$2384",
+                        "typeString": "contract IChefRamsey"
+                      }
+                    },
+                    "nodeType": "Assignment",
+                    "operator": "=",
+                    "rightHandSide": {
+                      "id": 32,
+                      "name": "ramsey",
+                      "nodeType": "Identifier",
+                      "overloadedDeclarations": [],
+                      "referencedDeclaration": 26,
+                      "src": "645:6:0",
+                      "typeDescriptions": {
+                        "typeIdentifier": "t_contract$_IChefRamsey_$2384",
+                        "typeString": "contract IChefRamsey"
+                      }
+                    },
+                    "src": "635:16:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IChefRamsey_$2384",
+                      "typeString": "contract IChefRamsey"
+                    }
+                  },
+                  "id": 34,
+                  "nodeType": "ExpressionStatement",
+                  "src": "635:16:0"
+                }
+              ]
+            },
+            "functionSelector": "982f0d36",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "id": 29,
+                "kind": "modifierInvocation",
+                "modifierName": {
+                  "id": 28,
+                  "name": "initializer",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 3240,
+                  "src": "612:11:0"
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "612:11:0"
+              }
+            ],
+            "name": "intialize",
+            "nameLocation": "575:9:0",
+            "parameters": {
+              "id": 27,
+              "nodeType": "ParameterList",
+              "parameters": [
+                {
+                  "constant": false,
+                  "id": 26,
+                  "mutability": "mutable",
+                  "name": "ramsey",
+                  "nameLocation": "597:6:0",
+                  "nodeType": "VariableDeclaration",
+                  "scope": 36,
+                  "src": "585:18:0",
+                  "stateVariable": false,
+                  "storageLocation": "default",
+                  "typeDescriptions": {
+                    "typeIdentifier": "t_contract$_IChefRamsey_$2384",
+                    "typeString": "contract IChefRamsey"
+                  },
+                  "typeName": {
+                    "id": 25,
+                    "nodeType": "UserDefinedTypeName",
+                    "pathNode": {
+                      "id": 24,
+                      "name": "IChefRamsey",
+                      "nodeType": "IdentifierPath",
+                      "referencedDeclaration": 2384,
+                      "src": "585:11:0"
+                    },
+                    "referencedDeclaration": 2384,
+                    "src": "585:11:0",
+                    "typeDescriptions": {
+                      "typeIdentifier": "t_contract$_IChefRamsey_$2384",
+                      "typeString": "contract IChefRamsey"
+                    }
+                  },
+                  "visibility": "internal"
+                }
+              ],
+              "src": "584:20:0"
+            },
+            "returnParameters": {
+              "id": 30,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "624:0:0"
+            },
+            "scope": 43,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "public"
+          },
+          {
+            "id": 42,
+            "nodeType": "FunctionDefinition",
+            "src": "667:59:0",
+            "nodes": [],
+            "body": {
+              "id": 41,
+              "nodeType": "Block",
+              "src": "706:20:0",
+              "nodes": [],
+              "statements": []
+            },
+            "functionSelector": "74248364",
+            "implemented": true,
+            "kind": "function",
+            "modifiers": [
+              {
+                "id": 39,
+                "kind": "modifierInvocation",
+                "modifierName": {
+                  "id": 38,
+                  "name": "onlyOwner",
+                  "nodeType": "IdentifierPath",
+                  "referencedDeclaration": 3083,
+                  "src": "696:9:0"
+                },
+                "nodeType": "ModifierInvocation",
+                "src": "696:9:0"
+              }
+            ],
+            "name": "addPools",
+            "nameLocation": "676:8:0",
+            "parameters": {
+              "id": 37,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "684:2:0"
+            },
+            "returnParameters": {
+              "id": 40,
+              "nodeType": "ParameterList",
+              "parameters": [],
+              "src": "706:0:0"
+            },
+            "scope": 43,
+            "stateMutability": "nonpayable",
+            "virtual": false,
+            "visibility": "external"
+          }
+        ],
+        "abstract": false,
+        "baseContracts": [
+          {
+            "baseName": {
+              "id": 5,
+              "name": "OwnableUpgradeable",
+              "nodeType": "IdentifierPath",
+              "referencedDeclaration": 3169,
+              "src": "251:18:0"
+            },
+            "id": 6,
+            "nodeType": "InheritanceSpecifier",
+            "src": "251:18:0"
+          }
+        ],
+        "canonicalName": "ChefRamsey",
+        "contractDependencies": [],
+        "contractKind": "contract",
+        "fullyImplemented": true,
+        "linearizedBaseContracts": [
+          43,
+          3169,
+          4225,
+          3338
+        ],
+        "name": "ChefRamsey",
+        "nameLocation": "237:10:0",
+        "scope": 44,
+        "usedErrors": []
+      }
+    ],
+    "license": "MIT"
+  },
+  "id": 0
+}
