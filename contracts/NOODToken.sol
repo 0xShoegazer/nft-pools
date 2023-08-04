@@ -12,11 +12,11 @@ import "./interfaces/tokens/IProtocolToken.sol";
  * ProtocolToken is a native ERC20 token.
  * It has an hard cap and manages its own emissions and allocations.
  */
-contract PAWGToken is Ownable, ERC20, IProtocolToken {
+contract Noodleswap is Ownable, ERC20, IProtocolToken {
     using SafeMath for uint256;
 
-    uint256 public constant MAX_EMISSION_RATE = 0.01 ether;
-    uint256 public constant MAX_SUPPLY_LIMIT = 200000 ether;
+    uint256 public constant MAX_EMISSION_RATE = 0.25 ether;
+    uint256 public constant MAX_SUPPLY_LIMIT = 10_000_000 ether;
     uint256 public elasticMaxSupply; // Once deployed, controlled through governance only
     uint256 public emissionRate; // Token emission per second
 
@@ -62,7 +62,7 @@ contract PAWGToken is Ownable, ERC20, IProtocolToken {
         uint256 initialSupply,
         uint256 initialEmissionRate,
         address treasury
-    ) ERC20("PAWG Nation Token", "PAWG") {
+    ) ERC20("Noodleswap", "NOOD") {
         require(initialEmissionRate <= MAX_EMISSION_RATE, "invalid emission rate");
         require(maxSupply <= MAX_SUPPLY_LIMIT, "invalid initial maxSupply");
         require(initialSupply < maxSupply, "invalid initial supply");

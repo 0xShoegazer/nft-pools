@@ -1,0 +1,10 @@
+{
+  "base_goerli": {
+    "protocolToken": "0xd71114b3AD1Ec657B4194E0B3b7C9fC71C7bdbEF",
+    "xToken": "0x626355410729525eec3fd5628D840d683F24456d",
+    "dividends": "0x6E9776a02fF00d2D0FC986B78B64fAD7414c3B00",
+    "yeildBooster": "0xA124060495eeBb12ff2d6Ab36a7080a8cf1c9D98",
+    "chef": "0x5859c161A7ea5F8Ce4e8732749f49f4dF65105e4",
+    "nftPoolFactory": "0x66118981E4B7015C8310eE8D10C830803d85d64F"
+  }
+}

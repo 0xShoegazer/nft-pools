@@ -65,12 +65,6 @@ contract Dividends is Ownable, ReentrancyGuard, IXTokenUsage, IDividends {
     uint256 internal _cycleDurationSeconds = 7 days;
     uint256 public currentCycleStartTime;
 
-    constructor(address xToken_, uint256 startTime_) {
-        require(xToken_ != address(0), "zero address");
-        xToken = xToken_;
-        currentCycleStartTime = startTime_;
-    }
-
     /********************************************/
     /****************** EVENTS ******************/
     /********************************************/
@@ -109,6 +103,12 @@ contract Dividends is Ownable, ReentrancyGuard, IXTokenUsage, IDividends {
     modifier xTokenOnly() {
         require(msg.sender == xToken, "xTokenOnly: caller should be xToken");
         _;
+    }
+
+    constructor(address xToken_, uint256 startTime_) {
+        require(xToken_ != address(0), "zero address");
+        xToken = xToken_;
+        currentCycleStartTime = startTime_;
     }
 
     /*******************************************/

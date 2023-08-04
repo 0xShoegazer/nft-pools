@@ -43,9 +43,16 @@ const config: HardhatUserConfig = {
   networks: {
     hardhat: {
       forking: {
-        url: process.env.ARBITRUM_RPC || '',
-        blockNumber: 97443294,
+        url: `${process.env.BASE_GOERLI}`,
+        blockNumber: 7235933, // 3:30AM 7/18/2023
       },
+      // chainId: 84531,
+      accounts: [
+        {
+          privateKey: process.env.DEV_KEY,
+          balance: '10000000000000000000',
+        },
+      ],
     },
     arbitrum: {
       url: process.env.ARBITRUM_RPC || '',
@@ -56,16 +63,18 @@ const config: HardhatUserConfig = {
       accounts,
     },
     base: {
-      url: `https://developer-access-mainnet.base.org/`,
+      url: `${process.env.BASE_RPC}`,
       accounts,
       chainId: 8453,
-      gas: 500000,
-      gasPrice: 100,
+      // gas: 500000,
+      // gasPrice: 100,
     },
-    base_testnet: {
+    base_goerli: {
       url: `https://goerli.base.org`,
       accounts,
       chainId: 84531,
+      gas: 500000,
+      gasPrice: 100,
     },
   },
 };

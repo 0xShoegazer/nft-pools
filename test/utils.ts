@@ -5,6 +5,10 @@ import * as erc20 from '../node_modules/@openzeppelin/contracts/build/contracts/
 
 export const keccak256 = ethers.utils.solidityKeccak256;
 
+export async function getBlockTime(provider) {
+  return (await provider.getBlock(await provider.getBlockNumber())).timestamp;
+}
+
 export const giveTokens = async (
   tokenAddress: string,
   tokenBalanceOfStorageSlot: number,

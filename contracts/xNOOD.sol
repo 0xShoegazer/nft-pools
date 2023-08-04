@@ -18,7 +18,7 @@ import "./interfaces/IXTokenUsage.sol";
  * It can be converted back to ProtocolToken through a vesting process
  * This contract is made to receive xToken deposits from users in order to allocate them to Usages (plugins) contracts
  */
-contract xPAWG is Ownable, ReentrancyGuard, ERC20("PAWG Nation Escrowed Token", "xPAWG"), IXToken {
+contract xNOOD is Ownable, ReentrancyGuard, ERC20("Noodleswap Escrowed Token", "xNOOD"), IXToken {
     using Address for address;
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;

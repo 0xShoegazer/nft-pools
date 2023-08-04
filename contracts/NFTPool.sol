@@ -958,7 +958,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Staking position NFT", "s
                 // send share of ProtocolToken rewards
                 protocolTokenAmount = _safeRewardsTransfer(to, protocolTokenAmount);
 
-                // forbidden to harvest if contract has not explicitly confirmed it handle it
+                // Forbidden to harvest if contract has not explicitly confirmed it can handle it
                 _checkOnNFTHarvest(to, tokenId, protocolTokenAmount, xTokenRewards);
             }
         }

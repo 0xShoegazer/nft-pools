@@ -2,6 +2,7 @@
   "name": "nft-pools",
   "license": "MIT",
   "scripts": {
+    "start": "npx hardhat node",
     "build": "forge build",
     "build:watch": "forge build --watch",
     "debug": "forge debug",
