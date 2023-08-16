@@ -6,7 +6,7 @@
     "test": "npx hardhat test --network hardhat",
     "test:local": "npx hardhat test --network localhost",
     "deploy": "npx hardhat run ./scripts/deploy.ts --network",
-    "deploy:fresh": "npx hardhat run ./scripts/deploy-fresh.ts -network"
+    "deploy:fresh": "npx hardhat run ./scripts/deploy-fresh.ts"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
