@@ -19,7 +19,7 @@ interface IMasterChef {
         view
         returns (
             address poolAddress,
-            uint256 allocPointsARX,
+            uint256 allocPoints,
             uint256 allocPointsWETH,
             uint256 lastRewardTime,
             uint256 reserve,

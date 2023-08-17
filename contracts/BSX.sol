@@ -8,45 +8,45 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
-import "./interfaces/tokens/IARXToken.sol";
-import "./interfaces/tokens/IxARXToken.sol";
-import "./interfaces/IXArxTokenUsage.sol";
+import "./interfaces/tokens/IProtocolToken.sol";
+import "./interfaces/tokens/IXToken.sol";
+import "./interfaces/IXTokenUsage.sol";
 
 /*
- * xARX is Arbidex's escrowed governance token obtainable by converting ARX to it
+ * xBSX is Baseswaps's escrowed governance token obtainable by converting token to it
  * It's non-transferable, except from/to whitelisted addresses
- * It can be converted back to ARX through a vesting process
- * This contract is made to receive xArx deposits from users in order to allocate them to Usages (plugins) contracts
+ * It can be converted back to token through a vesting process
+ * This contract is made to receive xToken deposits from users in order to allocate them to Usages (plugins) contracts
  */
-contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", "xARX"), IxARXToken {
+contract xBSX is Ownable, ReentrancyGuard, ERC20("Baseswap escrowed token", "xBSX"), IXToken {
     using Address for address;
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
-    using SafeERC20 for IARXToken;
+    using SafeERC20 for IProtocolToken;
 
-    struct xArxBalance {
-        uint256 allocatedAmount; // Amount of xArx allocated to a Usage
-        uint256 redeemingAmount; // Total amount of xARX currently being redeemed
+    struct xTokenBalance {
+        uint256 allocatedAmount; // Amount of xToken allocated to a Usage
+        uint256 redeemingAmount; // Total amount of xToken currently being redeemed
     }
 
     struct RedeemInfo {
-        uint256 arxAmount; // ARX amount to receive when vesting has ended
-        uint256 xArxAmount; // xARX amount to redeem
+        uint256 amount; // token amount to receive when vesting has ended
+        uint256 xTokenAmount; // xToken amount to redeem
         uint256 endTime;
-        IXArxTokenUsage dividendsAddress;
-        uint256 dividendsAllocation; // Share of redeeming xArx to allocate to the Dividends Usage contract
+        IXTokenUsage dividendsAddress;
+        uint256 dividendsAllocation; // Share of redeeming xToken to allocate to the Dividends Usage contract
     }
 
-    IARXToken public immutable arxToken; // ARX token to convert to/from
-    IXArxTokenUsage public dividendsAddress; // Arbidex dividends contract
+    IProtocolToken public immutable protocolToken; // token to convert to/from
+    IXTokenUsage public dividendsAddress; // dividends contract
 
-    EnumerableSet.AddressSet private _transferWhitelist; // addresses allowed to send/receive xArx
+    EnumerableSet.AddressSet private _transferWhitelist; // addresses allowed to send/receive xToken
 
-    mapping(address => mapping(address => uint256)) public usageApprovals; // Usage approvals to allocate xArx
-    mapping(address => mapping(address => uint256)) public override usageAllocations; // Active xArx allocations to usages
+    mapping(address => mapping(address => uint256)) public usageApprovals; // Usage approvals to allocate xToken
+    mapping(address => mapping(address => uint256)) public override usageAllocations; // Active xToken allocations to usages
 
     uint256 public constant MAX_DEALLOCATION_FEE = 200; // 2%
-    mapping(address => uint256) public usagesDeallocationFee; // Fee paid when deallocating xArx
+    mapping(address => uint256) public usagesDeallocationFee; // Fee paid when deallocating xToken
 
     uint256 public constant MAX_FIXED_RATIO = 100; // 100%
 
@@ -55,14 +55,14 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     uint256 public maxRedeemRatio = 100; // 1:1
     uint256 public minRedeemDuration = 15 days; // 1296000s
     uint256 public maxRedeemDuration = 90 days; // 7776000s
-    // Adjusted dividends rewards for redeeming xARX
+    // Adjusted dividends rewards for redeeming xToken
     uint256 public redeemDividendsAdjustment = 50; // 50%
 
-    mapping(address => xArxBalance) public xArxBalances; // User's xARX balances
+    mapping(address => xTokenBalance) public xTokenBalances; // User's xToken balances
     mapping(address => RedeemInfo[]) public userRedeems; // User's redeeming instances
 
-    constructor(IARXToken arxToken_) {
-        arxToken = arxToken_;
+    constructor(IProtocolToken token) {
+        protocolToken = token;
         _transferWhitelist.add(address(this));
     }
 
@@ -82,9 +82,9 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     event UpdateDividendsAddress(address previousDividendsAddress, address newDividendsAddress);
     event UpdateDeallocationFee(address indexed usageAddress, uint256 fee);
     event SetTransferWhitelist(address account, bool add);
-    event Redeem(address indexed userAddress, uint256 xArxAmount, uint256 arxAmount, uint256 duration);
-    event FinalizeRedeem(address indexed userAddress, uint256 xArxAmount, uint256 arxAmount);
-    event CancelRedeem(address indexed userAddress, uint256 xArxAmount);
+    event Redeem(address indexed userAddress, uint256 xTokenAmount, uint256 amount, uint256 duration);
+    event FinalizeRedeem(address indexed userAddress, uint256 xTokenAmount, uint256 amount);
+    event CancelRedeem(address indexed userAddress, uint256 xTokenAmount);
     event UpdateRedeemDividendsAddress(
         address indexed userAddress,
         uint256 redeemIndex,
@@ -111,19 +111,19 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     /**************************************************/
 
     /*
-     * @dev Returns user's xARX balances
+     * @dev Returns user's xToken balances
      */
-    function getxArxBalance(
+    function getxTokenBalance(
         address userAddress
     ) external view returns (uint256 allocatedAmount, uint256 redeemingAmount) {
-        xArxBalance storage balance = xArxBalances[userAddress];
+        xTokenBalance storage balance = xTokenBalances[userAddress];
         return (balance.allocatedAmount, balance.redeemingAmount);
     }
 
     /*
-     * @dev returns redeemable ARX for "amount" of xARX vested for "duration" seconds
+     * @dev returns redeemable token for "amount" of xToken vested for "duration" seconds
      */
-    function getArxByVestingDuration(uint256 amount, uint256 duration) public view returns (uint256) {
+    function getAmountByVestingDuration(uint256 amount, uint256 duration) public view returns (uint256) {
         if (duration < minRedeemDuration) {
             return 0;
         }
@@ -160,8 +160,8 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
         view
         validateRedeem(userAddress, redeemIndex)
         returns (
-            uint256 arxAmount,
-            uint256 xArxAmount,
+            uint256 amount,
+            uint256 xTokenAmount,
             uint256 endTime,
             address dividendsContract,
             uint256 dividendsAllocation
@@ -169,8 +169,8 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     {
         RedeemInfo storage _redeem = userRedeems[userAddress][redeemIndex];
         return (
-            _redeem.arxAmount,
-            _redeem.xArxAmount,
+            _redeem.amount,
+            _redeem.xTokenAmount,
             _redeem.endTime,
             address(_redeem.dividendsAddress),
             _redeem.dividendsAllocation
@@ -178,14 +178,14 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     }
 
     /**
-     * @dev returns approved xARX to allocate from "userAddress" to "usageAddress"
+     * @dev returns approved xToken to allocate from "userAddress" to "usageAddress"
      */
     function getUsageApproval(address userAddress, address usageAddress) external view returns (uint256) {
         return usageApprovals[userAddress][usageAddress];
     }
 
     /**
-     * @dev returns allocated xARX from "userAddress" to "usageAddress"
+     * @dev returns allocated xToken from "userAddress" to "usageAddress"
      */
     function getUsageAllocation(address userAddress, address usageAddress) external view returns (uint256) {
         return usageAllocations[userAddress][usageAddress];
@@ -206,7 +206,7 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     }
 
     /**
-     * @dev returns if "account" is allowed to send/receive xARX
+     * @dev returns if "account" is allowed to send/receive xToken
      */
     function isTransferWhitelisted(address account) external view override returns (bool) {
         return _transferWhitelist.contains(account);
@@ -256,7 +256,7 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
      *
      * Must only be called by owner
      */
-    function updateDividendsAddress(IXArxTokenUsage dividendsAddress_) external onlyOwner {
+    function updateDividendsAddress(IXTokenUsage dividendsAddress_) external onlyOwner {
         // if set to 0, also set divs earnings while redeeming to 0
         if (address(dividendsAddress_) == address(0)) {
             redeemDividendsAdjustment = 0;
@@ -280,7 +280,7 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
      * @dev Adds or removes addresses from the transferWhitelist
      */
     function updateTransferWhitelist(address account, bool add) external onlyOwner {
-        require(account != address(this), "updateTransferWhitelist: Cannot remove xArx from whitelist");
+        require(account != address(this), "updateTransferWhitelist: Cannot remove xToken from whitelist");
 
         if (add) _transferWhitelist.add(account);
         else _transferWhitelist.remove(account);
@@ -293,10 +293,10 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     /*****************************************************************/
 
     /**
-     * @dev Approves "usage" address to get allocations up to "amount" of xArx from msg.sender
-     * IXArxTokenUsage is the systems plugin interface.
+     * @dev Approves "usage" address to get allocations up to "amount" of xToken from msg.sender
+     * IXTokenUsageenUsage is the systems plugin interface.
      */
-    function approveUsage(IXArxTokenUsage usage, uint256 amount) external nonReentrant {
+    function approveUsage(IXTokenUsage usage, uint256 amount) external nonReentrant {
         require(address(usage) != address(0), "approveUsage: approve to the zero address");
 
         usageApprovals[msg.sender][address(usage)] = amount;
@@ -304,14 +304,14 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     }
 
     /**
-     * @dev Convert caller's "amount" of ARX to xArx
+     * @dev Convert caller's "amount" of token to xToken
      */
     function convert(uint256 amount) external nonReentrant {
         _convert(amount, msg.sender);
     }
 
     /**
-     * @dev Convert caller's "amount" of ARX to xArx to "to" address
+     * @dev Convert caller's "amount" of token to xToken to "to" address
      */
     function convertTo(uint256 amount, address to) external override nonReentrant {
         require(address(msg.sender).isContract(), "convertTo: not allowed");
@@ -319,28 +319,28 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     }
 
     /**
-     * @dev Initiates redeem process (xArx to ARX)
+     * @dev Initiates redeem process (xToken to token)
      *
      * Handles dividends' compensation allocation during the vesting process if needed
      */
-    function redeem(uint256 xArxAmount, uint256 duration) external nonReentrant {
-        require(xArxAmount > 0, "redeem: xArxAmount cannot be null");
+    function redeem(uint256 xTokenAmount, uint256 duration) external nonReentrant {
+        require(xTokenAmount > 0, "redeem: xTokenAmount cannot be null");
         require(duration >= minRedeemDuration, "redeem: duration too low");
 
-        _transfer(msg.sender, address(this), xArxAmount);
-        xArxBalance storage balance = xArxBalances[msg.sender];
+        _transfer(msg.sender, address(this), xTokenAmount);
+        xTokenBalance storage balance = xTokenBalances[msg.sender];
 
-        // get corresponding ARX amount
-        uint256 arxAmount = getArxByVestingDuration(xArxAmount, duration);
-        emit Redeem(msg.sender, xArxAmount, arxAmount, duration);
+        // get corresponding token amount
+        uint256 amount = getAmountByVestingDuration(xTokenAmount, duration);
+        emit Redeem(msg.sender, xTokenAmount, amount, duration);
 
         // if redeeming is not immediate, go through vesting process
         if (duration > 0) {
             // add to SBT total
-            balance.redeemingAmount = balance.redeemingAmount.add(xArxAmount);
+            balance.redeemingAmount = balance.redeemingAmount.add(xTokenAmount);
 
             // handle dividends during the vesting process
-            uint256 dividendsAllocation = xArxAmount.mul(redeemDividendsAdjustment).div(100);
+            uint256 dividendsAllocation = xTokenAmount.mul(redeemDividendsAdjustment).div(100);
             // only if compensation is active
             if (dividendsAllocation > 0) {
                 // allocate to dividends
@@ -350,16 +350,16 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
             // add redeeming entry
             userRedeems[msg.sender].push(
                 RedeemInfo(
-                    arxAmount,
-                    xArxAmount,
+                    amount,
+                    xTokenAmount,
                     _currentBlockTimestamp().add(duration),
                     dividendsAddress,
                     dividendsAllocation
                 )
             );
         } else {
-            // immediately redeem for ARX
-            _finalizeRedeem(msg.sender, xArxAmount, arxAmount);
+            // immediately redeem for token
+            _finalizeRedeem(msg.sender, xTokenAmount, amount);
         }
     }
 
@@ -369,18 +369,18 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
      * Can only be called by the redeem entry owner
      */
     function finalizeRedeem(uint256 redeemIndex) external nonReentrant validateRedeem(msg.sender, redeemIndex) {
-        xArxBalance storage balance = xArxBalances[msg.sender];
+        xTokenBalance storage balance = xTokenBalances[msg.sender];
         RedeemInfo storage _redeem = userRedeems[msg.sender][redeemIndex];
         require(_currentBlockTimestamp() >= _redeem.endTime, "finalizeRedeem: vesting duration has not ended yet");
 
         // remove from SBT total
-        balance.redeemingAmount = balance.redeemingAmount.sub(_redeem.xArxAmount);
-        _finalizeRedeem(msg.sender, _redeem.xArxAmount, _redeem.arxAmount);
+        balance.redeemingAmount = balance.redeemingAmount.sub(_redeem.xTokenAmount);
+        _finalizeRedeem(msg.sender, _redeem.xTokenAmount, _redeem.amount);
 
         // handle dividends compensation if any was active
         if (_redeem.dividendsAllocation > 0) {
             // deallocate from dividends
-            IXArxTokenUsage(_redeem.dividendsAddress).deallocate(msg.sender, _redeem.dividendsAllocation, new bytes(0));
+            IXTokenUsage(_redeem.dividendsAddress).deallocate(msg.sender, _redeem.dividendsAllocation, new bytes(0));
         }
 
         // remove redeem entry
@@ -423,62 +423,62 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
      * Can only be called by its owner
      */
     function cancelRedeem(uint256 redeemIndex) external nonReentrant validateRedeem(msg.sender, redeemIndex) {
-        xArxBalance storage balance = xArxBalances[msg.sender];
+        xTokenBalance storage balance = xTokenBalances[msg.sender];
         RedeemInfo storage _redeem = userRedeems[msg.sender][redeemIndex];
 
-        // make redeeming xArx available again
-        balance.redeemingAmount = balance.redeemingAmount.sub(_redeem.xArxAmount);
-        _transfer(address(this), msg.sender, _redeem.xArxAmount);
+        // make redeeming xToken available again
+        balance.redeemingAmount = balance.redeemingAmount.sub(_redeem.xTokenAmount);
+        _transfer(address(this), msg.sender, _redeem.xTokenAmount);
 
         // handle dividends compensation if any was active
         if (_redeem.dividendsAllocation > 0) {
             // deallocate from dividends
-            IXArxTokenUsage(_redeem.dividendsAddress).deallocate(msg.sender, _redeem.dividendsAllocation, new bytes(0));
+            IXTokenUsage(_redeem.dividendsAddress).deallocate(msg.sender, _redeem.dividendsAllocation, new bytes(0));
         }
 
-        emit CancelRedeem(msg.sender, _redeem.xArxAmount);
+        emit CancelRedeem(msg.sender, _redeem.xTokenAmount);
 
         // remove redeem entry
         _deleteRedeemEntry(redeemIndex);
     }
 
     /**
-     * @dev Allocates caller's "amount" of available xArx to "usageAddress" contract
+     * @dev Allocates caller's "amount" of available xToken to "usageAddress" contract
      *
      * args specific to usage contract must be passed into "usageData"
      */
     function allocate(address usageAddress, uint256 amount, bytes calldata usageData) external nonReentrant {
         _allocate(msg.sender, usageAddress, amount);
 
-        // allocates xArx to usageContract
-        IXArxTokenUsage(usageAddress).allocate(msg.sender, amount, usageData);
+        // allocates xToken to usageContract
+        IXTokenUsage(usageAddress).allocate(msg.sender, amount, usageData);
     }
 
     /**
-     * @dev Allocates "amount" of available xArx from "userAddress" to caller (ie usage contract)
+     * @dev Allocates "amount" of available xToken from "userAddress" to caller (ie usage contract)
      *
-     * Caller must have an allocation approval for the required xArx xArx from "userAddress"
+     * Caller must have an allocation approval for the required xToken from "userAddress"
      */
     function allocateFromUsage(address userAddress, uint256 amount) external override nonReentrant {
         _allocate(userAddress, msg.sender, amount);
     }
 
     /**
-     * @dev Deallocates caller's "amount" of available xArx from "usageAddress" contract
+     * @dev Deallocates caller's "amount" of available xToken from "usageAddress" contract
      *
      * args specific to usage contract must be passed into "usageData"
      */
     function deallocate(address usageAddress, uint256 amount, bytes calldata usageData) external nonReentrant {
         _deallocate(msg.sender, usageAddress, amount);
 
-        // deallocate xArx into usageContract
-        IXArxTokenUsage(usageAddress).deallocate(msg.sender, amount, usageData);
+        // deallocate xToken into usageContract
+        IXTokenUsage(usageAddress).deallocate(msg.sender, amount, usageData);
     }
 
     /**
-     * @dev Deallocates "amount" of allocated xArx belonging to "userAddress" from caller (ie usage contract)
+     * @dev Deallocates "amount" of allocated xToken belonging to "userAddress" from caller (ie usage contract)
      *
-     * Caller can only deallocate xArx from itself
+     * Caller can only deallocate xToken from itself
      */
     function deallocateFromUsage(address userAddress, uint256 amount) external override nonReentrant {
         _deallocate(userAddress, msg.sender, amount);
@@ -489,57 +489,57 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     /********************************************************/
 
     /**
-     * @dev Convert caller's "amount" of ARX into xArx to "to"
+     * @dev Convert caller's "amount" of token into xToken to "to"
      */
     function _convert(uint256 amount, address to) internal {
         require(amount != 0, "convert: amount cannot be null");
 
-        // mint new xArx
+        // mint new xToken
         _mint(to, amount);
 
         emit Convert(msg.sender, to, amount);
-        arxToken.safeTransferFrom(msg.sender, address(this), amount);
+        protocolToken.safeTransferFrom(msg.sender, address(this), amount);
     }
 
     /**
-     * @dev Finalizes the redeeming process for "userAddress" by transferring him "arxAmount" and removing "xArxAmount" from supply
+     * @dev Finalizes the redeeming process for "userAddress" by transferring him "amount" and removing "xTokenAmount" from supply
      *
      * Any vesting check should be ran before calling this
-     * ARX excess is automatically burnt
+     * token excess is automatically burnt
      */
-    function _finalizeRedeem(address userAddress, uint256 xArxAmount, uint256 arxAmount) internal {
-        uint256 arxExcess = xArxAmount.sub(arxAmount);
+    function _finalizeRedeem(address userAddress, uint256 xTokenAmount, uint256 amount) internal {
+        uint256 excess = xTokenAmount.sub(amount);
 
-        // sends due ARX tokens
-        arxToken.safeTransfer(userAddress, arxAmount);
+        // sends due xToken tokens
+        protocolToken.safeTransfer(userAddress, amount);
 
-        // burns ARX excess if any
-        arxToken.burn(arxExcess);
-        _burn(address(this), xArxAmount);
+        // burns token excess if any
+        protocolToken.burn(excess);
+        _burn(address(this), xTokenAmount);
 
-        emit FinalizeRedeem(userAddress, xArxAmount, arxAmount);
+        emit FinalizeRedeem(userAddress, xTokenAmount, amount);
     }
 
     /**
-     * @dev Allocates "userAddress" user's "amount" of available xArx to "usageAddress" contract
+     * @dev Allocates "userAddress" user's "amount" of available xToken to "usageAddress" contract
      *
      */
     function _allocate(address userAddress, address usageAddress, uint256 amount) internal {
         require(amount > 0, "allocate: amount cannot be null");
 
-        xArxBalance storage balance = xArxBalances[userAddress];
+        xTokenBalance storage balance = xTokenBalances[userAddress];
 
         // approval checks if allocation request amount has been approved by userAddress to be allocated to this usageAddress
-        uint256 approvedxArx = usageApprovals[userAddress][usageAddress];
-        require(approvedxArx >= amount, "allocate: non authorized amount");
+        uint256 approvedxToken = usageApprovals[userAddress][usageAddress];
+        require(approvedxToken >= amount, "allocate: non authorized amount");
 
         // remove allocated amount from usage's approved amount
-        usageApprovals[userAddress][usageAddress] = approvedxArx.sub(amount);
+        usageApprovals[userAddress][usageAddress] = approvedxToken.sub(amount);
 
         // update usage's allocatedAmount for userAddress
         usageAllocations[userAddress][usageAddress] = usageAllocations[userAddress][usageAddress].add(amount);
 
-        // adjust user's xArx balances
+        // adjust user's xToken balances
         balance.allocatedAmount = balance.allocatedAmount.add(amount);
         _transfer(userAddress, address(this), amount);
 
@@ -547,14 +547,14 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
     }
 
     /**
-     * @dev Deallocates "amount" of available xArx to "usageAddress" contract
+     * @dev Deallocates "amount" of available xToken to "usageAddress" contract
      *
      * args specific to usage contract must be passed into "usageData"
      */
     function _deallocate(address userAddress, address usageAddress, uint256 amount) internal {
         require(amount > 0, "deallocate: amount cannot be null");
 
-        // check if there is enough allocated xArx to this usage to deallocate
+        // check if there is enough allocated xToken to this usage to deallocate
         uint256 allocatedAmount = usageAllocations[userAddress][usageAddress];
         require(allocatedAmount >= amount, "deallocate: non authorized amount");
 
@@ -563,12 +563,12 @@ contract xARXToken is Ownable, ReentrancyGuard, ERC20("Arbidex escrowed token", 
 
         uint256 deallocationFeeAmount = amount.mul(usagesDeallocationFee[usageAddress]).div(10000);
 
-        // adjust user's xArx balances
-        xArxBalance storage balance = xArxBalances[userAddress];
+        // adjust user's xToken balances
+        xTokenBalance storage balance = xTokenBalances[userAddress];
         balance.allocatedAmount = balance.allocatedAmount.sub(amount);
         _transfer(address(this), userAddress, amount.sub(deallocationFeeAmount));
-        // burn corresponding ARX and xArx
-        arxToken.burn(deallocationFeeAmount);
+        // burn corresponding token and xToken
+        protocolToken.burn(deallocationFeeAmount);
         _burn(address(this), deallocationFeeAmount);
 
         emit Deallocate(userAddress, usageAddress, amount, deallocationFeeAmount);

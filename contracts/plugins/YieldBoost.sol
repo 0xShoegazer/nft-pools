@@ -9,20 +9,20 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/utils/EnumerableSet.sol";
 
 import "../interfaces/INFTPool.sol";
-import "../interfaces/IXArxTokenUsage.sol";
+import "../interfaces/IXTokenUsage.sol";
 import "../interfaces/IYieldBooster.sol";
-import "../interfaces/tokens/IxARXToken.sol";
+import "../interfaces/tokens/IXToken.sol";
 
 /*
- * This contract is a xARX Usage (plugin) that can boost spNFTs' yield (staking positions on NFTPools) when it
- * receives allocations from the xARXToken contract
+ * This contract is a xToken Usage (plugin) that can boost spNFTs' yield (staking positions on NFTPools) when it
+ * receives allocations from the xToken contract
  */
-contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooster {
+contract YieldBooster is Ownable, ReentrancyGuard, IXTokenUsage, IYieldBooster {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
     using EnumerableSet for EnumerableSet.UintSet;
 
-    IxARXToken public immutable xArxToken; // xArxToken contract
+    IXToken public immutable xToken;
 
     uint256 public constant MAX_TOTAL_ALLOCATION_FLOOR = 1000 ether;
     // use to set a floor when calculating the multiplier on a pool
@@ -42,13 +42,9 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
 
     bool public forcedDeallocationStatus; // Authorize users to forcibly deallocate everything
 
-    constructor(IxARXToken xARXToken_) {
-        xArxToken = xARXToken_;
-    }
-
-    /********************************************/
-    /****************** EVENTS ******************/
-    /********************************************/
+    // ================================================== //
+    // ===================== EVENTS ===================== //
+    // ================================================== //
 
     event Allocate(address indexed userAddress, address indexed poolAddress, uint256 tokenId, uint256 amount);
     event Deallocate(address indexed userAddress, address indexed poolAddress, uint256 tokenId, uint256 amount);
@@ -56,21 +52,25 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
     event UpdateForcedDeallocationStatus(address caller, bool status);
     event UpdateTotalAllocationFloor(uint256 newFloor);
 
-    /***********************************************/
-    /****************** MODIFIERS ******************/
-    /***********************************************/
+    // ==================================================== //
+    // ==================== MODIFIERS ===================== //
+    // ==================================================== //
 
     /**
-     * @dev Checks if caller is the xArxToken contract
+     * @dev Checks if caller is the xToken contract
      */
-    modifier xArxTokenOnly() {
-        require(msg.sender == address(xArxToken), "xArxTokenOnly: caller should be xARXToken");
+    modifier xTokenOnly() {
+        require(msg.sender == address(xToken), "xTokenOnly: caller should be xToken");
         _;
     }
 
-    /*******************************************/
-    /****************** VIEWS ******************/
-    /*******************************************/
+    constructor(IXToken _xToken) {
+        xToken = _xToken;
+    }
+
+    // ===================================================== //
+    // ======================= VIEWS ======================= //
+    // ===================================================== //
 
     /**
      * @dev Returns corresponding yield boost multiplier
@@ -111,21 +111,21 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
     }
 
     /**
-     * @dev Returns total xARX allocated to this contract by "userAddress"
+     * @dev Returns total xToken allocated to this contract by "userAddress"
      */
     function getUserTotalAllocation(address userAddress) external view returns (uint256) {
         return _usersTotalAllocation[userAddress];
     }
 
     /**
-     * @dev Returns total xARX allocated to this contract by "poolAddress"
+     * @dev Returns total xToken allocated to this contract by "poolAddress"
      */
     function getPoolTotalAllocation(address poolAddress) external view returns (uint256) {
         return _poolsTotalAllocation[poolAddress];
     }
 
     /**
-     * @dev Returns allocated xARX to "tokenId" spNFT from "poolAddress" NFTPool by "userAddress"
+     * @dev Returns allocated xToken to "tokenId" spNFT from "poolAddress" NFTPool by "userAddress"
      */
     function getUserPositionAllocation(
         address userAddress,
@@ -149,9 +149,9 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
         return _usersPositions[userAddress][poolAddress].at(index);
     }
 
-    /****************************************************/
-    /****************** OWNABLE FUNCTIONS ***************/
-    /****************************************************/
+    // ============================================= //
+    // ================== OWNABLE ================== //
+    // ============================================= //
 
     /**
      * @dev Updates totalAllocationFloor value
@@ -170,7 +170,7 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
      *
      * Can only be called by owner
      * Safety mechanism, should only be activated in case there is something wrong with this contract to avoid having
-     * stuck allocated xARX
+     * stuck allocated xToken
      * Contract should be discarded once activated
      */
     function updateForcedDeallocationStatus(bool status) external onlyOwner {
@@ -189,87 +189,87 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
         token.safeTransfer(msg.sender, balance);
     }
 
-    /*****************************************************************/
-    /****************** EXTERNAL PUBLIC FUNCTIONS *******************/
-    /*****************************************************************/
+    // =================================================== //
+    // ================ EXTERNAL PUBLIC ================== //
+    // =================================================== //
 
     /**
-     * Allocates "userAddress" user's "amount" of xARX to this usage contract
+     * Allocates "userAddress" user's "amount" of xTokenARX to this usage contract
      * "data" should contain tokenId and poolAddress
      *
-     * Can only be called by xARX contract, which is trusted to verify amounts
+     * Can only be called by xToken contract, which is trusted to verify amounts
      */
     function allocate(
         address userAddress,
         uint256 amount,
         bytes calldata data
-    ) external override nonReentrant xArxTokenOnly {
+    ) external override nonReentrant xTokenOnly {
         (address poolAddress, uint256 tokenId) = abi.decode(data, (address, uint256));
         _allocate(userAddress, poolAddress, tokenId, amount);
 
-        // allocated xARX is added (as boost points) to spNFT
+        // allocated xToken is added (as boost points) to spNFT
         INFTPool(poolAddress).boost(tokenId, amount);
     }
 
     /**
-     * Deallocates "userAddress" user's "amount" of xARX from this usage contract
+     * Deallocates "userAddress" user's "amount" of xToken from this usage contract
      * "data" should contain tokenId and poolAddress
      *
-     * Can only be called by xArxToken contract, which is trusted to verify amounts
+     * Can only be called by xToken contract, which is trusted to verify amounts
      */
     function deallocate(
         address userAddress,
         uint256 amount,
         bytes calldata data
-    ) external override nonReentrant xArxTokenOnly {
+    ) external override nonReentrant xTokenOnly {
         (address poolAddress, uint256 tokenId) = abi.decode(data, (address, uint256));
         _deallocate(userAddress, poolAddress, tokenId, amount);
 
-        // should only be called if spNFT has not been burned, to avoid having stuck xARX on it
+        // should only be called if spNFT has not been burned, to avoid having stuck xToken on it
         if (INFTPool(poolAddress).exists(tokenId)) {
-            // allocated xARX is removed (as boost points) from the spNFT
+            // allocated xToken is removed (as boost points) from the spNFT
             INFTPool(poolAddress).unboost(tokenId, amount);
         }
     }
 
     /**
-     * Deallocates "userAddress" user's "amount" of xARX from this usage contract
+     * Deallocates "userAddress" user's "amount" of xToken from this usage contract
      *
      * Can only be used by a pool contract, as msg.sender is used as poolAddress
-     * The pool should remove the allocated xARX (boost points) from its own spNFT when calling this function
+     * The pool should remove the allocated xToken (boost points) from its own spNFT when calling this function
      */
     function deallocateAllFromPool(address userAddress, uint256 tokenId) external override nonReentrant {
         uint256 amount = usersPositionsAllocation[userAddress][msg.sender][tokenId];
         _deallocate(userAddress, msg.sender, tokenId, amount);
 
-        // update user's xARX allocations balance
-        xArxToken.deallocateFromUsage(userAddress, amount);
+        // update user's xToken allocations balance
+        xToken.deallocateFromUsage(userAddress, amount);
     }
 
     /**
-     * Deallocates msg.sender's "amount" of xARX from xArxToken, without adjusting this contract allocations balances
+     * Deallocates msg.sender's "amount" of xToken from xToken, without adjusting this contract allocations balances
      *
      * Safety mechanism (cf. updateForcedDeallocationStatus)
      */
     function forceDeallocate() external nonReentrant {
         require(forcedDeallocationStatus, "forceDeallocate: unauthorized");
 
-        uint256 amount = xArxToken.usageAllocations(msg.sender, address(this));
+        uint256 amount = xToken.usageAllocations(msg.sender, address(this));
 
-        // update user's xARX allocations balance
-        xArxToken.deallocateFromUsage(msg.sender, amount);
+        // update user's xToken allocations balance
+        xToken.deallocateFromUsage(msg.sender, amount);
     }
 
-    /*****************************************************************/
-    /********************* INTERNAL FUNCTIONS ***********************/
-    /*****************************************************************/
+    // ====================================================== //
+    // ================ INTERNAL FUNCTIONS ================== //
+    // ====================================================== //
 
     /**
-     * @dev Returns multiplier that should be applied to a spNFT based on its boost points (allocated xARX)
+     * @dev Returns multiplier that should be applied to a spNFT based on its boost points (allocated xToken)
      *
      * The calculation is simply based on the ratio between userBoostPoints/totalPoolBoostPoints and userLP/totalLP
      * To get the max bonus on a position where a user owns 1% of the pool's LP supply, he will have to allocate at least
-     * 1% of the pool's allocated xARX
+     * 1% of the pool's allocated xToken
      *
      * The amount is capped at maxBoostMultiplier
      */
@@ -297,7 +297,7 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
     }
 
     /**
-     * @dev Allocates "userAddress" user's "amount" of xARX to "tokenId" spNFT of "poolAddress" pool
+     * @dev Allocates "userAddress" user's "amount" of xToken to "tokenId" spNFT of "poolAddress" pool
      */
     function _allocate(address userAddress, address poolAddress, uint256 tokenId, uint256 amount) internal {
         _usersTotalAllocation[userAddress] = _usersTotalAllocation[userAddress].add(amount);
@@ -312,11 +312,11 @@ contract YieldBooster is Ownable, ReentrancyGuard, IXArxTokenUsage, IYieldBooste
     }
 
     /**
-     * @dev Deallocates "userAddress" user's "amount" of xARX allocated to "tokenId" spNFT of "poolAddress" pool
+     * @dev Deallocates "userAddress" user's "amount" of xToken allocated to "tokenId" spNFT of "poolAddress" pool
      */
     function _deallocate(address userAddress, address poolAddress, uint256 tokenId, uint256 amount) internal {
         uint256 userPositionAllocation = usersPositionsAllocation[userAddress][poolAddress][tokenId];
-        require(userPositionAllocation >= amount, "deallocate: not enough allocated xARX");
+        require(userPositionAllocation >= amount, "deallocate: not enough allocated xToken");
 
         _usersTotalAllocation[userAddress] = _usersTotalAllocation[userAddress].sub(amount);
         usersPositionsAllocation[userAddress][poolAddress][tokenId] = userPositionAllocation.sub(amount);

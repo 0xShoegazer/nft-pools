@@ -12,9 +12,62 @@
     ]
   },
   "files": {
+    "contracts/BSX.sol": {
+      "lastModificationDate": 1692279093152,
+      "contentHash": "a3478a6478cc2e7cd36799d223aa5200",
+      "sourceName": "contracts/BSX.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "london",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "contracts\\interfaces\\IXTokenUsage.sol",
+        "contracts\\interfaces\\tokens\\IProtocolToken.sol",
+        "contracts\\interfaces\\tokens\\IXToken.sol",
+        "node_modules/@openzeppelin\\contracts/access/Ownable.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/ERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/SafeERC20.sol",
+        "node_modules/@openzeppelin/contracts/utils/Address.sol",
+        "node_modules/@openzeppelin/contracts/utils/Context.sol",
+        "node_modules/@openzeppelin\\contracts/utils/EnumerableSet.sol",
+        "node_modules/@openzeppelin\\contracts/utils/ReentrancyGuard.sol"
+      ],
+      "versionRequirement": "=0.7.6",
+      "artifacts": {
+        "xBSX": {
+          "0.7.6+commit.7338295f.Windows.msvc": "BSX.sol\\xBSX.json"
+        }
+      }
+    },
     "contracts/NFTPool.sol": {
-      "lastModificationDate": 1689872985904,
-      "contentHash": "13973ab4d8a51c4412ab7b87a0ed3549",
+      "lastModificationDate": 1692278987670,
+      "contentHash": "bb14896b9bcb95306181e46fa7b26c69",
       "sourceName": "contracts/NFTPool.sol",
       "solcConfig": {
         "settings": {
@@ -23,7 +76,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -41,45 +93,45 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "contracts/interfaces/IMasterChef.sol",
-        "contracts/interfaces/INFTHandler.sol",
-        "contracts/interfaces/INFTPool.sol",
-        "contracts/interfaces/IYieldBooster.sol",
-        "contracts/interfaces/tokens/IERC20Metadata.sol",
-        "contracts/interfaces/tokens/IxARXToken.sol",
+        "contracts\\interfaces\\IMasterChef.sol",
+        "contracts\\interfaces\\INFTHandler.sol",
+        "contracts\\interfaces\\INFTPool.sol",
+        "contracts\\interfaces\\IYieldBooster.sol",
+        "contracts\\interfaces\\tokens\\IERC20Metadata.sol",
+        "contracts\\interfaces\\tokens\\IXToken.sol",
         "node_modules/@openzeppelin/contracts/introspection/ERC165.sol",
         "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/SafeERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/ERC721.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721.sol",
         "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
         "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721Receiver.sol",
         "node_modules/@openzeppelin/contracts/utils/Address.sol",
         "node_modules/@openzeppelin/contracts/utils/Context.sol",
-        "node_modules/@openzeppelin/contracts/utils/Counters.sol",
+        "node_modules/@openzeppelin\\contracts/utils/Counters.sol",
         "node_modules/@openzeppelin/contracts/utils/EnumerableMap.sol",
-        "node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol",
-        "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "node_modules/@openzeppelin\\contracts/utils/EnumerableSet.sol",
+        "node_modules/@openzeppelin\\contracts/utils/ReentrancyGuard.sol",
         "node_modules/@openzeppelin/contracts/utils/Strings.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "NFTPool": {
-          "0.7.6+commit.7338295f.Linux.gcc": "NFTPool.sol/NFTPool.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "NFTPool.sol\\NFTPool.json"
         }
       }
     },
     "contracts/NFTPoolFactory.sol": {
-      "lastModificationDate": 1689872760059,
-      "contentHash": "bc4681b3be63966206637de850c80dca",
+      "lastModificationDate": 1692206711256,
+      "contentHash": "6209bee55fd762bcd299d881842f59b6",
       "sourceName": "contracts/NFTPoolFactory.sol",
       "solcConfig": {
         "settings": {
@@ -88,7 +140,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -106,41 +157,88 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "contracts/NFTPool.sol",
-        "contracts/interfaces/IMasterChef.sol",
-        "contracts/interfaces/INFTHandler.sol",
-        "contracts/interfaces/INFTPool.sol",
-        "contracts/interfaces/INFTPoolRewardManager.sol",
-        "contracts/interfaces/IYieldBooster.sol",
-        "contracts/interfaces/tokens/IERC20Metadata.sol",
-        "contracts/interfaces/tokens/IxARXToken.sol",
+        "contracts\\NFTPool.sol",
+        "contracts\\interfaces\\IMasterChef.sol",
+        "contracts\\interfaces\\INFTHandler.sol",
+        "contracts\\interfaces\\INFTPool.sol",
+        "contracts\\interfaces\\IYieldBooster.sol",
+        "contracts\\interfaces\\tokens\\IERC20Metadata.sol",
+        "contracts\\interfaces\\tokens\\IXToken.sol",
         "node_modules/@openzeppelin/contracts/introspection/ERC165.sol",
         "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/SafeERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/ERC721.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721.sol",
         "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
         "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721Receiver.sol",
         "node_modules/@openzeppelin/contracts/utils/Address.sol",
         "node_modules/@openzeppelin/contracts/utils/Context.sol",
-        "node_modules/@openzeppelin/contracts/utils/Counters.sol",
+        "node_modules/@openzeppelin\\contracts/utils/Counters.sol",
         "node_modules/@openzeppelin/contracts/utils/EnumerableMap.sol",
-        "node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol",
-        "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
+        "node_modules/@openzeppelin\\contracts/utils/EnumerableSet.sol",
+        "node_modules/@openzeppelin\\contracts/utils/ReentrancyGuard.sol",
         "node_modules/@openzeppelin/contracts/utils/Strings.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "NFTPoolFactory": {
-          "0.7.6+commit.7338295f.Linux.gcc": "NFTPoolFactory.sol/NFTPoolFactory.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "NFTPoolFactory.sol\\NFTPoolFactory.json"
+        }
+      }
+    },
+    "contracts/ProtocolToken.sol": {
+      "lastModificationDate": 1689372190278,
+      "contentHash": "2ea304f50c2f02fc9b2d3e8c2370e872",
+      "sourceName": "contracts/ProtocolToken.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "london",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "contracts\\interfaces\\tokens\\IProtocolToken.sol",
+        "node_modules/@openzeppelin\\contracts/access/Ownable.sol",
+        "node_modules/@openzeppelin\\contracts/math/Math.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/ERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin/contracts/utils/Context.sol"
+      ],
+      "versionRequirement": "=0.7.6",
+      "artifacts": {
+        "ProtocolToken": {
+          "0.7.6+commit.7338295f.Windows.msvc": "ProtocolToken.sol\\ProtocolToken.json"
         }
       }
     },
@@ -155,7 +253,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -173,7 +270,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -181,13 +278,13 @@
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "IDividendsV2": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IDividendsV2.sol/IDividendsV2.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IDividendsV2.sol\\IDividendsV2.json"
         }
       }
     },
     "contracts/interfaces/IMasterChef.sol": {
-      "lastModificationDate": 1689365586896,
-      "contentHash": "9df32ec3ee4a6e4a2d18d8731f4ccb4e",
+      "lastModificationDate": 1692278995652,
+      "contentHash": "1d8ca2367acf6654e0b1cea331036cd4",
       "sourceName": "contracts/interfaces/IMasterChef.sol",
       "solcConfig": {
         "settings": {
@@ -196,7 +293,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -214,7 +310,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -222,12 +318,12 @@
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "IMasterChef": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IMasterChef.sol/IMasterChef.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IMasterChef.sol\\IMasterChef.json"
         }
       }
     },
     "contracts/interfaces/INFTHandler.sol": {
-      "lastModificationDate": 1689873025373,
+      "lastModificationDate": 1692201088409,
       "contentHash": "c5d1d1b79248ef2d98380f486bb607d9",
       "sourceName": "contracts/interfaces/INFTHandler.sol",
       "solcConfig": {
@@ -237,7 +333,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -255,23 +350,23 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol"
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721Receiver.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "INFTHandler": {
-          "0.7.6+commit.7338295f.Linux.gcc": "INFTHandler.sol/INFTHandler.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "INFTHandler.sol\\INFTHandler.json"
         }
       }
     },
     "contracts/interfaces/INFTPool.sol": {
-      "lastModificationDate": 1687621688315,
-      "contentHash": "87336a705c54b498ce147b1ba27b2d9e",
+      "lastModificationDate": 1692207999252,
+      "contentHash": "2313ea7810db45895729b796896a89f7",
       "sourceName": "contracts/interfaces/INFTPool.sol",
       "solcConfig": {
         "settings": {
@@ -280,7 +375,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -298,25 +392,25 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
         "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol"
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "INFTPool": {
-          "0.7.6+commit.7338295f.Linux.gcc": "INFTPool.sol/INFTPool.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "INFTPool.sol\\INFTPool.json"
         }
       }
     },
-    "contracts/interfaces/INFTPoolRewardManager.sol": {
-      "lastModificationDate": 1689365586902,
-      "contentHash": "31fcd2e21e14c5d173bdf4b45fbb83a8",
-      "sourceName": "contracts/interfaces/INFTPoolRewardManager.sol",
+    "contracts/interfaces/IXTokenUsage.sol": {
+      "lastModificationDate": 1692201794435,
+      "contentHash": "a04c4325313610e8cd6acb1b97ebaf34",
+      "sourceName": "contracts/interfaces/IXTokenUsage.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -324,7 +418,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -342,56 +435,15 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [],
       "versionRequirement": "=0.7.6",
       "artifacts": {
-        "INFTPoolRewardManager": {
-          "0.7.6+commit.7338295f.Linux.gcc": "INFTPoolRewardManager.sol/INFTPoolRewardManager.json"
-        }
-      }
-    },
-    "contracts/interfaces/IXArxTokenUsage.sol": {
-      "lastModificationDate": 1689365586911,
-      "contentHash": "b4d0254d437f05183e14a398534c3ffb",
-      "sourceName": "contracts/interfaces/IXArxTokenUsage.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.7.6",
-      "artifacts": {
-        "IXArxTokenUsage": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IXArxTokenUsage.sol/IXArxTokenUsage.json"
+        "IXTokenUsage": {
+          "0.7.6+commit.7338295f.Windows.msvc": "IXTokenUsage.sol\\IXTokenUsage.json"
         }
       }
     },
@@ -406,7 +458,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -424,7 +475,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -432,50 +483,7 @@
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "IYieldBooster": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IYieldBooster.sol/IYieldBooster.json"
-        }
-      }
-    },
-    "contracts/interfaces/tokens/IARXToken.sol": {
-      "lastModificationDate": 1686847873613,
-      "contentHash": "28d933819ae349e5bb209436d8665e00",
-      "sourceName": "contracts/interfaces/tokens/IARXToken.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol"
-      ],
-      "versionRequirement": "=0.7.6",
-      "artifacts": {
-        "IARXToken": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IARXToken.sol/IARXToken.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IYieldBooster.sol\\IYieldBooster.json"
         }
       }
     },
@@ -490,7 +498,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -508,24 +515,24 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol"
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "IERC20Metadata": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IERC20Metadata.sol/IERC20Metadata.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IERC20Metadata.sol\\IERC20Metadata.json"
         }
       }
     },
-    "contracts/interfaces/tokens/IxARXToken.sol": {
-      "lastModificationDate": 1686847873614,
-      "contentHash": "c3a295ecbae374e54e0c4b19e1ccabac",
-      "sourceName": "contracts/interfaces/tokens/IxARXToken.sol",
+    "contracts/interfaces/tokens/IProtocolToken.sol": {
+      "lastModificationDate": 1692206777642,
+      "contentHash": "e5f765a3585de8e75d24534b0be968a4",
+      "sourceName": "contracts/interfaces/tokens/IProtocolToken.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -533,7 +540,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -551,23 +557,65 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol"
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
-        "IxARXToken": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IxARXToken.sol/IxARXToken.json"
+        "IProtocolToken": {
+          "0.7.6+commit.7338295f.Windows.msvc": "IProtocolToken.sol\\IProtocolToken.json"
+        }
+      }
+    },
+    "contracts/interfaces/tokens/IXToken.sol": {
+      "lastModificationDate": 1692206782784,
+      "contentHash": "ba60be3063664a537adc867ddd9051f2",
+      "sourceName": "contracts/interfaces/tokens/IXToken.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "london",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol"
+      ],
+      "versionRequirement": "=0.7.6",
+      "artifacts": {
+        "IXToken": {
+          "0.7.6+commit.7338295f.Windows.msvc": "IXToken.sol\\IXToken.json"
         }
       }
     },
     "contracts/plugins/YieldBoost.sol": {
-      "lastModificationDate": 1686847873614,
-      "contentHash": "cdedc67aa6661828f6911d6fd90d6377",
+      "lastModificationDate": 1692206961721,
+      "contentHash": "4e76496d7ef3aeed0612f4d514433913",
       "sourceName": "contracts/plugins/YieldBoost.sol",
       "solcConfig": {
         "settings": {
@@ -576,7 +624,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -594,543 +641,36 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "contracts/interfaces/INFTPool.sol",
-        "contracts/interfaces/IXArxTokenUsage.sol",
-        "contracts/interfaces/IYieldBooster.sol",
-        "contracts/interfaces/tokens/IxARXToken.sol",
-        "node_modules/@openzeppelin/contracts/access/Ownable.sol",
+        "contracts\\interfaces\\INFTPool.sol",
+        "contracts\\interfaces\\IXTokenUsage.sol",
+        "contracts\\interfaces\\IYieldBooster.sol",
+        "contracts\\interfaces\\tokens\\IXToken.sol",
+        "node_modules/@openzeppelin\\contracts/access/Ownable.sol",
         "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
-        "node_modules/@openzeppelin/contracts/math/Math.sol",
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "node_modules/@openzeppelin\\contracts/math/Math.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/SafeERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721.sol",
         "node_modules/@openzeppelin/contracts/utils/Address.sol",
         "node_modules/@openzeppelin/contracts/utils/Context.sol",
-        "node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol",
-        "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol"
+        "node_modules/@openzeppelin\\contracts/utils/EnumerableSet.sol",
+        "node_modules/@openzeppelin\\contracts/utils/ReentrancyGuard.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
         "YieldBooster": {
-          "0.7.6+commit.7338295f.Linux.gcc": "YieldBoost.sol/YieldBooster.json"
-        }
-      }
-    },
-    "contracts/upgrades/PoolCreator.sol": {
-      "lastModificationDate": 1687621688316,
-      "contentHash": "d28bbd6ab99e8c63585f9fe0eee69e80",
-      "sourceName": "contracts/upgrades/PoolCreator.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "contracts/upgrades/interfaces/IArbidexMasterChef.sol",
-        "contracts/upgrades/interfaces/IChefRamsey.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol"
-      ],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "ChefRamsey": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "PoolCreator.sol/ChefRamsey.json"
-        }
-      }
-    },
-    "contracts/upgrades/PoolRewardManager.sol": {
-      "lastModificationDate": 1687621389342,
-      "contentHash": "c37fdc6d5b838442f553770de12e49f1",
-      "sourceName": "contracts/upgrades/PoolRewardManager.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "contracts/upgrades/interfaces/INFTPoolRewardManager.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20PermitUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/SignedMathUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol"
-      ],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "PoolRewardManager": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "PoolRewardManager.sol/PoolRewardManager.json"
-        }
-      }
-    },
-    "contracts/upgrades/RewardManager.sol": {
-      "lastModificationDate": 1686847873616,
-      "contentHash": "d308609e202c56dd01cb90f0a2e65f2e",
-      "sourceName": "contracts/upgrades/RewardManager.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "contracts/upgrades/interfaces/INFTPoolRewardManager.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20PermitUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/SignedMathUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol"
-      ],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "RewardManager": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "RewardManager.sol/RewardManager.json"
-        }
-      }
-    },
-    "contracts/upgrades/interfaces/IArbidexMasterChef.sol": {
-      "lastModificationDate": 1686847873617,
-      "contentHash": "9b49ae2976c50de71ffdad8d262ccc25",
-      "sourceName": "contracts/upgrades/interfaces/IArbidexMasterChef.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "IArbidexMasterChef": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IArbidexMasterChef.sol/IArbidexMasterChef.json"
-        }
-      }
-    },
-    "contracts/upgrades/interfaces/IChefRamsey.sol": {
-      "lastModificationDate": 1687621688258,
-      "contentHash": "a5e495512b6b9fd411112fddd3330562",
-      "sourceName": "contracts/upgrades/interfaces/IChefRamsey.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "IChefRamsey": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IChefRamsey.sol/IChefRamsey.json"
-        }
-      }
-    },
-    "contracts/upgrades/interfaces/IMasterChef.sol": {
-      "lastModificationDate": 1686847873621,
-      "contentHash": "07fdf6dbd52477203fc17ba6a39db274",
-      "sourceName": "contracts/upgrades/interfaces/IMasterChef.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "IMasterChef": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "interfaces/IMasterChef.sol/IMasterChef.json"
-        }
-      }
-    },
-    "contracts/upgrades/interfaces/INFTPool.sol": {
-      "lastModificationDate": 1686847873622,
-      "contentHash": "e7d016d7a9c3f348b949eb2c885b9518",
-      "sourceName": "contracts/upgrades/interfaces/INFTPool.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "contracts/upgrades/interfaces/INFTPoolRewardManager.sol"
-      ],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "INFTPool": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "interfaces/INFTPool.sol/INFTPool.json"
-        }
-      }
-    },
-    "contracts/upgrades/interfaces/INFTPoolRewardManager.sol": {
-      "lastModificationDate": 1686847873622,
-      "contentHash": "6ceefab1fa6395e98d487fa4e29e81a6",
-      "sourceName": "contracts/upgrades/interfaces/INFTPoolRewardManager.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "INFTPoolRewardManager": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "interfaces/INFTPoolRewardManager.sol/INFTPoolRewardManager.json"
-        }
-      }
-    },
-    "contracts/upgrades/interfaces/IXToken.sol": {
-      "lastModificationDate": 1686847873623,
-      "contentHash": "ad0bf02c8106451cad4682c8f02012f6",
-      "sourceName": "contracts/upgrades/interfaces/IXToken.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "IXToken": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IXToken.sol/IXToken.json"
-        }
-      }
-    },
-    "contracts/upgrades/interfaces/IYieldBooster.sol": {
-      "lastModificationDate": 1686847873623,
-      "contentHash": "30bb2bbd4195ef6d0f45ad11c530d0f3",
-      "sourceName": "contracts/upgrades/interfaces/IYieldBooster.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "=0.8.15",
-      "artifacts": {
-        "IYieldBooster": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "interfaces/IYieldBooster.sol/IYieldBooster.json"
-        }
-      }
-    },
-    "contracts/xARX.sol": {
-      "lastModificationDate": 1686847873624,
-      "contentHash": "a1eb623a6f6cf009a49a1092708c110b",
-      "sourceName": "contracts/xARX.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "contracts/interfaces/IXArxTokenUsage.sol",
-        "contracts/interfaces/tokens/IARXToken.sol",
-        "contracts/interfaces/tokens/IxARXToken.sol",
-        "node_modules/@openzeppelin/contracts/access/Ownable.sol",
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
-        "node_modules/@openzeppelin/contracts/utils/Address.sol",
-        "node_modules/@openzeppelin/contracts/utils/Context.sol",
-        "node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol",
-        "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol"
-      ],
-      "versionRequirement": "=0.7.6",
-      "artifacts": {
-        "xARXToken": {
-          "0.7.6+commit.7338295f.Linux.gcc": "xARX.sol/xARXToken.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "YieldBoost.sol\\YieldBooster.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/access/Ownable.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "6748815a5b45c4aeeda56819f41190e0",
       "sourceName": "node_modules/@openzeppelin/contracts/access/Ownable.sol",
       "solcConfig": {
@@ -1140,7 +680,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1158,7 +697,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1168,12 +707,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "Ownable": {
-          "0.7.6+commit.7338295f.Linux.gcc": "Ownable.sol/Ownable.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "Ownable.sol\\Ownable.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/introspection/ERC165.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "08f854e2dd3c262845bba38c9b48e4e0",
       "sourceName": "node_modules/@openzeppelin/contracts/introspection/ERC165.sol",
       "solcConfig": {
@@ -1183,7 +722,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1201,7 +739,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1211,12 +749,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "ERC165": {
-          "0.7.6+commit.7338295f.Linux.gcc": "ERC165.sol/ERC165.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "ERC165.sol\\ERC165.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/introspection/IERC165.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "0d62a8380952235f135dae91590f90a3",
       "sourceName": "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
       "solcConfig": {
@@ -1226,7 +764,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1244,7 +781,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1252,12 +789,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "IERC165": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IERC165.sol/IERC165.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IERC165.sol\\IERC165.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/math/Math.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "e5c844515b04deabacef7eb872abc384",
       "sourceName": "node_modules/@openzeppelin/contracts/math/Math.sol",
       "solcConfig": {
@@ -1267,7 +804,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1285,7 +821,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1293,12 +829,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "Math": {
-          "0.7.6+commit.7338295f.Linux.gcc": "Math.sol/Math.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "Math.sol\\Math.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/math/SafeMath.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "e03e12206057e809eb76c5f681170c32",
       "sourceName": "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
       "solcConfig": {
@@ -1308,7 +844,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1326,7 +861,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1334,12 +869,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "SafeMath": {
-          "0.7.6+commit.7338295f.Linux.gcc": "SafeMath.sol/SafeMath.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "SafeMath.sol\\SafeMath.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "8065b340476f61365c076897199425f1",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC20/ERC20.sol",
       "solcConfig": {
@@ -1349,7 +884,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1367,24 +901,24 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
         "node_modules/@openzeppelin/contracts/utils/Context.sol"
       ],
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "ERC20": {
-          "0.7.6+commit.7338295f.Linux.gcc": "ERC20.sol/ERC20.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "ERC20.sol\\ERC20.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "e0a41531d159d3a32f84b7a3ecf9fabb",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
       "solcConfig": {
@@ -1394,7 +928,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1412,7 +945,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1420,12 +953,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "IERC20": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IERC20.sol/IERC20.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IERC20.sol\\IERC20.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "33e22842646d746e5c4124c2fdc051aa",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC20/SafeERC20.sol",
       "solcConfig": {
@@ -1435,7 +968,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1453,24 +985,24 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
         "node_modules/@openzeppelin/contracts/utils/Address.sol"
       ],
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "SafeERC20": {
-          "0.7.6+commit.7338295f.Linux.gcc": "SafeERC20.sol/SafeERC20.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "SafeERC20.sol\\SafeERC20.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "2d9804eb2b6f41ea0a65115e154d90eb",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol",
       "solcConfig": {
@@ -1480,7 +1012,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1498,33 +1029,33 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
         "node_modules/@openzeppelin/contracts/introspection/ERC165.sol",
         "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721.sol",
         "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
         "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721Receiver.sol",
         "node_modules/@openzeppelin/contracts/utils/Address.sol",
         "node_modules/@openzeppelin/contracts/utils/Context.sol",
         "node_modules/@openzeppelin/contracts/utils/EnumerableMap.sol",
-        "node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol",
+        "node_modules/@openzeppelin\\contracts/utils/EnumerableSet.sol",
         "node_modules/@openzeppelin/contracts/utils/Strings.sol"
       ],
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "ERC721": {
-          "0.7.6+commit.7338295f.Linux.gcc": "ERC721.sol/ERC721.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "ERC721.sol\\ERC721.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "e82621b83943f11c44988c60e83d6ebc",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol",
       "solcConfig": {
@@ -1534,7 +1065,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1552,7 +1082,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1562,12 +1092,12 @@
       "versionRequirement": ">=0.6.2, <0.8.0",
       "artifacts": {
         "IERC721": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IERC721.sol/IERC721.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IERC721.sol\\IERC721.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "eaebc3874248c26f6ea0b13b9a140a94",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Enumerable.sol",
       "solcConfig": {
@@ -1577,7 +1107,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1595,23 +1124,23 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
         "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol"
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.8.0",
       "artifacts": {
         "IERC721Enumerable": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IERC721Enumerable.sol/IERC721Enumerable.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IERC721Enumerable.sol\\IERC721Enumerable.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "370e7a48f316401b5063bcb604843e1b",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Metadata.sol",
       "solcConfig": {
@@ -1621,7 +1150,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1639,23 +1167,23 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
         "node_modules/@openzeppelin/contracts/introspection/IERC165.sol",
-        "node_modules/@openzeppelin/contracts/token/ERC721/IERC721.sol"
+        "node_modules/@openzeppelin\\contracts/token/ERC721/IERC721.sol"
       ],
       "versionRequirement": ">=0.6.2, <0.8.0",
       "artifacts": {
         "IERC721Metadata": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IERC721Metadata.sol/IERC721Metadata.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IERC721Metadata.sol\\IERC721Metadata.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "fad0b3f4424bdbb4b35467b29ea8d334",
       "sourceName": "node_modules/@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol",
       "solcConfig": {
@@ -1665,7 +1193,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1683,7 +1210,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1691,12 +1218,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "IERC721Receiver": {
-          "0.7.6+commit.7338295f.Linux.gcc": "IERC721Receiver.sol/IERC721Receiver.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "IERC721Receiver.sol\\IERC721Receiver.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/utils/Address.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "7aa46886ff5abe7515496208a5e2ce5a",
       "sourceName": "node_modules/@openzeppelin/contracts/utils/Address.sol",
       "solcConfig": {
@@ -1706,7 +1233,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1724,7 +1250,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1732,12 +1258,12 @@
       "versionRequirement": ">=0.6.2, <0.8.0",
       "artifacts": {
         "Address": {
-          "0.7.6+commit.7338295f.Linux.gcc": "Address.sol/Address.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "Address.sol\\Address.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/utils/Context.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "2adbd82f6d055a4751566d4671512b03",
       "sourceName": "node_modules/@openzeppelin/contracts/utils/Context.sol",
       "solcConfig": {
@@ -1747,7 +1273,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1765,7 +1290,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1773,12 +1298,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "Context": {
-          "0.7.6+commit.7338295f.Linux.gcc": "Context.sol/Context.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "Context.sol\\Context.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/utils/Counters.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "304a56eb1322144704fb39f8c7e6d722",
       "sourceName": "node_modules/@openzeppelin/contracts/utils/Counters.sol",
       "solcConfig": {
@@ -1788,7 +1313,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1806,22 +1330,22 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
       "imports": [
-        "node_modules/@openzeppelin/contracts/math/SafeMath.sol"
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol"
       ],
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "Counters": {
-          "0.7.6+commit.7338295f.Linux.gcc": "Counters.sol/Counters.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "Counters.sol\\Counters.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/utils/EnumerableMap.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "b1bb8570824c668943149211d74d6c51",
       "sourceName": "node_modules/@openzeppelin/contracts/utils/EnumerableMap.sol",
       "solcConfig": {
@@ -1831,7 +1355,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1849,7 +1372,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1857,12 +1380,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "EnumerableMap": {
-          "0.7.6+commit.7338295f.Linux.gcc": "EnumerableMap.sol/EnumerableMap.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "EnumerableMap.sol\\EnumerableMap.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "db7b1afdb2c204e1e52100b79f0c847e",
       "sourceName": "node_modules/@openzeppelin/contracts/utils/EnumerableSet.sol",
       "solcConfig": {
@@ -1872,7 +1395,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1890,7 +1412,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1898,12 +1420,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "EnumerableSet": {
-          "0.7.6+commit.7338295f.Linux.gcc": "EnumerableSet.sol/EnumerableSet.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "EnumerableSet.sol\\EnumerableSet.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "1c60f58cee45c61469e1aea31e4dd879",
       "sourceName": "node_modules/@openzeppelin/contracts/utils/ReentrancyGuard.sol",
       "solcConfig": {
@@ -1913,7 +1435,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1931,7 +1452,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1939,12 +1460,12 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "ReentrancyGuard": {
-          "0.7.6+commit.7338295f.Linux.gcc": "ReentrancyGuard.sol/ReentrancyGuard.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "ReentrancyGuard.sol\\ReentrancyGuard.json"
         }
       }
     },
     "node_modules/@openzeppelin/contracts/utils/Strings.sol": {
-      "lastModificationDate": 1689370930000,
+      "lastModificationDate": 1653000139549,
       "contentHash": "c86a31bacf868d392eda08a0eccc4735",
       "sourceName": "node_modules/@openzeppelin/contracts/utils/Strings.sol",
       "solcConfig": {
@@ -1954,7 +1475,6 @@
             "runs": 200
           },
           "metadata": {
-            "useLiteralContent": false,
             "bytecodeHash": "ipfs",
             "appendCBOR": true
           },
@@ -1972,7 +1492,7 @@
               ]
             }
           },
-          "evmVersion": "paris",
+          "evmVersion": "london",
           "libraries": {}
         }
       },
@@ -1980,695 +1500,7 @@
       "versionRequirement": ">=0.6.0, <0.8.0",
       "artifacts": {
         "Strings": {
-          "0.7.6+commit.7338295f.Linux.gcc": "Strings.sol/Strings.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "c88845618a815ef601f3f552c99d7ebb",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/access/AccessControlUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/SignedMathUpgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "AccessControlUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "AccessControlUpgradeable.sol/AccessControlUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "21b43d1337ebc77c11da3cbe3fd65316",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/access/IAccessControlUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "IAccessControlUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IAccessControlUpgradeable.sol/IAccessControlUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "db24b956904575cc79d02867ec03263c",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "OwnableUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "OwnableUpgradeable.sol/OwnableUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "b0970a564d121abf9adfff8d1a01eb16",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.2",
-      "artifacts": {
-        "Initializable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "Initializable.sol/Initializable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "9a9398a7dbda9d014f04d5eb0fb581fd",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "IERC20Upgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IERC20Upgradeable.sol/IERC20Upgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "9efcd5467a7f0bf533910ee8a267adb2",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20MetadataUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "IERC20MetadataUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IERC20MetadataUpgradeable.sol/IERC20MetadataUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20PermitUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "30ef13e9a1b22e74e5e4ce5ab2a247e4",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20PermitUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "IERC20PermitUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IERC20PermitUpgradeable.sol/IERC20PermitUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "aeacbe7315b287fd31acd3cfbeb926ad",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/utils/SafeERC20Upgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/IERC20Upgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/token/ERC20/extensions/IERC20PermitUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "SafeERC20Upgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "SafeERC20Upgradeable.sol/SafeERC20Upgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "c30c805386fda8a42ff515da963d3a95",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.1",
-      "artifacts": {
-        "AddressUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "AddressUpgradeable.sol/AddressUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "6200b84950eb05b4a92a39fd1d6e0f9b",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/ContextUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "ContextUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "ContextUpgradeable.sol/ContextUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "c221361be1c4953f5b71f47475b90266",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/StringsUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/math/SignedMathUpgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "StringsUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "StringsUpgradeable.sol/StringsUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "5f2d8b81c0ff5bd2047b4846c20b998d",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/ERC165Upgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "node_modules/@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/AddressUpgradeable.sol",
-        "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol"
-      ],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "ERC165Upgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "ERC165Upgradeable.sol/ERC165Upgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "d6ecf203a5e72c845be9bbf2f304a289",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/introspection/IERC165Upgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "IERC165Upgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "IERC165Upgradeable.sol/IERC165Upgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "5a2a749b45b6a8eb035f4bf75addcb27",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/math/MathUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "MathUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "MathUpgradeable.sol/MathUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/math/SignedMathUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "2a6b819b2e241091ada6d645df3e3929",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/math/SignedMathUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "SignedMathUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "SignedMathUpgradeable.sol/SignedMathUpgradeable.json"
-        }
-      }
-    },
-    "node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol": {
-      "lastModificationDate": 1689791291000,
-      "contentHash": "b5cad7eaf6f7db7b48d990721ee0d89e",
-      "sourceName": "node_modules/@openzeppelin/contracts-upgradeable/utils/structs/EnumerableSetUpgradeable.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "useLiteralContent": false,
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "paris",
-          "libraries": {}
-        }
-      },
-      "imports": [],
-      "versionRequirement": "^0.8.0",
-      "artifacts": {
-        "EnumerableSetUpgradeable": {
-          "0.8.15+commit.e14f2714.Linux.gcc": "EnumerableSetUpgradeable.sol/EnumerableSetUpgradeable.json"
+          "0.7.6+commit.7338295f.Windows.msvc": "Strings.sol\\Strings.json"
         }
       }
     }

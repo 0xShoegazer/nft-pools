@@ -491,20 +491,20 @@
   },
   "ast": {
     "absolutePath": "contracts/interfaces/tokens/IERC20Metadata.sol",
-    "id": 3166,
+    "id": 4679,
     "exportedSymbols": {
       "IERC20": [
-        6727
+        6678
       ],
       "IERC20Metadata": [
-        3165
+        4678
       ]
     },
     "nodeType": "SourceUnit",
     "src": "33:184:10",
     "nodes": [
       {
-        "id": 3156,
+        "id": 4669,
         "nodeType": "PragmaDirective",
         "src": "33:23:10",
         "nodes": [],
@@ -516,24 +516,24 @@
         ]
       },
       {
-        "id": 3157,
+        "id": 4670,
         "nodeType": "ImportDirective",
         "src": "60:56:10",
         "nodes": [],
         "absolutePath": "node_modules/@openzeppelin/contracts/token/ERC20/IERC20.sol",
         "file": "@openzeppelin/contracts/token/ERC20/IERC20.sol",
-        "scope": 3166,
-        "sourceUnit": 6728,
+        "scope": 4679,
+        "sourceUnit": 6679,
         "symbolAliases": [],
         "unitAlias": ""
       },
       {
-        "id": 3165,
+        "id": 4678,
         "nodeType": "ContractDefinition",
         "src": "120:95:10",
         "nodes": [
           {
-            "id": 3164,
+            "id": 4677,
             "nodeType": "FunctionDefinition",
             "src": "162:50:10",
             "nodes": [],
@@ -543,22 +543,22 @@
             "modifiers": [],
             "name": "decimals",
             "parameters": {
-              "id": 3160,
+              "id": 4673,
               "nodeType": "ParameterList",
               "parameters": [],
               "src": "179:2:10"
             },
             "returnParameters": {
-              "id": 3163,
+              "id": 4676,
               "nodeType": "ParameterList",
               "parameters": [
                 {
                   "constant": false,
-                  "id": 3162,
+                  "id": 4675,
                   "mutability": "mutable",
                   "name": "",
                   "nodeType": "VariableDeclaration",
-                  "scope": 3164,
+                  "scope": 4677,
                   "src": "205:5:10",
                   "stateVariable": false,
                   "storageLocation": "default",
@@ -567,7 +567,7 @@
                     "typeString": "uint8"
                   },
                   "typeName": {
-                    "id": 3161,
+                    "id": 4674,
                     "name": "uint8",
                     "nodeType": "ElementaryTypeName",
                     "src": "205:5:10",
@@ -581,7 +581,7 @@
               ],
               "src": "204:7:10"
             },
-            "scope": 3165,
+            "scope": 4678,
             "stateMutability": "view",
             "virtual": false,
             "visibility": "external"
@@ -591,32 +591,32 @@
         "baseContracts": [
           {
             "baseName": {
-              "id": 3158,
+              "id": 4671,
               "name": "IERC20",
               "nodeType": "UserDefinedTypeName",
-              "referencedDeclaration": 6727,
+              "referencedDeclaration": 6678,
               "src": "148:6:10",
               "typeDescriptions": {
-                "typeIdentifier": "t_contract$_IERC20_$6727",
+                "typeIdentifier": "t_contract$_IERC20_$6678",
                 "typeString": "contract IERC20"
               }
             },
-            "id": 3159,
+            "id": 4672,
             "nodeType": "InheritanceSpecifier",
             "src": "148:6:10"
           }
         ],
         "contractDependencies": [
-          6727
+          6678
         ],
         "contractKind": "interface",
         "fullyImplemented": false,
         "linearizedBaseContracts": [
-          3165,
-          6727
+          4678,
+          6678
         ],
         "name": "IERC20Metadata",
-        "scope": 3166
+        "scope": 4679
       }
     ],
     "license": "MIT"

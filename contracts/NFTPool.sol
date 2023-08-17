@@ -11,7 +11,7 @@ import "./interfaces/INFTHandler.sol";
 import "./interfaces/IMasterChef.sol";
 import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
-import "./interfaces/tokens/IxARXToken.sol";
+import "./interfaces/tokens/IXToken.sol";
 import "./interfaces/tokens/IERC20Metadata.sol";
 
 /*
@@ -38,8 +38,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         uint256 boostPoints; // Allocated xToken from yieldboost contract (optional)
         uint256 totalMultiplier; // lockMultiplier + allocated xToken boostPoints multiplier
         uint256 pendingXTokenRewards; // Not harvested xToken rewards
-        uint256 pendingArxRewards; // Not harvested ARX rewards
-        uint256 pendingWETHRewards; // Not harvested ARX rewards
+        uint256 pendingRewards; // Not harvested rewards
+        uint256 pendingWETHRewards; // Not harvested rewards
     }
 
     Counters.Counter private _tokenIds;
@@ -50,8 +50,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     bool public initialized;
 
     IERC20Metadata private _lpToken; // Deposit token contract's address
-    IERC20Metadata private _arxToken; // ARXToken contract's address
-    IxARXToken private _xToken; // xToken contract's address
+    IERC20Metadata private _protocolToken;
+    IXToken private _xToken; // xToken contract's address
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
     uint256 private _lpSupplyWithMultiplier; // Sum of deposit token on this pool including the user's total multiplier (lockMultiplier + boostPoints)
     uint256 private _accRewardsPerShare; // Accumulated Rewards (staked token) per share, times 1e18. See below
@@ -67,7 +67,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     uint256 private _maxBoostMultiplier = 10000; // 100%, Max boost that can be earned from xToken yieldBooster
 
     uint256 private constant _TOTAL_REWARDS_SHARES = 10000; // 100%, high limit for xTokenRewardsShare
-    uint256 public xTokenRewardsShare = 8000; // 80%, directly defines arxShare with the remaining value to 100%
+    uint256 public xTokenRewardsShare = 8000; // 80%, directly defines share with the remaining value to 100%
 
     bool public emergencyUnlock; // Release all locks in case of emergency
 
@@ -99,21 +99,16 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         factory = msg.sender;
     }
 
-    function initialize(
-        IMasterChef master_,
-        IERC20Metadata arxToken,
-        IxARXToken xToken,
-        IERC20Metadata lpToken
-    ) external {
+    function initialize(IMasterChef master_, IERC20Metadata token, IXToken xToken, IERC20Metadata lpToken) external {
         require(msg.sender == factory && !initialized, "FORBIDDEN");
         _lpToken = lpToken;
         master = master_;
-        _arxToken = arxToken;
+        _protocolToken = token;
         _xToken = xToken;
         initialized = true;
 
         // to convert main token to xToken
-        _arxToken.approve(address(_xToken), type(uint256).max);
+        _protocolToken.approve(address(_xToken), type(uint256).max);
     }
 
     /***********************************************/
@@ -217,28 +212,28 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
         override
         returns (
             address lpToken,
-            address arxToken,
+            address protocolToken,
             address xToken,
             uint256 lastRewardTime,
             uint256 accRewardsPerShare,
             uint256 accRewardsPerShareWETH,
             uint256 lpSupply,
             uint256 lpSupplyWithMultiplier,
-            uint256 allocPointsARX,
+            uint256 allocPoints,
             uint256 allocPointsWETH
         )
     {
-        (, allocPointsARX, allocPointsWETH, lastRewardTime, , , , ) = master.getPoolInfo(address(this));
+        (, allocPoints, allocPointsWETH, lastRewardTime, , , , ) = master.getPoolInfo(address(this));
         return (
             address(_lpToken),
-            address(_arxToken),
+            address(_protocolToken),
             address(_xToken),
             lastRewardTime,
             _accRewardsPerShare,
             _accRewardsPerShareWETH,
             _lpSupply,
             _lpSupplyWithMultiplier,
-            allocPointsARX,
+            allocPoints,
             allocPointsWETH
         );
     }
@@ -368,7 +363,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             .div(1e18)
             .sub(position.rewardDebt)
             .add(position.pendingXTokenRewards)
-            .add(position.pendingArxRewards);
+            .add(position.pendingRewards);
 
         wethAmount = positionAmountMultiplied.mul(accRewardsPerShareWETH).div(1e18).sub(position.rewardDebtWETH).add(
             position.pendingWETHRewards
@@ -432,7 +427,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
 
     /**
      * @dev Set the share of xToken for the distributed rewards
-     * The share of ARX will incidently be 100% - xTokenRewardsShare
+     * The share of token will incidently be 100% - xTokenRewardsShare
      *
      * Must only be called by the owner
      */
@@ -531,7 +526,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             amountWithMultiplier: amountWithMultiplier,
             boostPoints: 0,
             totalMultiplier: lockMultiplier,
-            pendingArxRewards: 0,
+            pendingRewards: 0,
             pendingXTokenRewards: 0,
             pendingWETHRewards: 0
         });
@@ -881,32 +876,32 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
             pending > 0 ||
             pendingWETH > 0 ||
             position.pendingXTokenRewards > 0 ||
-            position.pendingArxRewards > 0 ||
+            position.pendingRewards > 0 ||
             position.pendingWETHRewards > 0
         ) {
             uint256 xTokenRewards = pending.mul(xTokenRewardsShare).div(_TOTAL_REWARDS_SHARES);
-            uint256 arxAmount = pending.add(position.pendingArxRewards).sub(xTokenRewards);
+            uint256 amount = pending.add(position.pendingRewards).sub(xTokenRewards);
 
             xTokenRewards = xTokenRewards.add(position.pendingXTokenRewards);
 
             // Stack rewards in a buffer if to is equal to address(0)
             if (address(0) == to) {
                 position.pendingXTokenRewards = xTokenRewards;
-                position.pendingArxRewards = arxAmount;
+                position.pendingRewards = amount;
                 position.pendingWETHRewards = pendingWETH;
             } else {
                 // Convert and send xToken + main token rewards
                 position.pendingXTokenRewards = 0;
-                position.pendingArxRewards = 0;
+                position.pendingRewards = 0;
                 position.pendingWETHRewards = 0;
 
                 if (xTokenRewards > 0) xTokenRewards = _safeConvertTo(to, xTokenRewards);
 
-                arxAmount = _safeRewardsTransfer(address(_arxToken), to, arxAmount);
+                amount = _safeRewardsTransfer(address(_protocolToken), to, amount);
                 pendingWETH = _safeRewardsTransfer(master.wethToken(), to, pendingWETH);
 
                 // Forbidden to harvest if contract has not explicitly confirmed it can handle it
-                _checkOnNFTHarvest(to, tokenId, arxAmount, xTokenRewards, pendingWETH);
+                _checkOnNFTHarvest(to, tokenId, amount, xTokenRewards, pendingWETH);
             }
         }
 
@@ -971,10 +966,10 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     }
 
     /**
-     * @dev Safe convert ARX to xToken function, in case rounding error causes pool to not have enough tokens
+     * @dev Safe convert _protocolToken to xToken function, in case rounding error causes pool to not have enough tokens
      */
     function _safeConvertTo(address to, uint256 amount) internal returns (uint256) {
-        uint256 balance = _arxToken.balanceOf(address(this));
+        uint256 balance = _protocolToken.balanceOf(address(this));
         // cap to available balance
         if (amount > balance) {
             amount = balance;
@@ -989,7 +984,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
     function _checkOnNFTHarvest(
         address to,
         uint256 tokenId,
-        uint256 arxAmount,
+        uint256 amount,
         uint256 xTokenAmount,
         uint256 wethAmount
     ) internal {
@@ -1001,7 +996,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position 
                     msg.sender,
                     to,
                     tokenId,
-                    arxAmount,
+                    amount,
                     xTokenAmount,
                     wethAmount
                 ),
