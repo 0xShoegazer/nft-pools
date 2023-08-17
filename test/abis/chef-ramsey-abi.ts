@@ -5,23 +5,24 @@ export const RAMSEY_ABI = [
     type: 'constructor',
   },
   {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'rewardPerSecond',
-        type: 'uint256',
-      },
-    ],
-    name: 'AddRewardToken',
-    type: 'event',
+    inputs: [],
+    name: 'InvalidStartTime',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'PoolAlreadyExists',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'PoolNotExists',
+    type: 'error',
+  },
+  {
+    inputs: [],
+    name: 'ZeroAddress',
+    type: 'error',
   },
   {
     anonymous: false,
@@ -38,6 +39,12 @@ export const RAMSEY_ABI = [
         name: 'amount',
         type: 'uint256',
       },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amountWETH',
+        type: 'uint256',
+      },
     ],
     name: 'ClaimRewards',
     type: 'event',
@@ -48,13 +55,7 @@ export const RAMSEY_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
-        name: 'arxAmount',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'wethAmount',
+        name: 'amount',
         type: 'uint256',
       },
     ],
@@ -72,6 +73,25 @@ export const RAMSEY_ABI = [
       },
     ],
     name: 'Initialized',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'previousOwner',
+        type: 'address',
+      },
+      {
+        indexed: true,
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'OwnershipTransferred',
     type: 'event',
   },
   {
@@ -108,6 +128,12 @@ export const RAMSEY_ABI = [
         name: 'allocPoint',
         type: 'uint256',
       },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
+        type: 'uint256',
+      },
     ],
     name: 'PoolSet',
     type: 'event',
@@ -130,86 +156,17 @@ export const RAMSEY_ABI = [
       {
         indexed: false,
         internalType: 'uint256',
+        name: 'reserveWETH',
+        type: 'uint256',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
         name: 'lastRewardTime',
         type: 'uint256',
       },
     ],
     name: 'PoolUpdated',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        indexed: true,
-        internalType: 'bytes32',
-        name: 'previousAdminRole',
-        type: 'bytes32',
-      },
-      {
-        indexed: true,
-        internalType: 'bytes32',
-        name: 'newAdminRole',
-        type: 'bytes32',
-      },
-    ],
-    name: 'RoleAdminChanged',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'sender',
-        type: 'address',
-      },
-    ],
-    name: 'RoleGranted',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: true,
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-      {
-        indexed: true,
-        internalType: 'address',
-        name: 'sender',
-        type: 'address',
-      },
-    ],
-    name: 'RoleRevoked',
     type: 'event',
   },
   {
@@ -223,31 +180,6 @@ export const RAMSEY_ABI = [
       },
     ],
     name: 'SetEmergencyUnlock',
-    type: 'event',
-  },
-  {
-    anonymous: false,
-    inputs: [
-      {
-        indexed: false,
-        internalType: 'address',
-        name: 'token',
-        type: 'address',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'oldRate',
-        type: 'uint256',
-      },
-      {
-        indexed: false,
-        internalType: 'uint256',
-        name: 'newRate',
-        type: 'uint256',
-      },
-    ],
-    name: 'SetTokenRewardRate',
     type: 'event',
   },
   {
@@ -270,37 +202,69 @@ export const RAMSEY_ABI = [
     type: 'event',
   },
   {
-    inputs: [],
-    name: 'ADMIN_ROLE',
-    outputs: [
+    anonymous: false,
+    inputs: [
       {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32',
+        indexed: false,
+        internalType: 'address',
+        name: 'token',
+        type: 'address',
+      },
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'amount',
+        type: 'uint256',
       },
     ],
-    stateMutability: 'view',
-    type: 'function',
+    name: 'TokenWithdraw',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'treasury',
+        type: 'address',
+      },
+    ],
+    name: 'TreasuryUpdated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'uint256',
+        name: 'rate',
+        type: 'uint256',
+      },
+    ],
+    name: 'WethRateUpdated',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      {
+        indexed: false,
+        internalType: 'address',
+        name: 'weth',
+        type: 'address',
+      },
+    ],
+    name: 'WethUpdated',
+    type: 'event',
   },
   {
     inputs: [],
-    name: 'DEFAULT_ADMIN_ROLE',
+    name: 'WETH',
     outputs: [
       {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: '_mainToken',
-    outputs: [
-      {
-        internalType: 'contract IERC20MetadataUpgradeable',
+        internalType: 'contract IERC20Upgradeable',
         name: '',
         type: 'address',
       },
@@ -330,7 +294,12 @@ export const RAMSEY_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPoints',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
       {
@@ -348,38 +317,11 @@ export const RAMSEY_ABI = [
     inputs: [
       {
         internalType: 'address',
-        name: 'nftPool',
+        name: 'account',
         type: 'address',
       },
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-          },
-          {
-            internalType: 'uint256',
-            name: 'accTokenPerShare',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'PRECISION_FACTOR',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'rewardPerSec',
-            type: 'uint256',
-          },
-        ],
-        internalType: 'struct Reward',
-        name: 'rewardInfo',
-        type: 'tuple',
-      },
     ],
-    name: 'addRewardToken',
+    name: 'addUnlockOperator',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -390,11 +332,29 @@ export const RAMSEY_ABI = [
     outputs: [
       {
         internalType: 'uint256',
-        name: 'rewardsAmount',
+        name: 'rewardAmount',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'amountWETH',
         type: 'uint256',
       },
     ],
     stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'dummyToken',
+    outputs: [
+      {
+        internalType: 'contract IERC20Upgradeable',
+        name: '',
+        type: 'address',
+      },
+    ],
+    stateMutability: 'view',
     type: 'function',
   },
   {
@@ -412,11 +372,23 @@ export const RAMSEY_ABI = [
   },
   {
     inputs: [],
-    name: 'emissionRate',
+    name: 'emergencyWithdrawFromPool',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'emissionRates',
     outputs: [
       {
         internalType: 'uint256',
-        name: '',
+        name: 'mainRate',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'wethRate',
         type: 'uint256',
       },
     ],
@@ -437,56 +409,6 @@ export const RAMSEY_ABI = [
         internalType: 'address',
         name: '',
         type: 'address',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'getMainChefPoolInfo',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'lpToken',
-            type: 'address',
-          },
-          {
-            internalType: 'uint256',
-            name: 'arxAllocPoint',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'WETHAllocPoint',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'lastRewardTime',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'accArxPerShare',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'accWETHPerShare',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'totalDeposit',
-            type: 'uint256',
-          },
-        ],
-        internalType: 'struct ArbidexPoolInfo',
-        name: '',
-        type: 'tuple',
       },
     ],
     stateMutability: 'view',
@@ -515,7 +437,7 @@ export const RAMSEY_ABI = [
     inputs: [
       {
         internalType: 'address',
-        name: 'poolAddress_',
+        name: '_poolAddress',
         type: 'address',
       },
     ],
@@ -528,7 +450,12 @@ export const RAMSEY_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPoints',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
       {
@@ -543,89 +470,21 @@ export const RAMSEY_ABI = [
       },
       {
         internalType: 'uint256',
+        name: 'reserveWETH',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
         name: 'poolEmissionRate',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'poolEmissionRateWETH',
         type: 'uint256',
       },
     ],
     stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: 'poolAddress',
-        type: 'address',
-      },
-    ],
-    name: 'getPoolRewardTokenInfo',
-    outputs: [
-      {
-        components: [
-          {
-            internalType: 'address',
-            name: 'token',
-            type: 'address',
-          },
-          {
-            internalType: 'uint256',
-            name: 'accTokenPerShare',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'PRECISION_FACTOR',
-            type: 'uint256',
-          },
-          {
-            internalType: 'uint256',
-            name: 'rewardPerSec',
-            type: 'uint256',
-          },
-        ],
-        internalType: 'struct Reward[]',
-        name: '',
-        type: 'tuple[]',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-    ],
-    name: 'getRoleAdmin',
-    outputs: [
-      {
-        internalType: 'bytes32',
-        name: '',
-        type: 'bytes32',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-    ],
-    name: 'grantRole',
-    outputs: [],
-    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -638,43 +497,29 @@ export const RAMSEY_ABI = [
   {
     inputs: [
       {
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-    ],
-    name: 'hasRole',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'contract IXToken',
-        name: '_xToken',
-        type: 'address',
-      },
-      {
-        internalType: 'contract IArbidexMasterChef',
-        name: '_chef',
+        internalType: 'contract IProtocolTokenUpgradeable',
+        name: '_mainToken',
         type: 'address',
       },
       {
         internalType: 'address',
         name: '_treasury',
         type: 'address',
+      },
+      {
+        internalType: 'address',
+        name: '_weth',
+        type: 'address',
+      },
+      {
+        internalType: 'uint256',
+        name: '_wethPerSecond',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: '_startTime',
+        type: 'uint256',
       },
       {
         internalType: 'contract IYieldBooster',
@@ -695,7 +540,7 @@ export const RAMSEY_ABI = [
         type: 'address',
       },
     ],
-    name: 'isAdmin',
+    name: 'isUnlockOperator',
     outputs: [
       {
         internalType: 'bool',
@@ -711,7 +556,7 @@ export const RAMSEY_ABI = [
     name: 'mainChef',
     outputs: [
       {
-        internalType: 'contract IArbidexMasterChef',
+        internalType: 'contract IBaseswapMasterChef',
         name: '',
         type: 'address',
       },
@@ -727,19 +572,6 @@ export const RAMSEY_ABI = [
         internalType: 'uint256',
         name: '',
         type: 'uint256',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
-    inputs: [],
-    name: 'mainToken',
-    outputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
       },
     ],
     stateMutability: 'view',
@@ -779,78 +611,36 @@ export const RAMSEY_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-    ],
-    name: 'renounceRole',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'bytes32',
-        name: 'role',
-        type: 'bytes32',
-      },
-      {
-        internalType: 'address',
-        name: 'account',
-        type: 'address',
-      },
-    ],
-    name: 'revokeRole',
-    outputs: [],
-    stateMutability: 'nonpayable',
-    type: 'function',
-  },
-  {
-    inputs: [
-      {
-        internalType: 'address',
-        name: '',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: '',
-        type: 'uint256',
-      },
-    ],
-    name: 'rewardTokenInfo',
+    inputs: [],
+    name: 'protocolToken',
     outputs: [
       {
         internalType: 'address',
-        name: 'token',
+        name: '',
         type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'accTokenPerShare',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'PRECISION_FACTOR',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'rewardPerSec',
-        type: 'uint256',
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'account',
+        type: 'address',
+      },
+    ],
+    name: 'removeUnlockOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'renounceOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -862,7 +652,12 @@ export const RAMSEY_ABI = [
       },
       {
         internalType: 'uint256',
-        name: 'allocPoint',
+        name: 'allocPoints',
+        type: 'uint256',
+      },
+      {
+        internalType: 'uint256',
+        name: 'allocPointsWETH',
         type: 'uint256',
       },
       {
@@ -892,6 +687,32 @@ export const RAMSEY_ABI = [
   {
     inputs: [
       {
+        internalType: 'address',
+        name: '_weth',
+        type: 'address',
+      },
+    ],
+    name: 'setWethReward',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'uint256',
+        name: 'wethRate',
+        type: 'uint256',
+      },
+    ],
+    name: 'setWethRewardRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
         internalType: 'contract IYieldBooster',
         name: 'yieldBooster_',
         type: 'address',
@@ -905,8 +726,13 @@ export const RAMSEY_ABI = [
   {
     inputs: [
       {
-        internalType: 'contract IERC20MetadataUpgradeable',
+        internalType: 'contract IERC20Upgradeable',
         name: '_dummyToken',
+        type: 'address',
+      },
+      {
+        internalType: 'contract IBaseswapMasterChef',
+        name: '_oldChef',
         type: 'address',
       },
       {
@@ -934,27 +760,8 @@ export const RAMSEY_ABI = [
     type: 'function',
   },
   {
-    inputs: [
-      {
-        internalType: 'bytes4',
-        name: 'interfaceId',
-        type: 'bytes4',
-      },
-    ],
-    name: 'supportsInterface',
-    outputs: [
-      {
-        internalType: 'bool',
-        name: '',
-        type: 'bool',
-      },
-    ],
-    stateMutability: 'view',
-    type: 'function',
-  },
-  {
     inputs: [],
-    name: 'totalAllocPoint',
+    name: 'totalAllocPoints',
     outputs: [
       {
         internalType: 'uint256',
@@ -963,6 +770,32 @@ export const RAMSEY_ABI = [
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'totalAllocPointsWETH',
+    outputs: [
+      {
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'address',
+        name: 'newOwner',
+        type: 'address',
+      },
+    ],
+    name: 'transferOwnership',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {
@@ -995,41 +828,59 @@ export const RAMSEY_ABI = [
     inputs: [
       {
         internalType: 'address',
-        name: 'nftPool',
+        name: '_treasury',
         type: 'address',
-      },
-      {
-        internalType: 'address',
-        name: 'rewardToken',
-        type: 'address',
-      },
-      {
-        internalType: 'uint256',
-        name: 'rewardIndex',
-        type: 'uint256',
-      },
-      {
-        internalType: 'uint256',
-        name: 'rewardsPerSec',
-        type: 'uint256',
       },
     ],
-    name: 'updateRewardTokenRate',
+    name: 'updateTreasury',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
   },
   {
     inputs: [],
-    name: 'xToken',
+    name: 'wethPerSecond',
     outputs: [
       {
-        internalType: 'contract IXToken',
+        internalType: 'uint256',
+        name: '',
+        type: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'wethToken',
+    outputs: [
+      {
+        internalType: 'address',
         name: '',
         type: 'address',
       },
     ],
     stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'withdrawFromPool',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      {
+        internalType: 'contract IERC20Upgradeable',
+        name: 'token',
+        type: 'address',
+      },
+    ],
+    name: 'withdrawToken',
+    outputs: [],
+    stateMutability: 'nonpayable',
     type: 'function',
   },
   {

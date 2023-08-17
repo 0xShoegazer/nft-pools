@@ -3,7 +3,6 @@ import { BigNumber, Contract } from 'ethers';
 import { MAX_UINT256 } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
-import { getNFTPool } from '../test/utils';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
 export async function deployProtocolToken(

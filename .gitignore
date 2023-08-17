@@ -11,8 +11,8 @@ cache
 artifacts
 
 # forge
-forge-artifacts
-forge-cache
+artifacts_forge
+cache_forge
 
 # zkSync
 cache-zk
