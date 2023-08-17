@@ -12,10 +12,10 @@
     ]
   },
   "files": {
-    "contracts/BSX.sol": {
-      "lastModificationDate": 1692279093152,
-      "contentHash": "a3478a6478cc2e7cd36799d223aa5200",
-      "sourceName": "contracts/BSX.sol",
+    "contracts/BaseXToken.sol": {
+      "lastModificationDate": 1692286863700,
+      "contentHash": "6e91f44df428297d86f53ce90f9db91f",
+      "sourceName": "contracts/BaseXToken.sol",
       "solcConfig": {
         "settings": {
           "optimizer": {
@@ -45,23 +45,18 @@
         }
       },
       "imports": [
-        "contracts\\interfaces\\IXTokenUsage.sol",
         "contracts\\interfaces\\tokens\\IProtocolToken.sol",
-        "contracts\\interfaces\\tokens\\IXToken.sol",
         "node_modules/@openzeppelin\\contracts/access/Ownable.sol",
+        "node_modules/@openzeppelin\\contracts/math/Math.sol",
         "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
         "node_modules/@openzeppelin\\contracts/token/ERC20/ERC20.sol",
         "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
-        "node_modules/@openzeppelin\\contracts/token/ERC20/SafeERC20.sol",
-        "node_modules/@openzeppelin/contracts/utils/Address.sol",
-        "node_modules/@openzeppelin/contracts/utils/Context.sol",
-        "node_modules/@openzeppelin\\contracts/utils/EnumerableSet.sol",
-        "node_modules/@openzeppelin\\contracts/utils/ReentrancyGuard.sol"
+        "node_modules/@openzeppelin/contracts/utils/Context.sol"
       ],
       "versionRequirement": "=0.7.6",
       "artifacts": {
-        "xBSX": {
-          "0.7.6+commit.7338295f.Windows.msvc": "BSX.sol\\xBSX.json"
+        "BaseXToken": {
+          "0.7.6+commit.7338295f.Windows.msvc": "BaseXToken.sol\\BaseXToken.json"
         }
       }
     },
@@ -191,54 +186,6 @@
       "artifacts": {
         "NFTPoolFactory": {
           "0.7.6+commit.7338295f.Windows.msvc": "NFTPoolFactory.sol\\NFTPoolFactory.json"
-        }
-      }
-    },
-    "contracts/ProtocolToken.sol": {
-      "lastModificationDate": 1689372190278,
-      "contentHash": "2ea304f50c2f02fc9b2d3e8c2370e872",
-      "sourceName": "contracts/ProtocolToken.sol",
-      "solcConfig": {
-        "settings": {
-          "optimizer": {
-            "enabled": true,
-            "runs": 200
-          },
-          "metadata": {
-            "bytecodeHash": "ipfs",
-            "appendCBOR": true
-          },
-          "outputSelection": {
-            "*": {
-              "": [
-                "ast"
-              ],
-              "*": [
-                "abi",
-                "evm.bytecode",
-                "evm.deployedBytecode",
-                "evm.methodIdentifiers",
-                "metadata"
-              ]
-            }
-          },
-          "evmVersion": "london",
-          "libraries": {}
-        }
-      },
-      "imports": [
-        "contracts\\interfaces\\tokens\\IProtocolToken.sol",
-        "node_modules/@openzeppelin\\contracts/access/Ownable.sol",
-        "node_modules/@openzeppelin\\contracts/math/Math.sol",
-        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
-        "node_modules/@openzeppelin\\contracts/token/ERC20/ERC20.sol",
-        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
-        "node_modules/@openzeppelin/contracts/utils/Context.sol"
-      ],
-      "versionRequirement": "=0.7.6",
-      "artifacts": {
-        "ProtocolToken": {
-          "0.7.6+commit.7338295f.Windows.msvc": "ProtocolToken.sol\\ProtocolToken.json"
         }
       }
     },
@@ -666,6 +613,59 @@
       "artifacts": {
         "YieldBooster": {
           "0.7.6+commit.7338295f.Windows.msvc": "YieldBoost.sol\\YieldBooster.json"
+        }
+      }
+    },
+    "contracts/xBSX.sol": {
+      "lastModificationDate": 1692279093152,
+      "contentHash": "a3478a6478cc2e7cd36799d223aa5200",
+      "sourceName": "contracts/xBSX.sol",
+      "solcConfig": {
+        "settings": {
+          "optimizer": {
+            "enabled": true,
+            "runs": 200
+          },
+          "metadata": {
+            "bytecodeHash": "ipfs",
+            "appendCBOR": true
+          },
+          "outputSelection": {
+            "*": {
+              "": [
+                "ast"
+              ],
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata"
+              ]
+            }
+          },
+          "evmVersion": "london",
+          "libraries": {}
+        }
+      },
+      "imports": [
+        "contracts\\interfaces\\IXTokenUsage.sol",
+        "contracts\\interfaces\\tokens\\IProtocolToken.sol",
+        "contracts\\interfaces\\tokens\\IXToken.sol",
+        "node_modules/@openzeppelin\\contracts/access/Ownable.sol",
+        "node_modules/@openzeppelin\\contracts/math/SafeMath.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/ERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/IERC20.sol",
+        "node_modules/@openzeppelin\\contracts/token/ERC20/SafeERC20.sol",
+        "node_modules/@openzeppelin/contracts/utils/Address.sol",
+        "node_modules/@openzeppelin/contracts/utils/Context.sol",
+        "node_modules/@openzeppelin\\contracts/utils/EnumerableSet.sol",
+        "node_modules/@openzeppelin\\contracts/utils/ReentrancyGuard.sol"
+      ],
+      "versionRequirement": "=0.7.6",
+      "artifacts": {
+        "xBSX": {
+          "0.7.6+commit.7338295f.Windows.msvc": "xBSX.sol\\xBSX.json"
         }
       }
     },

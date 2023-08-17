@@ -9,14 +9,13 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./interfaces/tokens/IProtocolToken.sol";
 
 /*
- * ProtocolToken is a native ERC20 token.
+ * BaseXToken is a native ERC20 token.
  * It has an hard cap and manages its own emissions and allocations.
  */
-contract ProtocolToken is Ownable, ERC20, IProtocolToken {
+contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
     using SafeMath for uint256;
 
-    uint256 public constant MAX_EMISSION_RATE = 0.01 ether;
-    uint256 public constant MAX_SUPPLY_LIMIT = 200000 ether;
+    uint256 public constant MAX_SUPPLY_LIMIT = 10_000_000 ether;
     uint256 public elasticMaxSupply; // Once deployed, controlled through governance only
     uint256 public emissionRate; // Token emission per second
 
@@ -24,7 +23,7 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
     uint256 public masterReserve; // Pending rewards for the master
 
     uint256 public constant ALLOCATION_PRECISION = 100;
-    // Allocations emitted over time. When < 100%, the rest is minted into the treasury (default 15%)
+    // Allocations emitted over time. When < 100%, the rest is minted into the treasury (default 50%)
     uint256 public farmingAllocation = 50; // = 50%
 
     address public masterAddress;
@@ -57,15 +56,7 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
         _;
     }
 
-    constructor(
-        string memory _name,
-        string memory _symbol,
-        uint256 maxSupply,
-        uint256 initialSupply,
-        uint256 initialEmissionRate,
-        address treasury
-    ) ERC20(_name, _symbol) {
-        require(initialEmissionRate <= MAX_EMISSION_RATE, "invalid emission rate");
+    constructor(uint256 maxSupply, uint256 initialSupply, uint256 initialEmissionRate, address treasury) {
         require(maxSupply <= MAX_SUPPLY_LIMIT, "invalid initial maxSupply");
         require(initialSupply < maxSupply, "invalid initial supply");
         require(treasury != address(0), "invalid treasury address");
@@ -74,7 +65,7 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
         emissionRate = initialEmissionRate;
         treasuryAddress = treasury;
 
-        _mint(msg.sender, initialSupply);
+        _mint(treasury, initialSupply);
     }
 
     // ========================================== //
@@ -240,8 +231,6 @@ contract ProtocolToken is Ownable, ERC20, IProtocolToken {
      * Must only be called by the owner
      */
     function updateEmissionRate(uint256 emissionRate_) external onlyOwner {
-        require(emissionRate_ <= MAX_EMISSION_RATE, "updateEmissionRate: can't exceed maximum");
-
         // apply emissions before changes
         emitAllocations();
 

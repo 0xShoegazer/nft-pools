@@ -1,5 +1,7 @@
 {
   "base": {
+    "protocolToken": "",
+    "xtoken": "",
     "factory": ""
   }
 }

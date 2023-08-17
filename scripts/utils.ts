@@ -4,39 +4,19 @@ import { MAX_UINT256 } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
 import { getNFTPool } from '../test/utils';
+import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
-export async function deployMasterChefy(oldChef: string, treasury: string, yieldBoooster: string, signer) {
-  const factory = await ethers.getContractFactory('MasterChef', signer);
-  const instance = await factory.deploy(oldChef, treasury, yieldBoooster);
+export async function deployProtocolToken(
+  maxSupply: BigNumber,
+  initialMint: BigNumber,
+  initialEmissionRate: BigNumber,
+  treasury: string,
+  signer: SignerWithAddress
+) {
+  const factory = await ethers.getContractFactory('BaseXToken', signer);
+  const instance = await factory.deploy(maxSupply, initialMint, initialEmissionRate, treasury);
   await instance.deployed();
-  console.log(`MasterChef deployed at: ${instance.address}`);
-
-  return instance;
-}
-
-export async function deployRamsey(oldChef: string, treasury: string, yieldBoooster: string, signer) {
-  const factory = await ethers.getContractFactory('ChefRamsey', signer);
-  const instance = await upgrades.deployProxy(factory, [oldChef, treasury, yieldBoooster]);
-  await instance.deployed();
-  console.log(`ChefRamsey deployed at: ${instance.address}`);
-
-  return instance;
-}
-
-export async function deployRewardManager(treasury: string, signer) {
-  const factory = await ethers.getContractFactory('PoolRewardManager', signer);
-  const instance = await upgrades.deployProxy(factory, [treasury]);
-  await instance.deployed();
-  console.log(`PoolRewardManager deployed at: ${instance.address}`);
-
-  return instance;
-}
-
-export async function deployGlobalRewardManager(treasury: string, signer) {
-  const factory = await ethers.getContractFactory('RewardManager', signer);
-  const instance = await upgrades.deployProxy(factory, [treasury]);
-  await instance.deployed();
-  console.log(`RewardManager deployed at: ${instance.address}`);
+  console.log(`BaseXToken deployed at: ${instance.address}`);
 
   return instance;
 }
@@ -50,44 +30,44 @@ export async function deployPoolFactory(master: string, mainToken: string, xToke
   return instance;
 }
 
-export async function createPool(factoryAddress: string, lpToken: string, signer): Promise<string> {
-  const factory = await ethers.getContractAt('NFTPoolFactory', factoryAddress, signer);
-  const tx = await factory.createPool(lpToken);
-  const receipt = await tx.wait();
+// export async function createPool(factoryAddress: string, lpToken: string, signer): Promise<string> {
+//   const factory = await ethers.getContractAt('NFTPoolFactory', factoryAddress, signer);
+//   const tx = await factory.createPool(lpToken);
+//   const receipt = await tx.wait();
 
-  const poolEvent = receipt.events.find((evt) => evt.event === 'PoolCreated');
-  const poolAddress = poolEvent.args.pool;
-  console.log('New pool address: ' + poolAddress);
+//   const poolEvent = receipt.events.find((evt) => evt.event === 'PoolCreated');
+//   const poolAddress = poolEvent.args.pool;
+//   console.log('New pool address: ' + poolAddress);
 
-  return poolAddress;
-}
+//   return poolAddress;
+// }
 
-/**
- * Util that creates a pool and then approves the new instance for lp token
- * @param factoryAddress
- * @param lpToken
- * @param rewardManager
- * @param signer
- * @returns
- */
-export async function createPoolWithInstance(
-  factoryAddress: string,
-  lpToken: string,
-  signer
-): Promise<{
-  lpInstance: Contract;
-  nftPool: Contract;
-}> {
-  const nftPoolAddress = await createPool(factoryAddress, lpToken, signer);
+// /**
+//  * Util that creates a pool and then approves the new instance for lp token
+//  * @param factoryAddress
+//  * @param lpToken
+//  * @param rewardManager
+//  * @param signer
+//  * @returns
+//  */
+// export async function createPoolWithInstance(
+//   factoryAddress: string,
+//   lpToken: string,
+//   signer
+// ): Promise<{
+//   lpInstance: Contract;
+//   nftPool: Contract;
+// }> {
+//   const nftPoolAddress = await createPool(factoryAddress, lpToken, signer);
 
-  const lpInstance = await getERC20WithSigner(lpToken, signer);
-  await lpInstance.approve(nftPoolAddress, MAX_UINT256);
+//   const lpInstance = await getERC20WithSigner(lpToken, signer);
+//   await lpInstance.approve(nftPoolAddress, MAX_UINT256);
 
-  return {
-    lpInstance,
-    nftPool: getNFTPool(nftPoolAddress, signer),
-  };
-}
+//   return {
+//     lpInstance,
+//     nftPool: getNFTPool(nftPoolAddress, signer),
+//   };
+// }
 
 export async function addPoolToChef(ramsey: string, nftPoolAddress: string, allocationPoints: number, signer) {
   // const chef = await ethers.getContractAt('ChefRamsey', ramsey, signer);
