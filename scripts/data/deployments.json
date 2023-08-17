@@ -3,6 +3,7 @@
     "protocolToken": "0xd5046B976188EB40f6DE40fB527F89c05b323385",
     "xtoken": "0xE4750593d1fC8E74b31549212899A72162f315Fa",
     "masterchef": "",
-    "factory": "0xef24b5f1B763D33e1723a57Ee4d5a2a5faa5c11B"
+    "factory": "0xef24b5f1B763D33e1723a57Ee4d5a2a5faa5c11B",
+    "yeildBooster": "0x0F5433c9f1c2E86588304eD09BC79AbEcc89e0de"
   }
 }

@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat';
-import { deployPoolFactory, deployProtocolToken, deployXToken } from './utils';
+import { deployPoolFactory, deployProtocolToken, deployXToken, deployYieldBooster } from './utils';
 import { parseUnits } from 'ethers/lib/utils';
 
 const FACTORY = '0xef24b5f1B763D33e1723a57Ee4d5a2a5faa5c11B';
@@ -17,6 +17,8 @@ const XTOKEN = '0xE4750593d1fC8E74b31549212899A72162f315Fa';
 async function main() {
   try {
     const signer = (await ethers.getSigners())[0];
+
+    // await deployYieldBooster(XTOKEN);
 
     // const maxSupply = parseUnits('10000000');
     // const initialMint = parseUnits('840000');

@@ -3,7 +3,7 @@ import { testFixture } from './fixtures/awesome.fixture';
 import { increase, latest } from '@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time';
 import { expect } from 'chai';
 import { ONE_DAY_SECONDS } from './constants';
-import { formatUnits } from 'ethers/lib/utils';
+import { formatUnits, parseUnits } from 'ethers/lib/utils';
 
 describe('The Situation', () => {
   // it('set the chef on token ', async () => {
@@ -84,9 +84,145 @@ describe('The Situation', () => {
   //   console.log(formatUnits(balance));
   // });
 
-  it('allows a position to claim rewards', async () => {
+  // it('allows a position to claim rewards', async () => {
+  //   const { nftPool, BaseXToken, xBSXToken, bswapToken, signer, tokenId } = await loadFixture(testFixture);
+
+  //   let pending = await nftPool.pendingRewards(tokenId);
+  //   let pMain = pending.mainAmount;
+  //   let pSwap = pending.wethAmount;
+  //   console.log(formatUnits(pMain));
+  //   console.log(formatUnits(pSwap));
+
+  //   await increase(ONE_DAY_SECONDS);
+
+  //   pending = await nftPool.pendingRewards(tokenId);
+  //   pMain = pending.mainAmount;
+  //   pSwap = pending.wethAmount;
+  //   console.log(formatUnits(pMain));
+  //   console.log(formatUnits(pSwap));
+
+  //   let userBswapBal = await bswapToken.balanceOf(signer.address);
+  //   let userBsxBal = await BaseXToken.balanceOf(signer.address);
+  //   let userXBsxBal = await xBSXToken.balanceOf(signer.address);
+  //   console.log(formatUnits(userBswapBal));
+  //   console.log(formatUnits(userBsxBal));
+  //   console.log(formatUnits(userXBsxBal));
+
+  //   await nftPool.harvestPosition(tokenId);
+
+  //   userBswapBal = await bswapToken.balanceOf(signer.address);
+  //   userBsxBal = await BaseXToken.balanceOf(signer.address);
+  //   userXBsxBal = await xBSXToken.balanceOf(signer.address);
+  //   console.log(formatUnits(userBswapBal));
+  //   console.log(formatUnits(userBsxBal));
+  //   console.log(formatUnits(userXBsxBal));
+  // });
+
+  // it('allows a position to claim rewards when rates are zerod out', async () => {
+  //   const { nftPool, BaseXToken, xBSXToken, bswapToken, signer, tokenId, masterChef } = await loadFixture(testFixture);
+
+  //   console.log(`
+  //   Pending:`);
+  //   let pending = await nftPool.pendingRewards(tokenId);
+  //   let pMain = pending.mainAmount;
+  //   let pSwap = pending.wethAmount;
+  //   console.log(formatUnits(pMain));
+  //   console.log(formatUnits(pSwap));
+
+  //   await increase(ONE_DAY_SECONDS);
+
+  //   console.log(`
+  //   Pending:`);
+  //   pending = await nftPool.pendingRewards(tokenId);
+  //   pMain = pending.mainAmount;
+  //   pSwap = pending.wethAmount;
+  //   console.log(formatUnits(pMain));
+  //   console.log(formatUnits(pSwap));
+
+  //   console.log(`
+  //   Balances:`);
+  //   let userBswapBal = await bswapToken.balanceOf(signer.address);
+  //   let userBsxBal = await BaseXToken.balanceOf(signer.address);
+  //   let userXBsxBal = await xBSXToken.balanceOf(signer.address);
+  //   console.log(formatUnits(userBswapBal));
+  //   console.log(formatUnits(userBsxBal));
+  //   console.log(formatUnits(userXBsxBal));
+
+  //   await nftPool.harvestPosition(tokenId);
+
+  //   console.log(`
+  //   Balances:`);
+  //   userBswapBal = await bswapToken.balanceOf(signer.address);
+  //   userBsxBal = await BaseXToken.balanceOf(signer.address);
+  //   userXBsxBal = await xBSXToken.balanceOf(signer.address);
+  //   console.log(formatUnits(userBswapBal));
+  //   console.log(formatUnits(userBsxBal));
+  //   console.log(formatUnits(userXBsxBal));
+
+  //   await BaseXToken.updateEmissionRate(parseUnits('0'));
+
+  //   await increase(ONE_DAY_SECONDS);
+
+  //   console.log(`
+  //   Pending:`);
+  //   pending = await nftPool.pendingRewards(tokenId);
+  //   pMain = pending.mainAmount;
+  //   pSwap = pending.wethAmount;
+  //   console.log(formatUnits(pMain));
+  //   console.log(formatUnits(pSwap));
+
+  //   // Should give no token/xtoken without blowing up
+  //   await nftPool.harvestPosition(tokenId);
+
+  //   console.log(`
+  //   Balances:`);
+  //   userBswapBal = await bswapToken.balanceOf(signer.address);
+  //   userBsxBal = await BaseXToken.balanceOf(signer.address);
+  //   userXBsxBal = await xBSXToken.balanceOf(signer.address);
+  //   console.log(formatUnits(userBswapBal));
+  //   console.log(formatUnits(userBsxBal));
+  //   console.log(formatUnits(userXBsxBal));
+
+  //   await masterChef.setWethRewardRate(parseUnits('0'));
+
+  //   await increase(ONE_DAY_SECONDS);
+
+  //   console.log('WETH rate to zero now');
+
+  //   console.log(`
+  //   Pending:`);
+  //   pending = await nftPool.pendingRewards(tokenId);
+  //   pMain = pending.mainAmount;
+  //   pSwap = pending.wethAmount;
+  //   console.log(formatUnits(pMain));
+  //   console.log(formatUnits(pSwap));
+
+  //   console.log(`
+  //   Balances:`);
+  //   userBswapBal = await bswapToken.balanceOf(signer.address);
+  //   userBsxBal = await BaseXToken.balanceOf(signer.address);
+  //   userXBsxBal = await xBSXToken.balanceOf(signer.address);
+  //   console.log(formatUnits(userBswapBal));
+  //   console.log(formatUnits(userBsxBal));
+  //   console.log(formatUnits(userXBsxBal));
+
+  //   await nftPool.harvestPosition(tokenId);
+
+  //   console.log(`
+  //   Balances:`);
+  //   userBswapBal = await bswapToken.balanceOf(signer.address);
+  //   userBsxBal = await BaseXToken.balanceOf(signer.address);
+  //   userXBsxBal = await xBSXToken.balanceOf(signer.address);
+  //   console.log(formatUnits(userBswapBal));
+  //   console.log(formatUnits(userBsxBal));
+  //   console.log(formatUnits(userXBsxBal));
+  // });
+
+  it('rewards all regulat token', async () => {
     const { nftPool, BaseXToken, xBSXToken, bswapToken, signer, tokenId } = await loadFixture(testFixture);
 
+    console.log(`
+    Pending:`);
     let pending = await nftPool.pendingRewards(tokenId);
     let pMain = pending.mainAmount;
     let pSwap = pending.wethAmount;
@@ -95,12 +231,16 @@ describe('The Situation', () => {
 
     await increase(ONE_DAY_SECONDS);
 
+    console.log(`
+    Pending:`);
     pending = await nftPool.pendingRewards(tokenId);
     pMain = pending.mainAmount;
     pSwap = pending.wethAmount;
     console.log(formatUnits(pMain));
     console.log(formatUnits(pSwap));
 
+    console.log(`
+    Balances:`);
     let userBswapBal = await bswapToken.balanceOf(signer.address);
     let userBsxBal = await BaseXToken.balanceOf(signer.address);
     let userXBsxBal = await xBSXToken.balanceOf(signer.address);
@@ -110,6 +250,42 @@ describe('The Situation', () => {
 
     await nftPool.harvestPosition(tokenId);
 
+    // User claim, set all to regular token, pending only shows total, but next claim should increase only regular token balance
+
+    console.log(`
+    Balances:`);
+    userBswapBal = await bswapToken.balanceOf(signer.address);
+    userBsxBal = await BaseXToken.balanceOf(signer.address);
+    userXBsxBal = await xBSXToken.balanceOf(signer.address);
+    console.log(formatUnits(userBswapBal));
+    console.log(formatUnits(userBsxBal));
+    console.log(formatUnits(userXBsxBal));
+
+    await nftPool.setXTokenRewardsShare(0);
+
+    await increase(ONE_DAY_SECONDS);
+
+    console.log(`
+    Pending:`);
+    pending = await nftPool.pendingRewards(tokenId);
+    pMain = pending.mainAmount;
+    pSwap = pending.wethAmount;
+    console.log(formatUnits(pMain));
+    console.log(formatUnits(pSwap));
+
+    console.log(`
+    Balances:`);
+    userBswapBal = await bswapToken.balanceOf(signer.address);
+    userBsxBal = await BaseXToken.balanceOf(signer.address);
+    userXBsxBal = await xBSXToken.balanceOf(signer.address);
+    console.log(formatUnits(userBswapBal));
+    console.log(formatUnits(userBsxBal));
+    console.log(formatUnits(userXBsxBal));
+
+    await nftPool.harvestPosition(tokenId);
+
+    console.log(`
+    Balances:`);
     userBswapBal = await bswapToken.balanceOf(signer.address);
     userBsxBal = await BaseXToken.balanceOf(signer.address);
     userXBsxBal = await xBSXToken.balanceOf(signer.address);
