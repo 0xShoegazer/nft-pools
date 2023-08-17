@@ -19,7 +19,7 @@ import "./interfaces/tokens/IERC20Metadata.sol";
  * spNFTs add the possibility to create an additional layer on liquidity providing lock features
  * spNFTs are yield-generating positions when the NFTPool contract has allocations from the MasterChef
  */
-contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Arbidex staking position NFT", "spNFT") {
+contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position NFT", "spNFT") {
     using Address for address;
     using Counters for Counters.Counter;
     // using EnumerableSet for EnumerableSet.AddressSet;

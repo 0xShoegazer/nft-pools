@@ -24,7 +24,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
 
     uint256 public constant ALLOCATION_PRECISION = 100;
     // Allocations emitted over time. When < 100%, the rest is minted into the treasury (default 50%)
-    uint256 public farmingAllocation = 50; // = 50%
+    uint256 public farmingAllocation = 90; // = 90%
 
     address public masterAddress;
     address public treasuryAddress;

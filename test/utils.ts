@@ -5,6 +5,11 @@ import * as helpers from '@nomicfoundation/hardhat-network-helpers';
 
 export const keccak256 = ethers.utils.solidityKeccak256;
 
+export async function getCurrentBlockTime(provider) {
+  const block = await provider.getBlock(await provider.getBlockNumber);
+  return block.timestamp;
+}
+
 export function getNFTPool(address: string, signer) {
   return new Contract(address, poolABI.abi, signer);
 }
