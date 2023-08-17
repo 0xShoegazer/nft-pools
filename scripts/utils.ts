@@ -38,6 +38,15 @@ export async function deployPoolFactory(master: string, mainToken: string, xToke
   return instance;
 }
 
+export async function deployDividends(xToken: string, startTime: number, signer) {
+  const factory = await ethers.getContractFactory('Dividends', signer);
+  const instance = await factory.deploy(xToken, startTime);
+  await instance.deployed();
+  console.log(`Dividends deployed at: ${instance.address}`);
+
+  return instance;
+}
+
 // export async function createPool(factoryAddress: string, lpToken: string, signer): Promise<string> {
 //   const factory = await ethers.getContractAt('NFTPoolFactory', factoryAddress, signer);
 //   const tx = await factory.createPool(lpToken);

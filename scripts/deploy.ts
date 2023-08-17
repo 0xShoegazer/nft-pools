@@ -1,5 +1,5 @@
 import { ethers } from 'hardhat';
-import { deployPoolFactory, deployProtocolToken, deployXToken, deployYieldBooster } from './utils';
+import { deployDividends, deployPoolFactory, deployProtocolToken, deployXToken, deployYieldBooster } from './utils';
 import { parseUnits } from 'ethers/lib/utils';
 import { getCurrentBlockTime } from '../test/utils';
 
@@ -44,11 +44,14 @@ async function main() {
 
     // await deployXToken(PROTOCOL_TOKEN, signer); // verify
     // Can set dividends on xtoken if needed
+    // const blockTime = await getCurrentBlockTime(ethers.provider)
+    // const dividendsStart = blockTime + 99999999999999999999999999
+    // await deployDividends(XTOKEN, dividendsStart, signer);
 
     // TODO: Deploy new factory with new chef
     // await deployPoolFactory(CHEF, PROTOCOL_TOKEN, XTOKEN, signer);
 
-    const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
+    // const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
   } catch (error) {
     console.error(error);
     process.exitCode = 1;
