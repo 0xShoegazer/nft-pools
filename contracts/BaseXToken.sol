@@ -52,7 +52,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
      * @dev Throws error if called by any account other than the master
      */
     modifier onlyMaster() {
-        require(msg.sender == masterAddress, "ProtocolToken: caller is not the master");
+        require(msg.sender == masterAddress, "BaseXToken: caller is not the master");
         _;
     }
 
@@ -168,7 +168,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
     }
 
     /**
-     * @dev Burns "amount" of ProtocolToken by sending it to BURN_ADDRESS
+     * @dev Burns "amount" of BaseXToken by sending it to BURN_ADDRESS
      */
     function burn(uint256 amount) external override {
         _transfer(msg.sender, BURN_ADDRESS, amount);
@@ -226,7 +226,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
     }
 
     /**
-     * @dev Updates ProtocolToken emission rate per second
+     * @dev Updates BaseXToken emission rate per second
      *
      * Must only be called by the owner
      */
@@ -239,7 +239,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
     }
 
     /**
-     * @dev Updates ProtocolToken max supply
+     * @dev Updates BaseXToken max supply
      *
      * Must only be called by the owner
      */

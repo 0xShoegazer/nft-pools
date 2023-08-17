@@ -21,6 +21,15 @@ export async function deployProtocolToken(
   return instance;
 }
 
+export async function deployXToken(mainToken: string, signer: SignerWithAddress) {
+  const factory = await ethers.getContractFactory('xBSX', signer);
+  const instance = await factory.deploy(mainToken);
+  await instance.deployed();
+  console.log(`xBSX deployed at: ${instance.address}`);
+
+  return instance;
+}
+
 export async function deployPoolFactory(master: string, mainToken: string, xToken: string, signer) {
   const factory = await ethers.getContractFactory('NFTPoolFactory', signer);
   const instance = await factory.deploy(master, mainToken, xToken);

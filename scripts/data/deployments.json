@@ -1,7 +1,8 @@
 {
   "base": {
-    "protocolToken": "",
-    "xtoken": "",
+    "protocolToken": "0xd5046B976188EB40f6DE40fB527F89c05b323385",
+    "xtoken": "0xE4750593d1fC8E74b31549212899A72162f315Fa",
+    "masterchef": "",
     "factory": ""
   }
 }
