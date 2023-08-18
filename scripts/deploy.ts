@@ -26,17 +26,6 @@ interface PoolInfo {
   allocationPointsWETH: number;
 }
 
-//   {
-//     pid: 10,
-//     lpSymbol: 'USD+-USDC LP',
-//     lpAddresses: {
-//       [ChainId.BASE]: '0x696b4d181Eb58cD4B54a59d2Ce834184Cf7Ac31A',
-//     },
-//     token: serializedTokens.usdp,
-//     quoteToken: serializedTokens.usdbc,
-//     classic: true,
-//   },
-
 // 1 - 0xE80B4F755417FB4baF4dbd23C029db3F62786523 - 2045
 // 2 - 0x81a03d61c913BdcC60519423C8841C18FfB752a8 - 5
 // 3 - 0x9A0b05F3cF748A114A4f8351802b3BFfE07100D4 - 200
