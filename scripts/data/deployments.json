@@ -2,8 +2,20 @@
   "base": {
     "protocolToken": "0xd5046B976188EB40f6DE40fB527F89c05b323385",
     "xtoken": "0xE4750593d1fC8E74b31549212899A72162f315Fa",
-    "masterchef": "",
+    "dummyToken": "0x29399d824a99789f587a491C59210326e8ef4545",
+    "masterchef": "0x6Fc0f134a1F20976377b259687b1C15a5d422B47",
     "factory": "0x1d23317069d9a01b99A2B755A4Bb7528450198B8",
-    "yeildBooster": "0x0F5433c9f1c2E86588304eD09BC79AbEcc89e0de"
+    "yeildBooster": "0x0F5433c9f1c2E86588304eD09BC79AbEcc89e0de",
+    "nftPools": [
+      {
+        "pool": "BBT-ETH",
+        "lpAddress": "0xf4b96d5162adee867b6361e9f1848d701c4286c7",
+        "nftPoolAddress": "0x6cC611e036D9cE3f66502d5cC544cdC209542Fc2",
+        "allocationPoints": 1,
+        "allocationPointsWETH": 1,
+        "created": true,
+        "addedToChef": true
+      }
+    ]
   }
 }
