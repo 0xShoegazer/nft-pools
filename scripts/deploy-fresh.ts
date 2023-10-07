@@ -39,7 +39,7 @@ async function main() {
   const LP_ADDRESS = WETH_USDC;
   const allocARX = 200;
   const allocWETH = 10;
-  await runAddPoolFlow(LP_ADDRESS, ARBIDEX_TREASURY, NEW_FACTORY, NEW_CHEF, allocARX, allocWETH, signer);
+  await runAddPoolFlow(LP_ADDRESS, ARBIDEX_TREASURY, NEW_FACTORY, signer);
 }
 
 // We recommend this pattern to be able to use async/await everywhere

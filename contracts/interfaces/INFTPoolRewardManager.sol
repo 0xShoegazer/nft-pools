@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity =0.7.6;
+pragma solidity >=0.7.6;
 
 interface INFTPoolRewardManager {
     function pendingAdditionalRewards(
@@ -16,6 +16,5 @@ interface INFTPoolRewardManager {
 
     function harvestAdditionalRewards(uint256 positionAmountMultiplied, address to, uint256 tokenId) external;
 
-    // permissioned function
-    function addPool(address nftPoolAddress) external;
+    function initializePool(address _poolAddress) external;
 }

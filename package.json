@@ -5,8 +5,7 @@
     "start": "yarn hardhat node",
     "test": "npx hardhat test --network hardhat",
     "test:local": "npx hardhat test --network localhost",
-    "deploy": "npx hardhat run ./scripts/deploy.ts --network",
-    "deploy:fresh": "npx hardhat run ./scripts/deploy-fresh.ts"
+    "deploy": "npx hardhat run ./scripts/deploy.ts --network"
   },
   "devDependencies": {
     "@ethersproject/abi": "^5.7.0",
