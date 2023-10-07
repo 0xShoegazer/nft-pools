@@ -77,8 +77,8 @@ async function main() {
     // await deployPoolFactory(CHEF, PROTOCOL_TOKEN, XTOKEN, signer);
 
     // const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
-    const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
-    console.log(await factory.getPool('0x696b4d181Eb58cD4B54a59d2Ce834184Cf7Ac31A'));
+    // const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
+    // console.log(await factory.getPool('0x696b4d181Eb58cD4B54a59d2Ce834184Cf7Ac31A'));
 
     // await createNFTPool(
     //   {
@@ -91,6 +91,13 @@ async function main() {
     // );
 
     // TODO: updatePool on any pools created then before "go live"
+    // const blockTime = await getCurrentBlockTime(ethers.provider);
+    // // base is around 2 seconds right now
+    // // 60 sec * 22 minutes
+    // const start = blockTime + 60 * 21;
+    // console.log(start);
+
+    console.log(new Date(1692558049 * 1000).toLocaleString());
   } catch (error) {
     console.error(error);
     process.exitCode = 1;

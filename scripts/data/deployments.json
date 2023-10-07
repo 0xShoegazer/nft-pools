@@ -6,6 +6,7 @@
     "masterchef": "0x6Fc0f134a1F20976377b259687b1C15a5d422B47",
     "factory": "0x1d23317069d9a01b99A2B755A4Bb7528450198B8",
     "yeildBooster": "0x0F5433c9f1c2E86588304eD09BC79AbEcc89e0de",
+    "NitroPoolFactory": "0x556aBC60160bdF828b6B343D4A9cCfEc6188250E",
     "nftPools": [
       {
         "pool": "BBT-ETH",

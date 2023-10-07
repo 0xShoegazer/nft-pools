@@ -6,7 +6,7 @@ import * as helpers from '@nomicfoundation/hardhat-network-helpers';
 export const keccak256 = ethers.utils.solidityKeccak256;
 
 export async function getCurrentBlockTime(provider) {
-  const block = await provider.getBlock(await provider.getBlockNumber);
+  const block = await provider.getBlock(await provider.getBlockNumber());
   return block.timestamp;
 }
 
