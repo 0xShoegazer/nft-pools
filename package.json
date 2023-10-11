@@ -3,6 +3,7 @@
   "license": "MIT",
   "scripts": {
     "start": "npx hardhat node",
+    "compile": "npx hardhat compile",
     "build": "forge build",
     "build:watch": "forge build --watch",
     "debug": "forge debug",

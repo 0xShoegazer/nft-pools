@@ -18,7 +18,7 @@ import "./interfaces/IXTokenUsage.sol";
  * It can be converted back to ProtocolToken through a vesting process
  * This contract is made to receive xToken deposits from users in order to allocate them to Usages (plugins) contracts
  */
-contract xToken is Ownable, ReentrancyGuard, ERC20("Protocol escrowed token", "xToken"), IXToken {
+contract xToken is Ownable, ERC20, ReentrancyGuard, IXToken {
     using Address for address;
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -61,7 +61,7 @@ contract xToken is Ownable, ReentrancyGuard, ERC20("Protocol escrowed token", "x
     mapping(address => xTokenBalance) public xTokenBalances; // User's xToken balances
     mapping(address => RedeemInfo[]) public userRedeems; // User's redeeming instances
 
-    constructor(IProtocolToken _protocolToken) {
+    constructor(IProtocolToken _protocolToken, string memory _name, string memory _symbol) ERC20(_name, _symbol) {
         protocolToken = _protocolToken;
         _transferWhitelist.add(address(this));
         _transferWhitelist.add(msg.sender);

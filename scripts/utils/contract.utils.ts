@@ -4,6 +4,7 @@ import { BigNumber } from 'ethers';
 
 export async function deployProtocolToken(
   name: string,
+  symbol: string,
   maxSupply: BigNumber,
   initialSupply: BigNumber,
   emissionRate: BigNumber,
@@ -17,24 +18,26 @@ export async function deployProtocolToken(
   // const treasury = DEV_ACCOUNT;
 
   console.log('Args:');
-  console.log(`${maxSupply.toString()} ${initialSupply.toString()} ${emissionRate.toString()} ${treasury}`);
+  console.log(
+    `${name} ${symbol} ${maxSupply.toString()} ${initialSupply.toString()} ${emissionRate.toString()} ${treasury}`
+  );
 
-  const factory = await ethers.getContractFactory(name, signer);
-  const instance = await factory.deploy(maxSupply, initialSupply, emissionRate, treasury);
+  const factory = await ethers.getContractFactory('ProtocolToken', signer);
+  const instance = await factory.deploy(name, symbol, maxSupply, initialSupply, emissionRate, treasury);
   await instance.deployed();
 
   console.log(`${name} deployed to: ${instance.address}`);
 }
 
-export async function deployXToken(mainToken: string, xtokenName: string, signer: SignerWithAddress) {
+export async function deployXToken(mainToken: string, name: string, symbol: string, signer: SignerWithAddress) {
   console.log('Args:');
-  console.log(`${mainToken}`);
+  console.log(`${mainToken} ${name} ${symbol}`);
 
-  const factory = await ethers.getContractFactory(xtokenName, signer);
-  const instance = await factory.deploy(mainToken);
+  const factory = await ethers.getContractFactory('xToken', signer);
+  const instance = await factory.deploy(mainToken, name, symbol);
   await instance.deployed();
 
-  console.log(`${xtokenName} deployed to: ${instance.address}`);
+  console.log(`xToken deployed to: ${instance.address}`);
 }
 
 export async function deployFactory(chef: string, protoToko: string, xToken: string, signer: SignerWithAddress) {
@@ -59,6 +62,7 @@ export async function deployDividends(xToken: string, startTime: number, signer:
   await instance.deployed();
 
   console.log(`Dividends deployed to: ${instance.address}`);
+  console.log(`Args: ${xToken} ${startTime}`);
 }
 
 export async function runProtcolSetup(chef: string, protocolToken: string) {

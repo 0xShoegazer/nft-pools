@@ -1,10 +1,18 @@
 {
-  "base_goerli": {
+  "baseGoerli": {
     "protocolToken": "0xd71114b3AD1Ec657B4194E0B3b7C9fC71C7bdbEF",
     "xToken": "0x626355410729525eec3fd5628D840d683F24456d",
     "dividends": "0x6E9776a02fF00d2D0FC986B78B64fAD7414c3B00",
     "yeildBooster": "0xA124060495eeBb12ff2d6Ab36a7080a8cf1c9D98",
     "chef": "0x5859c161A7ea5F8Ce4e8732749f49f4dF65105e4",
     "nftPoolFactory": "0x66118981E4B7015C8310eE8D10C830803d85d64F"
+  },
+  "scrollSepolia": {
+    "protocolToken": "0x74a52eb08d699CD8BE1d42dA4B241d526B8a8285",
+    "xToken": "0x8DFAf055e21B16302DBf00815e5b4d9b6042a4Df",
+    "dividends": "0x7bb14ED986Dae0C8423350A7f1C59a31b3C84509",
+    "yeildBooster": "0xc1e624C810D297FD70eF53B0E08F44FABE468591",
+    "chef": "0xbF79915e80DE0A361A4F35175BA9bF2e91B10424",
+    "nftPoolFactory": "0x7FFE23bf32053F84C72Dc686f526c584dAF5f8D6"
   }
 }
