@@ -12,12 +12,11 @@ import { getCurrentBlockTime } from '../test/utils';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { RAMSEY_ABI } from '../test/abis/chef-ramsey-abi';
 
-const FACTORY = '0x1d23317069d9a01b99A2B755A4Bb7528450198B8';
-// const CHEF_UPGRADEABLE = '0xaBEb4DeD0b07460F9C9edb85864DFd3a6865D570';
-const CHEF = '0x6Fc0f134a1F20976377b259687b1C15a5d422B47';
-const TREASURY = '0xAF1823bACd8EDDA3b815180a61F8741fA4aBc6Dd';
-const PROTOCOL_TOKEN = '0xd5046B976188EB40f6DE40fB527F89c05b323385';
-const XTOKEN = '0xE4750593d1fC8E74b31549212899A72162f315Fa';
+const FACTORY = '';
+const CHEF = '';
+const TREASURY = '';
+const PROTOCOL_TOKEN = '';
+const XTOKEN = '';
 
 interface PoolInfo {
   pool: string;
@@ -25,25 +24,6 @@ interface PoolInfo {
   allocationPoints: number;
   allocationPointsWETH: number;
 }
-
-// 1 - 0xE80B4F755417FB4baF4dbd23C029db3F62786523 - 2045
-// 2 - 0x81a03d61c913BdcC60519423C8841C18FfB752a8 - 5
-// 3 - 0x9A0b05F3cF748A114A4f8351802b3BFfE07100D4 - 200
-// 5 - 0x6D3c5a4a7aC4B1428368310E4EC3bB1350d01455 - 205
-// 6 - 0x07CFA5Df24fB17486AF0CBf6C910F24253a674D3 - 1300
-// 7 - 0x41d160033C222E6f3722EC97379867324567d883 - 230
-// 8 - 0xa2b120Cab75AEfDfAFdA6A14713349A3096EED79 - 30
-// 9 - 0x2135780D04C96E14bC205d2c8B8eD4e716d09A2b - 25
-// 10 - 0x696b4d181Eb58cD4B54a59d2Ce834184Cf7Ac31A - 50
-// 11 - 0x7Fb35b3967798cE8322cC50eF52553BC5Ee4c306 - 50
-// 12 - 0x6EDa0a4e05fF50594E53dBf179793CADD03689e5 - 50
-// 13 - 0x1cd6Ca847016A3bd0cC1fe2dF5027E78ea428170 - 50
-// 14 - 0x317d373E590795e2c09D73FaD7498FC98c0A692B - 25
-// 15 - 0x30dcc8444F8361D5CE119fC25e16AF0B583e88Fd - 50
-// 16 - 0x29399d824a99789f587a491C59210326e8ef4545 - 1
-
-// @note this is using arbidex dev account instead of baseswap deployer
-// TODO: transfer ownerships as needed after setup
 
 async function main() {
   try {

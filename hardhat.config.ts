@@ -1,7 +1,6 @@
 import * as dotenv from 'dotenv';
 import { HardhatUserConfig } from 'hardhat/config';
 import '@nomicfoundation/hardhat-toolbox';
-import '@openzeppelin/hardhat-upgrades';
 import '@nomiclabs/hardhat-etherscan';
 
 dotenv.config();
@@ -45,12 +44,12 @@ const config: HardhatUserConfig = {
       // gas: 500000,
       // gasPrice: 100,
     },
-    base_goerli: {
+    baseGoerli: {
       url: process.env.BASE_GOERLI_RPC,
       accounts,
       chainId: 84531,
-      // gas: 500000,
-      // gasPrice: 100,
+      gas: 500000,
+      gasPrice: 100,
     },
   },
   etherscan: {
