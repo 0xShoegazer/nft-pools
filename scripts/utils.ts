@@ -1,4 +1,4 @@
-import { ethers, upgrades } from 'hardhat';
+import { ethers } from 'hardhat';
 import { BigNumber, Contract } from 'ethers';
 import { MAX_UINT256 } from '../test/constants';
 import { formatEther } from 'ethers/lib/utils';

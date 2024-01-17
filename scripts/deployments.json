@@ -1,0 +1,9 @@
+{
+  "baseGoerli": {
+    "MasterChef": "0x1af81D2aB7e75433Bc50Cd06CD5Ec33d94D25d3F",
+    "ProtocolToken": "0xD1ffA3ceB16110c27eAe3284675348a8Cb314F58",
+    "xProtocolToken": "0x9195Cd056f7B6A09e77aD66C9BbBDf2873D64ad9",
+    "NFTPoolFactory": "0x0D8769D15D550780AcF016f6fB1586e561F8C871",
+    "YieldBooster": "0xEb6a909e8c5eAdaFDDd7581f18a7Ed07cb4bE538"
+  }
+}
