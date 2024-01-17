@@ -59,17 +59,17 @@ async function main() {
     // const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
     // console.log(await factory.getPool('0x696b4d181Eb58cD4B54a59d2Ce834184Cf7Ac31A'));
 
-    // await createNFTPool(
-    //   {
-    //     pool: 'USD+-USDC',
-    //     lpAddress: '0x696b4d181Eb58cD4B54a59d2Ce834184Cf7Ac31A',
-    //     allocationPoints: 50,
-    //     allocationPointsWETH: 50,
-    //   },
-    //   signer
-    // );
+    // const pool = {
+    //   pool: 'GLP',
+    //   lpAddress: '0x688487605ebD93332756a69059324C12c1Ef5e3C',
+    //   allocationPoints: 50,
+    //   allocationPointsWETH: 50,
+    // };
+    // const nftPoolAddress = await createNFTPool(pool, signer);
+    // await sleepWait();
+    // await addPoolToChef(nftPoolAddress, pool, false, signer);
 
-    // TODO: updatePool on any pools created then before "go live"
+    // TODO: updatePool() on any pools created then before "go live"
     // const blockTime = await getCurrentBlockTime(ethers.provider);
     // // base is around 2 seconds right now
     // // 60 sec * 22 minutes
@@ -92,11 +92,7 @@ async function createNFTPool(pool: PoolInfo, signer: SignerWithAddress) {
   const nftPoolAddress = ethers.utils.defaultAbiCoder.decode(['address'], rx.events[1].data);
   console.log('NFTPool created: ' + nftPoolAddress[0]);
 
-  nftPoolAddress[0];
-
-  await sleepWait();
-
-  await addPoolToChef(nftPoolAddress[0], pool, false, signer);
+  return nftPoolAddress[0];
 }
 
 async function addPoolToChef(nftPoolAddress: string, pool: PoolInfo, withUpdate: boolean, signer: SignerWithAddress) {
