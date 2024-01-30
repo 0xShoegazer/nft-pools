@@ -12,12 +12,17 @@ import { getCurrentBlockTime } from '../test/utils';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 import { RAMSEY_ABI } from '../test/abis/chef-ramsey-abi';
 
-const FACTORY = '0x0D8769D15D550780AcF016f6fB1586e561F8C871';
-const CHEF = '0x1af81D2aB7e75433Bc50Cd06CD5Ec33d94D25d3F';
-const TREASURY = '0x03d4C4b1B115c068Ef864De2e21E724a758892A2'; // Dev acount
-const PROTOCOL_TOKEN = '0xD1ffA3ceB16110c27eAe3284675348a8Cb314F58';
-const XTOKEN = '0x9195Cd056f7B6A09e77aD66C9BbBDf2873D64ad9';
-const YIELD_BOOSTER = '0xEb6a909e8c5eAdaFDDd7581f18a7Ed07cb4bE538';
+const FACTORY_MAINNET = '';
+const CHEF_MAINNET = '';
+const TREASURY = '0x03d4C4b1B115c068Ef864De2e21E724a758892A2'; // @note Dev acount
+const PROTOCOL_TOKEN_MAINNET = '0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB';
+const PROTOCOL_TOKEN_TESTNET = '0xB687282AD4Fb8897D5Cd41f3C1A54DeB4cc88625';
+const XTOKEN_MAINNET = '0xFb68BBfaEF679C1E653b5cE271a0A383c0df6B45';
+const XTOKEN_TESTNET = '0x2ee99Be3c520B7Bd64f51641c3e7Ef28950E03B7';
+const YIELD_BOOSTER_MAINNET = '';
+
+const SFS_MAINNET = '0x8680CEaBcb9b56913c519c069Add6Bc3494B7020';
+const SFS_TESTNET = '0xBBd707815a7F7eb6897C7686274AFabd7B579Ff6';
 
 interface PoolInfo {
   pool: string;
@@ -30,11 +35,11 @@ async function main() {
   try {
     const signer = (await ethers.getSigners())[0];
 
-    // const maxSupply = parseUnits('10000000');
-    // const initialMint = parseUnits('840000');
-    // const initialEmissionRate = parseUnits('0.15');
-    // await deployProtocolToken(maxSupply, initialMint, initialEmissionRate, TREASURY, signer);
-    // console.log(`${maxSupply.toString()} ${initialMint.toString()} ${initialEmissionRate.toString()} ${TREASURY}`);
+    const maxSupply = parseUnits('10000000');
+    const initialMint = parseUnits('600000');
+    const initialEmissionRate = parseUnits('0');
+    //await deployProtocolToken(maxSupply, initialMint, initialEmissionRate, TREASURY, SFS_TESTNET, signer);
+    console.log(`${maxSupply.toString()} ${initialMint.toString()} ${initialEmissionRate.toString()} ${TREASURY}`);
 
     // // TODO: transfer ownerships as needed after setup
     // const bsx = await ethers.getContractAt('BaseXToken', PROTOCOL_TOKEN, signer);
@@ -82,24 +87,24 @@ async function main() {
   }
 }
 
-async function createNFTPool(pool: PoolInfo, signer: SignerWithAddress) {
-  console.log(`Creating NFTPool for pool: ${pool.pool}`);
+// async function createNFTPool(pool: PoolInfo, signer: SignerWithAddress) {
+//   console.log(`Creating NFTPool for pool: ${pool.pool}`);
 
-  const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
-  const tx = await factory.createPool(pool.lpAddress);
-  const rx = await tx.wait();
+//   const factory = await ethers.getContractAt('NFTPoolFactory', FACTORY, signer);
+//   const tx = await factory.createPool(pool.lpAddress);
+//   const rx = await tx.wait();
 
-  const nftPoolAddress = ethers.utils.defaultAbiCoder.decode(['address'], rx.events[1].data);
-  console.log('NFTPool created: ' + nftPoolAddress[0]);
+//   const nftPoolAddress = ethers.utils.defaultAbiCoder.decode(['address'], rx.events[1].data);
+//   console.log('NFTPool created: ' + nftPoolAddress[0]);
 
-  return nftPoolAddress[0];
-}
+//   return nftPoolAddress[0];
+// }
 
-async function addPoolToChef(nftPoolAddress: string, pool: PoolInfo, withUpdate: boolean, signer: SignerWithAddress) {
-  console.log(`Adding NFTPool to chef for pool: ${pool.pool}`);
+// async function addPoolToChef(nftPoolAddress: string, pool: PoolInfo, withUpdate: boolean, signer: SignerWithAddress) {
+//   console.log(`Adding NFTPool to chef for pool: ${pool.pool}`);
 
-  const chef = await ethers.getContractAt(RAMSEY_ABI, CHEF, signer);
-  await chef.add(nftPoolAddress, pool.allocationPoints, pool.allocationPointsWETH, withUpdate);
-}
+//   const chef = await ethers.getContractAt(RAMSEY_ABI, CHEF, signer);
+//   await chef.add(nftPoolAddress, pool.allocationPoints, pool.allocationPointsWETH, withUpdate);
+// }
 
 main();

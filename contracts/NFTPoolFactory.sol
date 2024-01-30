@@ -22,7 +22,7 @@ contract NFTPoolFactory {
         protocolToken = _protocolToken;
         xToken = _xToken;
 
-        // Register the pool under the same SFS NFT
+        // Register under the same SFS NFT
         _protocolToken.feeShareContract().assign(_protocolToken.feeShareTokenId());
     }
 

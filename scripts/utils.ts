@@ -1,7 +1,7 @@
 import { ethers } from 'hardhat';
 import { BigNumber, Contract } from 'ethers';
 import { MAX_UINT256 } from '../test/constants';
-import { formatEther } from 'ethers/lib/utils';
+import { formatEther, parseUnits } from 'ethers/lib/utils';
 import { ERC20_ABI } from '../test/abis/erc20-abi';
 import { SignerWithAddress } from '@nomiclabs/hardhat-ethers/signers';
 
@@ -10,21 +10,25 @@ export async function deployProtocolToken(
   initialMint: BigNumber,
   initialEmissionRate: BigNumber,
   treasury: string,
+  feeShare: string,
   signer: SignerWithAddress
 ) {
-  const factory = await ethers.getContractFactory('BaseXToken', signer);
-  const instance = await factory.deploy(maxSupply, initialMint, initialEmissionRate, treasury);
+  const factory = await ethers.getContractFactory('SwapModeToken', signer);
+  const instance = await factory.deploy(maxSupply, initialMint, initialEmissionRate, treasury, feeShare, {
+    // gasPrice: parseUnits('0'),
+    // gasLimit: 500000,
+  });
   await instance.deployed();
-  console.log(`BaseXToken deployed at: ${instance.address}`);
+  console.log(`SwapModeToken deployed at: ${instance.address}`);
 
   return instance;
 }
 
 export async function deployXToken(mainToken: string, signer: SignerWithAddress) {
-  const factory = await ethers.getContractFactory('xBSX', signer);
+  const factory = await ethers.getContractFactory('xSwapMode', signer);
   const instance = await factory.deploy(mainToken);
   await instance.deployed();
-  console.log(`xBSX deployed at: ${instance.address}`);
+  console.log(`xSwapMode deployed at: ${instance.address}`);
 
   return instance;
 }

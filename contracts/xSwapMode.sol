@@ -61,12 +61,15 @@ contract xSwapMode is Ownable, ReentrancyGuard, ERC20("Swap Mode Escrowed Token"
     mapping(address => xTokenBalance) public xTokenBalances; // User's xToken balances
     mapping(address => RedeemInfo[]) public userRedeems; // User's redeeming instances
 
-    constructor(IProtocolToken token) {
-        protocolToken = token;
+    constructor(IProtocolToken _protocolToken) {
+        protocolToken = _protocolToken;
 
         _transferWhitelist.add(address(this));
-        _transferWhitelist.add(token.treasuryAddress());
+        _transferWhitelist.add(_protocolToken.treasuryAddress());
         _transferWhitelist.add(msg.sender);
+
+        // Register under the same SFS NFT
+        _protocolToken.feeShareContract().assign(_protocolToken.feeShareTokenId());
     }
 
     /********************************************/
