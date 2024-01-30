@@ -1,28 +1,29 @@
 // SPDX-License-Identifier: MIT
 pragma solidity =0.7.6;
 
-import "./interfaces/tokens/IERC20Metadata.sol";
+import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 
 import "./interfaces/IMasterChef.sol";
 import "./interfaces/tokens/IXToken.sol";
+import "./interfaces/tokens/IProtocolToken.sol";
 import "./NFTPool.sol";
-import "./interfaces/IFeeSharing.sol";
 
 contract NFTPoolFactory {
     IMasterChef public immutable master; // Address of the master
-    IERC20Metadata public immutable protocolToken;
+    IProtocolToken public immutable protocolToken;
     IXToken public immutable xToken;
 
     // lp token => pool
     mapping(address => address) public getPool;
     address[] public pools;
 
-    constructor(IMasterChef _master, IERC20Metadata _token, IXToken _xToken, IFeeSharing _feeShare) {
+    constructor(IMasterChef _master, IProtocolToken _protocolToken, IXToken _xToken) {
         master = _master;
-        protocolToken = _token;
+        protocolToken = _protocolToken;
         xToken = _xToken;
 
-        _feeShare.register(msg.sender);
+        // Register the pool under the same SFS NFT
+        _protocolToken.feeShareContract().assign(_protocolToken.feeShareTokenId());
     }
 
     event PoolCreated(address indexed lpToken, address pool);
@@ -42,7 +43,7 @@ contract NFTPoolFactory {
         }
         require(pool != address(0), "failed");
 
-        NFTPool(pool).initialize(master, protocolToken, xToken, IERC20Metadata(lpToken));
+        NFTPool(pool).initialize(master, protocolToken, xToken, IERC20(lpToken));
         getPool[lpToken] = pool;
         pools.push(pool);
 

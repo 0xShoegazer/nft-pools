@@ -32,6 +32,9 @@ contract SwapModeToken is Ownable, ERC20("Swap Mode", "SMD"), IProtocolToken {
 
     address public constant BURN_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 
+    IFeeSharing public immutable override feeShareContract;
+    uint256 public immutable override feeShareTokenId;
+
     // ========================================= //
     // ================ EVENTS ================= //
     // ========================================= //
@@ -72,7 +75,8 @@ contract SwapModeToken is Ownable, ERC20("Swap Mode", "SMD"), IProtocolToken {
         emissionRate = initialEmissionRate;
         treasuryAddress = treasury;
 
-        feeShare.register(treasury);
+        feeShareTokenId = feeShare.register(treasury);
+        feeShareContract = feeShare;
 
         _mint(treasury, initialSupply);
     }

@@ -16,7 +16,7 @@ const config = {
           // evmVersion: 'london',
           optimizer: {
             enabled: true,
-            runs: 5000,
+            runs: 2500,
           },
         },
       },

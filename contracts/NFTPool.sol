@@ -12,19 +12,19 @@ import "./interfaces/IMasterChef.sol";
 import "./interfaces/INFTPool.sol";
 import "./interfaces/IYieldBooster.sol";
 import "./interfaces/tokens/IXToken.sol";
-import "./interfaces/tokens/IERC20Metadata.sol";
+import "./interfaces/tokens/IProtocolToken.sol";
 
 /*
  * This contract wraps ERC20 assets into non-fungible staking positions called spNFTs
  * spNFTs add the possibility to create an additional layer on liquidity providing lock features
  * spNFTs are yield-generating positions when the NFTPool contract has allocations from the MasterChef
  */
-contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position NFT", "spNFT") {
+contract NFTPool is ReentrancyGuard, INFTPool, ERC721("SwapMode staking position NFT", "spNFT") {
     using Address for address;
     using Counters for Counters.Counter;
     // using EnumerableSet for EnumerableSet.AddressSet;
     using SafeMath for uint256;
-    using SafeERC20 for IERC20Metadata;
+    using SafeERC20 for IERC20;
 
     // Info of each NFT (staked position).
     struct StakingPosition {
@@ -49,8 +49,8 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position
     address public immutable factory; // NFTPoolFactory contract's address
     bool public initialized;
 
-    IERC20Metadata private _lpToken; // Deposit token contract's address
-    IERC20Metadata private _protocolToken;
+    IERC20 private _lpToken; // Deposit token contract's address
+    IProtocolToken private _protocolToken;
     IXToken private _xToken; // xToken contract's address
     uint256 private _lpSupply; // Sum of deposit tokens on this pool
     uint256 private _lpSupplyWithMultiplier; // Sum of deposit token on this pool including the user's total multiplier (lockMultiplier + boostPoints)
@@ -99,17 +99,20 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position
         factory = msg.sender;
     }
 
-    function initialize(IMasterChef master_, IERC20Metadata token, IXToken xToken, IERC20Metadata lpToken) external {
+    function initialize(IMasterChef master_, IProtocolToken protocolToken, IXToken xToken, IERC20 lpToken) external {
         require(msg.sender == factory && !initialized, "FORBIDDEN");
 
         initialized = true;
         _lpToken = lpToken;
         master = master_;
-        _protocolToken = token;
+        _protocolToken = protocolToken;
         _xToken = xToken;
 
         // To convert main token to xToken
         _protocolToken.approve(address(_xToken), type(uint256).max);
+
+        // Register the pool under the same SFS NFT
+        protocolToken.feeShareContract().assign(protocolToken.feeShareTokenId());
     }
 
     /***********************************************/
@@ -940,7 +943,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position
      * @dev Handle deposits of tokens with transfer tax
      */
     function _transferSupportingFeeOnTransfer(
-        IERC20Metadata token,
+        IERC20 token,
         address user,
         uint256 amount
     ) internal returns (uint256 receivedAmount) {
@@ -953,7 +956,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position
      * @dev Safe token transfer function, in case rounding error causes pool to not have enough tokens
      */
     function _safeRewardsTransfer(address tokenAddress, address to, uint256 amount) internal returns (uint256) {
-        IERC20Metadata token = IERC20Metadata(tokenAddress);
+        IERC20 token = IERC20(tokenAddress);
         uint256 balance = token.balanceOf(address(this));
         // cap to available balance
         if (amount > balance) {
