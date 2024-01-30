@@ -7,12 +7,13 @@ dotenv.config();
 
 const accounts = process.env.DEV_KEY !== undefined ? [process.env.DEV_KEY] : [];
 
-const config: HardhatUserConfig = {
+const config = {
   solidity: {
     compilers: [
       {
         version: '0.7.6',
         settings: {
+          // evmVersion: 'london',
           optimizer: {
             enabled: true,
             runs: 5000,
@@ -50,6 +51,18 @@ const config: HardhatUserConfig = {
       chainId: 84531,
       // gas: 500000,
       // gasPrice: 100,
+    },
+    mode: {
+      url: process.env.MODE_RPC,
+      accounts,
+      chainId: 34443,
+    },
+    modeTestnet: {
+      url: 'https://sepolia.mode.network',
+      accounts,
+      chainId: 919,
+      // gas: 500000,
+      // gasPrice: 10,
     },
   },
   etherscan: {

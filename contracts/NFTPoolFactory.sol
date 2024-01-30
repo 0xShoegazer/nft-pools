@@ -6,6 +6,7 @@ import "./interfaces/tokens/IERC20Metadata.sol";
 import "./interfaces/IMasterChef.sol";
 import "./interfaces/tokens/IXToken.sol";
 import "./NFTPool.sol";
+import "./interfaces/IFeeSharing.sol";
 
 contract NFTPoolFactory {
     IMasterChef public immutable master; // Address of the master
@@ -16,10 +17,12 @@ contract NFTPoolFactory {
     mapping(address => address) public getPool;
     address[] public pools;
 
-    constructor(IMasterChef _master, IERC20Metadata _token, IXToken _xToken) {
+    constructor(IMasterChef _master, IERC20Metadata _token, IXToken _xToken, IFeeSharing _feeShare) {
         master = _master;
         protocolToken = _token;
         xToken = _xToken;
+
+        _feeShare.register(msg.sender);
     }
 
     event PoolCreated(address indexed lpToken, address pool);

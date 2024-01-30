@@ -7,12 +7,13 @@ import "@openzeppelin/contracts/math/SafeMath.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
 import "./interfaces/tokens/IProtocolToken.sol";
+import "./interfaces/IFeeSharing.sol";
 
 /*
- * BaseXToken is a native ERC20 token.
+ * SwapModeToken is a native ERC20 token.
  * It has an hard cap and manages its own emissions and allocations.
  */
-contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
+contract SwapModeToken is Ownable, ERC20("Swap Mode", "SMD"), IProtocolToken {
     using SafeMath for uint256;
 
     uint256 public constant MAX_SUPPLY_LIMIT = 10_000_000 ether;
@@ -52,11 +53,17 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
      * @dev Throws error if called by any account other than the master
      */
     modifier onlyMaster() {
-        require(msg.sender == masterAddress, "BaseXToken: caller is not the master");
+        require(msg.sender == masterAddress, "SwapModeToken: caller is not the master");
         _;
     }
 
-    constructor(uint256 maxSupply, uint256 initialSupply, uint256 initialEmissionRate, address treasury) {
+    constructor(
+        uint256 maxSupply,
+        uint256 initialSupply,
+        uint256 initialEmissionRate,
+        address treasury,
+        IFeeSharing feeShare
+    ) {
         require(maxSupply <= MAX_SUPPLY_LIMIT, "invalid initial maxSupply");
         require(initialSupply < maxSupply, "invalid initial supply");
         require(treasury != address(0), "invalid treasury address");
@@ -64,6 +71,8 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
         elasticMaxSupply = maxSupply;
         emissionRate = initialEmissionRate;
         treasuryAddress = treasury;
+
+        feeShare.register(treasury);
 
         _mint(treasury, initialSupply);
     }
@@ -168,7 +177,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
     }
 
     /**
-     * @dev Burns "amount" of BaseXToken by sending it to BURN_ADDRESS
+     * @dev Burns "amount" of SwapModeToken by sending it to BURN_ADDRESS
      */
     function burn(uint256 amount) external override {
         _transfer(msg.sender, BURN_ADDRESS, amount);
@@ -226,7 +235,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
     }
 
     /**
-     * @dev Updates BaseXToken emission rate per second
+     * @dev Updates SwapModeToken emission rate per second
      *
      * Must only be called by the owner
      */
@@ -239,7 +248,7 @@ contract BaseXToken is Ownable, ERC20("BaseX", "BSX"), IProtocolToken {
     }
 
     /**
-     * @dev Updates BaseXToken max supply
+     * @dev Updates SwapModeToken max supply
      *
      * Must only be called by the owner
      */

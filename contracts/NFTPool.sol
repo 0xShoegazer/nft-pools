@@ -101,13 +101,14 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position
 
     function initialize(IMasterChef master_, IERC20Metadata token, IXToken xToken, IERC20Metadata lpToken) external {
         require(msg.sender == factory && !initialized, "FORBIDDEN");
+
+        initialized = true;
         _lpToken = lpToken;
         master = master_;
         _protocolToken = token;
         _xToken = xToken;
-        initialized = true;
 
-        // to convert main token to xToken
+        // To convert main token to xToken
         _protocolToken.approve(address(_xToken), type(uint256).max);
     }
 

@@ -5,5 +5,19 @@
     "xProtocolToken": "0x9195Cd056f7B6A09e77aD66C9BbBDf2873D64ad9",
     "NFTPoolFactory": "0x0D8769D15D550780AcF016f6fB1586e561F8C871",
     "YieldBooster": "0xEb6a909e8c5eAdaFDDd7581f18a7Ed07cb4bE538"
+  },
+  "modeTestnet": {
+    "MasterChef": "",
+    "ProtocolToken": "",
+    "xProtocolToken": "",
+    "NFTPoolFactory": "",
+    "YieldBooster": ""
+  },
+  "mode": {
+    "MasterChef": "",
+    "ProtocolToken": "",
+    "xProtocolToken": "",
+    "NFTPoolFactory": "",
+    "YieldBooster": ""
   }
 }
