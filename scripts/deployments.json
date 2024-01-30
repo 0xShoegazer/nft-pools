@@ -7,17 +7,17 @@
     "YieldBooster": "0xEb6a909e8c5eAdaFDDd7581f18a7Ed07cb4bE538"
   },
   "modeTestnet": {
-    "MasterChef": "",
-    "ProtocolToken": "",
-    "xProtocolToken": "",
-    "NFTPoolFactory": "",
-    "YieldBooster": ""
+    "MasterChef": "0x396f2ca2a470efc92511fd3e99833d28d38cff53",
+    "ProtocolToken": "0xB687282AD4Fb8897D5Cd41f3C1A54DeB4cc88625",
+    "xProtocolToken": "0x2ee99Be3c520B7Bd64f51641c3e7Ef28950E03B7",
+    "NFTPoolFactory": "0xA6Fae39901858a6dD51B5068C11348305a031cdF",
+    "YieldBooster": "0x4Ab974442D6e67c32E40f44BcDC22388F3F16d9e"
   },
   "mode": {
-    "MasterChef": "",
-    "ProtocolToken": "",
-    "xProtocolToken": "",
-    "NFTPoolFactory": "",
-    "YieldBooster": ""
+    "MasterChef": "0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9",
+    "ProtocolToken": "0xFDa619b6d20975be80A10332cD39b9a4b0FAa8BB",
+    "xProtocolToken": "0xFb68BBfaEF679C1E653b5cE271a0A383c0df6B45",
+    "NFTPoolFactory": "0x78a087d713Be963Bf307b18F2Ff8122EF9A63ae9",
+    "YieldBooster": "0x0fE9E7B39dbdfe32c9F37FAcCec6b33d290CbF50"
   }
 }
