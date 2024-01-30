@@ -884,6 +884,7 @@ contract NFTPool is ReentrancyGuard, INFTPool, ERC721("Baseswap staking position
             uint256 amount = pending.add(position.pendingRewards).sub(xTokenRewards);
 
             xTokenRewards = xTokenRewards.add(position.pendingXTokenRewards);
+            pendingWETH = pendingWETH.add(position.pendingWETHRewards);
 
             // Stack rewards in a buffer if to is equal to address(0)
             if (address(0) == to) {

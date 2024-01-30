@@ -2,7 +2,7 @@
   "name": "@baseswapfi/nft-pools",
   "scripts": {
     "build": "npx hardhat compile",
-    "start": "yarn hardhat node",
+    "start": "npx hardhat node",
     "test": "npx hardhat test",
     "deploy": "npx hardhat run ./scripts/deploy.ts --network"
   },

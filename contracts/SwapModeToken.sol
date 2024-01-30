@@ -28,7 +28,7 @@ contract SwapModeToken is Ownable, ERC20("Swap Mode", "SMD"), IProtocolToken {
     uint256 public farmingAllocation = 90; // = 90%
 
     address public masterAddress;
-    address public treasuryAddress;
+    address public override treasuryAddress;
 
     address public constant BURN_ADDRESS = 0x000000000000000000000000000000000000dEaD;
 

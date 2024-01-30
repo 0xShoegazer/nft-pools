@@ -11,4 +11,6 @@ interface IProtocolToken is IERC20 {
     function masterEmissionRate() external view returns (uint256);
 
     function burn(uint256 amount) external;
+
+    function treasuryAddress() external view returns (address);
 }

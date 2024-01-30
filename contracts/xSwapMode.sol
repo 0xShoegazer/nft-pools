@@ -13,12 +13,12 @@ import "./interfaces/tokens/IXToken.sol";
 import "./interfaces/IXTokenUsage.sol";
 
 /*
- * xBSX is Baseswaps's escrowed governance token obtainable by converting token to it
+ * xSMD is Swap Mode's escrowed governance token obtainable by converting token to it
  * It's non-transferable, except from/to whitelisted addresses
  * It can be converted back to token through a vesting process
  * This contract is made to receive xToken deposits from users in order to allocate them to Usages (plugins) contracts
  */
-contract xBSX is Ownable, ReentrancyGuard, ERC20("Baseswap escrowed token", "xBSX"), IXToken {
+contract xSwapMode is Ownable, ReentrancyGuard, ERC20("Swap Mode Escrowed Token", "xSMD"), IXToken {
     using Address for address;
     using SafeMath for uint256;
     using EnumerableSet for EnumerableSet.AddressSet;
@@ -63,7 +63,10 @@ contract xBSX is Ownable, ReentrancyGuard, ERC20("Baseswap escrowed token", "xBS
 
     constructor(IProtocolToken token) {
         protocolToken = token;
+
         _transferWhitelist.add(address(this));
+        _transferWhitelist.add(token.treasuryAddress());
+        _transferWhitelist.add(msg.sender);
     }
 
     /********************************************/

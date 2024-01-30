@@ -26,7 +26,7 @@ const config = {
     hardhat: {
       forking: {
         url: process.env.BASE_RPC || '',
-        blockNumber: 2752169,
+        blockNumber: 9925339, // 1/30 1:30PM
       },
       // loggingEnabled: true,
     },

@@ -49,17 +49,10 @@ export async function testFixture() {
   await lpInstance.approve(nftPool.address, MAX_UINT256);
   await nftPool.createPosition(userOneLpBalance.div(2), 0);
 
-  const [BaseXToken, xBSXToken, oldChef] = await Promise.all([
-    ethers.getContractAt('BaseXToken', BSX, signer),
-    ethers.getContractAt('xBSX', xBSX, signer),
-    ethers.getContractAt(OLD_CHEF_ABI, OLD_CHEF, signer),
+  const [BaseXToken, xBSXToken] = await Promise.all([
+    ethers.getContractAt('SwapModeToken', BSX, signer),
+    ethers.getContractAt('xSwapMode', xBSX, signer),
   ]);
-
-  await BaseXToken.initializeMasterAddress(masterChef.address);
-
-  const start = await latest();
-  await BaseXToken.initializeEmissionStart(start + 10);
-  await BaseXToken.updateEmissionRate(parseUnits('0.01'));
 
   return {
     signer,
@@ -68,8 +61,6 @@ export async function testFixture() {
     tokenId: 1,
     BaseXToken,
     xBSXToken,
-    oldChef,
-    oldChefPid: 16,
     bswapToken: getERC20WithSigner(BSWAP, signer),
   };
 }
