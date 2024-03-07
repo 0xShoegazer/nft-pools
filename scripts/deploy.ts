@@ -7,10 +7,10 @@ async function main() {
   const signer = (await ethers.getSigners())[0];
 
   // await runAddPoolFlow(depositToken, ARBIDEX_TREASURY, NFT_POOL_FACTORY, signer);
-  const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
+  // const rewardManager = await deployRewardManager(ARBIDEX_TREASURY, signer);
 
   // 0xc4e56BFe61A5259CBd5Ad1B9C98c75A97C337B7B
-  await runAddPoolFlow('0xc4e56BFe61A5259CBd5Ad1B9C98c75A97C337B7B', ARBIDEX_TREASURY, NFT_POOL_FACTORY, signer);
+  await runAddPoolFlow('0x39511b74722afE77d532Eb70632B4B59C559019b', ARBIDEX_TREASURY, NFT_POOL_FACTORY, signer);
 
   // const rewardManager = await ethers.getContractAt('PoolRewardManager', '0x61cD9a2c3DE71f1aC514941BaC5F08520F8469b3');
   // console.log(await rewardManager.poolAddress());
